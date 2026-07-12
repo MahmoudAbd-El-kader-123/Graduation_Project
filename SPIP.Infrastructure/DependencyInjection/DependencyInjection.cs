@@ -12,6 +12,7 @@ using SPIP.Infrastructure.Identity;
 using SPIP.Infrastructure.Persistence.Context;
 using SPIP.Infrastructure.Repositories;
 using SPIP.Infrastructure.Services;
+using SPIP.Application.Services;
 using System.Text;
 
 namespace SPIP.Infrastructure.DependencyInjection;
@@ -20,8 +21,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<SPIP.Infrastructure.Persistence.Interceptors.AuditInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        {
+            var interceptor = sp.GetRequiredService<SPIP.Infrastructure.Persistence.Interceptors.AuditInterceptor>();
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                   .AddInterceptors(interceptor);
+        });
 
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
@@ -59,13 +66,38 @@ public static class DependencyInjection
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            // Dynamically register all permissions as policies
+            var permissions = typeof(SPIP.Domain.Constants.Permissions).GetNestedTypes()
+                .SelectMany(t => t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy))
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
+                .Select(x => (string)x.GetRawConstantValue()!)
+                .ToList();
+
+            foreach (var permission in permissions)
+            {
+                options.AddPolicy(permission, policy => policy.RequireClaim("Permission", permission));
+            }
+        });
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IVendorRepository, VendorRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IVendorColumnMappingRepository, VendorColumnMappingRepository>();
+        services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IVendorService, VendorService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IVendorColumnMappingService, VendorColumnMappingService>();
+        services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+        services.AddScoped<IClosedXmlImportService, ClosedXmlImportService>();
 
         return services;
     }

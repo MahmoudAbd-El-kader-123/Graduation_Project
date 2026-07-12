@@ -16,6 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Role> Roles_Domain => Set<Role>();
     public DbSet<Vendor> Vendors => Set<Vendor>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<VendorColumnMapping> VendorColumnMappings => Set<VendorColumnMapping>();
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
     public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
     public DbSet<Invoice> Invoices => Set<Invoice>();

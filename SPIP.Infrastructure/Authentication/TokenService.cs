@@ -17,7 +17,7 @@ public class TokenService : ITokenService
         _jwtSettings = jwtOptions.Value;
     }
 
-    public string GenerateToken(Guid userId, string email, string userName, IList<string> roles)
+    public string GenerateToken(Guid userId, string email, string userName, IList<string> roles, IList<string> permissions)
     {
         var claims = new List<Claim>
         {
@@ -29,6 +29,7 @@ public class TokenService : ITokenService
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(permissions.Select(p => new Claim("Permission", p)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -3,6 +3,7 @@ using SPIP.Application.Interfaces.Repositories;
 using SPIP.Application.Interfaces.Services;
 using SPIP.Domain.Entities;
 using SPIP.Domain.Enums;
+using SPIP.Shared.Pagination;
 using SPIP.Shared.Result;
 
 namespace SPIP.Application.Services;
@@ -25,28 +26,20 @@ public class UserService : IUserService
         return Result<UserDto>.Success(MapToDto(user));
     }
 
-    public async Task<Result<IEnumerable<UserDto>>> GetAllAsync()
+    public async Task<Result<PagedResult<UserDto>>> GetPagedAsync(UserParameters parameters)
     {
-        var users = await _userRepository.GetAllAsync();
-        return Result<IEnumerable<UserDto>>.Success(users.Select(MapToDto));
-    }
-
-    public async Task<Result<UserDto>> CreateAsync(CreateUserDto dto)
-    {
-        var user = new User
+        var (items, totalCount) = await _userRepository.GetPagedAsync(parameters);
+        var pagedResult = new PagedResult<UserDto>
         {
-            FullName = dto.FullName,
-            Email = dto.Email,
-            PasswordHash = dto.Password, // Hashing handled in Infrastructure layer
-            Role = Enum.TryParse<UserRole>(dto.Role, true, out var role) ? role : UserRole.Employee,
-            IsActive = true
+            Items = items.Select(MapToDto).ToList(),
+            PageNumber = parameters.PageNumber,
+            PageSize = parameters.PageSize,
+            TotalCount = totalCount
         };
-
-        var created = await _userRepository.AddAsync(user);
-        await _userRepository.SaveChangesAsync();
-
-        return Result<UserDto>.Success(MapToDto(created));
+        return Result<PagedResult<UserDto>>.Success(pagedResult);
     }
+
+
 
     public async Task<Result<UserDto>> UpdateAsync(int id, UpdateUserDto dto)
     {
@@ -63,6 +56,19 @@ public class UserService : IUserService
         await _userRepository.SaveChangesAsync();
 
         return Result<UserDto>.Success(MapToDto(user));
+    }
+
+    public async Task<Result<bool>> ToggleActiveStatusAsync(int id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user is null)
+            return Result<bool>.Failure("User not found.");
+
+        user.IsActive = !user.IsActive;
+        await _userRepository.UpdateAsync(user);
+        await _userRepository.SaveChangesAsync();
+
+        return Result<bool>.Success(user.IsActive);
     }
 
     public async Task<Result<bool>> DeleteAsync(int id)

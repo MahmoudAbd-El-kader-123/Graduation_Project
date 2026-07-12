@@ -11,6 +11,8 @@ public class PurchaseOrder : BaseEntity
     public int RequestedByUserId { get; set; }
     public User? RequestedByUser { get; set; }
     public PurchaseOrderStatus Status { get; set; } = PurchaseOrderStatus.Draft;
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+    public DateTime? ExpectedDeliveryDate { get; set; }
     public decimal TotalAmount { get; set; }
 
     public ICollection<PurchaseOrderItem> Items { get; set; } = new List<PurchaseOrderItem>();

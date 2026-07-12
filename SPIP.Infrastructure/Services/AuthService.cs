@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using SPIP.Application.DTOs.Auth;
 using SPIP.Application.Interfaces.Services;
 using SPIP.Infrastructure.Identity;
+using SPIP.Infrastructure.Persistence.Context;
 
 namespace SPIP.Infrastructure.Services;
 
@@ -10,12 +11,16 @@ public class AuthService : IAuthService
     private const string DefaultRegistrationRole = "Accountant";
 
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     private readonly ITokenService _tokenService;
+    private readonly ApplicationDbContext _context;
 
-    public AuthService(UserManager<ApplicationUser> userManager, ITokenService tokenService)
+    public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, ITokenService tokenService, ApplicationDbContext context)
     {
         _userManager = userManager;
+        _roleManager = roleManager;
         _tokenService = tokenService;
+        _context = context;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -45,8 +50,20 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, DefaultRegistrationRole);
 
+        var domainUser = new SPIP.Domain.Entities.User
+        {
+            IdentityId = user.Id,
+            FullName = user.FullName,
+            Email = user.Email!,
+            Role = SPIP.Domain.Enums.UserRole.Accountant,
+            IsActive = true
+        };
+        _context.Users_Domain.Add(domainUser);
+        await _context.SaveChangesAsync();
+
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles);
+        var permissions = await GetPermissionsForRolesAsync(roles);
+        var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles, permissions);
 
         return new AuthResponseDto
         {
@@ -76,7 +93,8 @@ public class AuthService : IAuthService
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles);
+        var permissions = await GetPermissionsForRolesAsync(roles);
+        var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles, permissions);
 
         return new AuthResponseDto
         {
@@ -89,5 +107,20 @@ public class AuthService : IAuthService
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             Roles = roles
         };
+    }
+
+    private async Task<IList<string>> GetPermissionsForRolesAsync(IList<string> roles)
+    {
+        var permissions = new List<string>();
+        foreach (var roleName in roles)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role != null)
+            {
+                var claims = await _roleManager.GetClaimsAsync(role);
+                permissions.AddRange(claims.Where(c => c.Type == "Permission").Select(c => c.Value));
+            }
+        }
+        return permissions.Distinct().ToList();
     }
 }

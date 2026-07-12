@@ -52,9 +52,10 @@ public class Program
 
             var roleManager = provider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
             var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+            var context = provider.GetRequiredService<SPIP.Infrastructure.Persistence.Context.ApplicationDbContext>();
 
             await RoleSeeder.SeedAsync(roleManager);
-            await AdminUserSeeder.SeedAsync(userManager);
+            await AdminUserSeeder.SeedAsync(userManager, context);
 
             Log.Information("Identity data seeded successfully");
         }
@@ -81,6 +82,9 @@ public class Program
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
         builder.Services.AddControllers();
+
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<SPIP.Application.Interfaces.Services.ICurrentUserService, SPIP.API.Services.CurrentUserService>();
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);

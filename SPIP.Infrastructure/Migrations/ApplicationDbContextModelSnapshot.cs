@@ -17,7 +17,7 @@ namespace SPIP.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -486,10 +486,16 @@ namespace SPIP.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Barcode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErpId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -505,6 +511,10 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Uom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -530,8 +540,14 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ExpectedDeliveryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("OrderNumber")
                         .IsRequired()
@@ -694,15 +710,14 @@ namespace SPIP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -737,6 +752,9 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ErpId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
@@ -748,12 +766,50 @@ namespace SPIP.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("TaxRegistrationNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("Vendors", (string)null);
+                });
+
+            modelBuilder.Entity("SPIP.Domain.Entities.VendorColumnMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExcelColumn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SystemField")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("VendorColumnMappings");
                 });
 
             modelBuilder.Entity("SPIP.Domain.Entities.VendorPriceHistory", b =>
@@ -1084,6 +1140,17 @@ namespace SPIP.Infrastructure.Migrations
                         .HasForeignKey("InvoiceId");
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("SPIP.Domain.Entities.VendorColumnMapping", b =>
+                {
+                    b.HasOne("SPIP.Domain.Entities.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("SPIP.Domain.Entities.VendorPriceHistory", b =>
