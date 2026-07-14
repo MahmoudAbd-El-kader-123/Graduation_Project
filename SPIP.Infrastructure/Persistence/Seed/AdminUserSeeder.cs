@@ -12,36 +12,44 @@ public static class AdminUserSeeder
     public static async Task SeedAsync(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
     {
         var existingAdmin = await userManager.FindByEmailAsync(AdminEmail);
-        if (existingAdmin is not null)
-            return;
-
-        var adminUser = new ApplicationUser
+        
+        if (existingAdmin == null)
         {
-            UserName = AdminEmail,
-            Email = AdminEmail,
-            FullName = "System Administrator",
-            EmailConfirmed = true,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        var result = await userManager.CreateAsync(adminUser, AdminPassword);
-
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-
-            var domainUser = new SPIP.Domain.Entities.User
+            var adminUser = new ApplicationUser
             {
-                IdentityId = adminUser.Id,
-                FullName = adminUser.FullName,
-                Email = adminUser.Email,
-                Role = SPIP.Domain.Enums.UserRole.Admin,
-                IsActive = true
+                UserName = AdminEmail,
+                Email = AdminEmail,
+                FullName = "System Administrator",
+                EmailConfirmed = true,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
-            
-            context.Users_Domain.Add(domainUser);
-            await context.SaveChangesAsync();
+
+            var result = await userManager.CreateAsync(adminUser, AdminPassword);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                existingAdmin = adminUser;
+            }
+        }
+
+        if (existingAdmin != null)
+        {
+            var domainUserExists = context.Users_Domain.Any(u => u.IdentityId == existingAdmin.Id);
+            if (!domainUserExists)
+            {
+                var domainUser = new SPIP.Domain.Entities.User
+                {
+                    IdentityId = existingAdmin.Id,
+                    FullName = existingAdmin.FullName,
+                    Email = existingAdmin.Email,
+                    Role = SPIP.Domain.Enums.UserRole.Admin,
+                    IsActive = true
+                };
+                
+                context.Users_Domain.Add(domainUser);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

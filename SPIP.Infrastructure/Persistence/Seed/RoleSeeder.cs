@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using SPIP.Domain.Constants;
+using System.Reflection;
+using System.Security.Claims;
 
 namespace SPIP.Infrastructure.Persistence.Seed;
 
@@ -14,6 +17,26 @@ public static class RoleSeeder
             if (!exists)
             {
                 await roleManager.CreateAsync(new IdentityRole<Guid>(roleName));
+            }
+        }
+
+        // Seed all permissions to Admin
+        var adminRole = await roleManager.FindByNameAsync("Admin");
+        if (adminRole != null)
+        {
+            var existingClaims = await roleManager.GetClaimsAsync(adminRole);
+            var allPermissions = typeof(Permissions).GetNestedTypes()
+                .SelectMany(t => t.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
+                .Select(x => (string)x.GetRawConstantValue()!)
+                .ToList();
+
+            foreach (var permission in allPermissions)
+            {
+                if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == permission))
+                {
+                    await roleManager.AddClaimAsync(adminRole, new Claim("Permission", permission));
+                }
             }
         }
     }

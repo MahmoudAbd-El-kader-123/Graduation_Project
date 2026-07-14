@@ -42,13 +42,37 @@ public class ClosedXmlImportService : IClosedXmlImportService
             var mappings = await _mappingRepository.GetByVendorIdAsync(vendorId);
             if (!mappings.Any()) return Result<PurchaseOrder>.Failure("No column mappings found for this vendor.");
 
-            // Find column indexes based on mappings
-            var headerRow = worksheet.Row(1);
+            // Find column indexes based on mappings by scanning the first 50 rows
             var columnIndexes = new Dictionary<string, int>();
+            IXLRow? headerRow = null;
+
+            for (int i = 1; i <= Math.Min(50, worksheet.LastRowUsed()?.RowNumber() ?? 50); i++)
+            {
+                var row = worksheet.Row(i);
+                var cells = row.CellsUsed();
+                
+                bool isHeader = false;
+                foreach (var mapping in mappings)
+                {
+                    if (cells.Any(c => c.GetString().Trim().Equals(mapping.ExcelColumn.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        isHeader = true;
+                        break;
+                    }
+                }
+
+                if (isHeader)
+                {
+                    headerRow = row;
+                    break;
+                }
+            }
+
+            if (headerRow == null) return Result<PurchaseOrder>.Failure("Could not locate the header row containing the mapped columns.");
 
             foreach (var mapping in mappings)
             {
-                var cell = headerRow.CellsUsed().FirstOrDefault(c => c.GetString().Equals(mapping.ExcelColumn, StringComparison.OrdinalIgnoreCase));
+                var cell = headerRow.CellsUsed().FirstOrDefault(c => c.GetString().Trim().Equals(mapping.ExcelColumn.Trim(), StringComparison.OrdinalIgnoreCase));
                 if (cell != null)
                 {
                     columnIndexes[mapping.SystemField] = cell.Address.ColumnNumber;
@@ -89,7 +113,7 @@ public class ClosedXmlImportService : IClosedXmlImportService
 
             var productsList = vendorProducts.ToList();
 
-            for (int r = 2; r <= rowCount; r++)
+            for (int r = headerRow.RowNumber() + 1; r <= rowCount; r++)
             {
                 var row = worksheet.Row(r);
                 if (row.IsEmpty()) continue;
