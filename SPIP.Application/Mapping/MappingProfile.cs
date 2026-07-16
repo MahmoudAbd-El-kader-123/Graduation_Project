@@ -9,6 +9,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<User, UserDto>()
-            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.RoleName));
     }
 }

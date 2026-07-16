@@ -39,6 +39,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
     public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login([FromBody] LoginRequestDto request)
     {
         var validationResult = await _loginValidator.ValidateAsync(request);
@@ -50,5 +51,19 @@ public class AuthController : ControllerBase
 
         var result = await _authService.LoginAsync(request);
         return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Login successful."));
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> RefreshToken([FromBody] RefreshTokenRequestDto request)
+    {
+        try
+        {
+            var result = await _authService.RefreshTokenAsync(request);
+            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Token refreshed successfully."));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponse<AuthResponseDto>.FailureResponse(ex.Message));
+        }
     }
 }

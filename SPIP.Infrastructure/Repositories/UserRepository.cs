@@ -25,9 +25,9 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             query = query.Where(u => u.FullName.ToLower().Contains(search) || u.Email.ToLower().Contains(search));
         }
 
-        if (!string.IsNullOrWhiteSpace(p.Role) && Enum.TryParse<SPIP.Domain.Enums.UserRole>(p.Role, true, out var parsedRole))
+        if (!string.IsNullOrWhiteSpace(p.Role))
         {
-            query = query.Where(u => u.Role == parsedRole);
+            query = query.Where(u => u.RoleName.ToLower() == p.Role.ToLower());
         }
 
         if (p.IsActive.HasValue)

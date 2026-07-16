@@ -36,9 +36,8 @@ public class DashboardService : IDashboardService
             TotalUsers = users.Count,
             ActiveUsers = users.Count(u => u.IsActive),
             InactiveUsers = users.Count(u => !u.IsActive),
-            AdminUsers = users.Count(u => u.Role == Domain.Enums.UserRole.Admin),
-            ManagerUsers = users.Count(u => u.Role == Domain.Enums.UserRole.Manager),
-            AccountantUsers = users.Count(u => u.Role == Domain.Enums.UserRole.Accountant),
+            UsersPerRole = users.GroupBy(u => u.RoleName)
+                                .ToDictionary(g => string.IsNullOrWhiteSpace(g.Key) ? "Unassigned" : g.Key, g => g.Count()),
             TotalRoles = rolesCount,
             TotalPermissions = totalPermissions
         };

@@ -12,3 +12,8 @@ obj/
 ## Build results
 [Dd]ebug/
 [Rr]elease/
+
+## Configuration
+appsettings.json
+appsettings.*.json
+*.env

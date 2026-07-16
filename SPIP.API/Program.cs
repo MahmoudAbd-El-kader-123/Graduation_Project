@@ -89,7 +89,45 @@ public class Program
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
+
         builder.Services.AddSwaggerWithJwt();
+
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = System.Threading.RateLimiting.PartitionedRateLimiter.Create<Microsoft.AspNetCore.Http.HttpContext, string>(httpContext =>
+                System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 400,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+
+            options.AddPolicy("AuthPolicy", httpContext =>
+                System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 5,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+
+            options.RejectionStatusCode = 429;
+        });
     }
 
     private static void ConfigurePipeline(WebApplication app)
@@ -103,6 +141,10 @@ public class Program
         app.UseGlobalExceptionHandling();
 
         app.UseHttpsRedirection();
+
+        app.UseCors("AllowFrontend");
+
+        app.UseRateLimiter();
 
         app.UseAuthentication();
         app.UseAuthorization();

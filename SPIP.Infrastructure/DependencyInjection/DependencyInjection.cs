@@ -98,6 +98,7 @@ public static class DependencyInjection
         services.AddScoped<IVendorColumnMappingService, VendorColumnMappingService>();
         services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
         services.AddScoped<IClosedXmlImportService, ClosedXmlImportService>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

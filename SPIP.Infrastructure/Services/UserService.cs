@@ -1,20 +1,28 @@
+using Microsoft.AspNetCore.Identity;
 using SPIP.Application.DTOs.User;
 using SPIP.Application.Interfaces.Repositories;
 using SPIP.Application.Interfaces.Services;
 using SPIP.Domain.Entities;
-using SPIP.Domain.Enums;
+using SPIP.Infrastructure.Identity;
 using SPIP.Shared.Pagination;
 using SPIP.Shared.Result;
 
-namespace SPIP.Application.Services;
+namespace SPIP.Infrastructure.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(
+        IUserRepository userRepository,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole<Guid>> roleManager)
     {
         _userRepository = userRepository;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<Result<UserDto>> GetByIdAsync(int id)
@@ -39,23 +47,40 @@ public class UserService : IUserService
         return Result<PagedResult<UserDto>>.Success(pagedResult);
     }
 
-
-
     public async Task<Result<UserDto>> UpdateAsync(int id, UpdateUserDto dto)
     {
-        var user = await _userRepository.GetByIdAsync(id);
-        if (user is null)
+        var domainUser = await _userRepository.GetByIdAsync(id);
+        if (domainUser is null)
             return Result<UserDto>.Failure("User not found.");
 
-        user.FullName = dto.FullName;
-        user.IsActive = dto.IsActive;
-        if (Enum.TryParse<UserRole>(dto.Role, true, out var role))
-            user.Role = role;
+        var appUser = await _userManager.FindByIdAsync(domainUser.IdentityId.ToString());
+        if (appUser == null)
+            return Result<UserDto>.Failure("Identity User not found.");
 
-        await _userRepository.UpdateAsync(user);
+        var newRole = await _roleManager.FindByIdAsync(dto.RoleId.ToString());
+        if (newRole == null)
+            return Result<UserDto>.Failure("Role not found.");
+
+        // Update Identity Roles
+        var currentRoles = await _userManager.GetRolesAsync(appUser);
+        await _userManager.RemoveFromRolesAsync(appUser, currentRoles);
+        await _userManager.AddToRoleAsync(appUser, newRole.Name!);
+
+        // Update Domain User
+        domainUser.FullName = dto.FullName;
+        domainUser.IsActive = dto.IsActive;
+        domainUser.RoleId = newRole.Id;
+        domainUser.RoleName = newRole.Name!;
+
+        await _userRepository.UpdateAsync(domainUser);
         await _userRepository.SaveChangesAsync();
 
-        return Result<UserDto>.Success(MapToDto(user));
+        // Update Identity User basic details if needed
+        appUser.FullName = dto.FullName;
+        appUser.IsActive = dto.IsActive;
+        await _userManager.UpdateAsync(appUser);
+
+        return Result<UserDto>.Success(MapToDto(domainUser));
     }
 
     public async Task<Result<bool>> ToggleActiveStatusAsync(int id)
@@ -67,6 +92,13 @@ public class UserService : IUserService
         user.IsActive = !user.IsActive;
         await _userRepository.UpdateAsync(user);
         await _userRepository.SaveChangesAsync();
+        
+        var appUser = await _userManager.FindByIdAsync(user.IdentityId.ToString());
+        if (appUser != null)
+        {
+            appUser.IsActive = user.IsActive;
+            await _userManager.UpdateAsync(appUser);
+        }
 
         return Result<bool>.Success(user.IsActive);
     }
@@ -79,6 +111,12 @@ public class UserService : IUserService
 
         await _userRepository.DeleteAsync(user);
         await _userRepository.SaveChangesAsync();
+        
+        var appUser = await _userManager.FindByIdAsync(user.IdentityId.ToString());
+        if (appUser != null)
+        {
+            await _userManager.DeleteAsync(appUser);
+        }
 
         return Result<bool>.Success(true);
     }
@@ -88,7 +126,8 @@ public class UserService : IUserService
         Id = user.Id,
         FullName = user.FullName,
         Email = user.Email,
-        Role = user.Role.ToString(),
+        RoleId = user.RoleId,
+        Role = user.RoleName,
         IsActive = user.IsActive
     };
 }

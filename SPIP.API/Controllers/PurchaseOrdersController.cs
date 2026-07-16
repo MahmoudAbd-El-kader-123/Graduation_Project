@@ -21,10 +21,12 @@ public class ImportPurchaseOrderRequest
 public class PurchaseOrdersController : ControllerBase
 {
     private readonly IPurchaseOrderService _poService;
+    private readonly IClosedXmlImportService _importService;
 
-    public PurchaseOrdersController(IPurchaseOrderService poService)
+    public PurchaseOrdersController(IPurchaseOrderService poService, IClosedXmlImportService importService)
     {
         _poService = poService;
+        _importService = importService;
     }
 
     [HttpGet]
@@ -59,6 +61,21 @@ public class PurchaseOrdersController : ControllerBase
         return result.Succeeded
             ? Ok(ApiResponse<int>.SuccessResponse(result.Data!, "Purchase order imported successfully."))
             : BadRequest(ApiResponse<int>.FailureResponse(result.Error!));
+    }
+
+    [HttpPost("import-preview")]
+    // [Authorize(Policy = Permissions.POImports.Import)] // Or a new permission if desired
+    public async Task<ActionResult<ApiResponse<SPIP.Application.DTOs.Import.ExcelPreviewDto>>> ImportPreview(IFormFile file, [FromQuery] int rowsToExtract = 50)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(ApiResponse<SPIP.Application.DTOs.Import.ExcelPreviewDto>.FailureResponse("No file uploaded."));
+
+        using var stream = file.OpenReadStream();
+        var result = await _importService.GetExcelPreviewAsync(stream, rowsToExtract);
+        
+        return result.Succeeded
+            ? Ok(ApiResponse<SPIP.Application.DTOs.Import.ExcelPreviewDto>.SuccessResponse(result.Data!, "Preview generated successfully."))
+            : BadRequest(ApiResponse<SPIP.Application.DTOs.Import.ExcelPreviewDto>.FailureResponse(result.Error!));
     }
 
     [HttpDelete("{id:int}")]

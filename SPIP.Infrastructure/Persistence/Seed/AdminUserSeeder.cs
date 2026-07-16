@@ -35,6 +35,19 @@ public static class AdminUserSeeder
 
         if (existingAdmin != null)
         {
+            var adminRole = await userManager.GetRolesAsync(existingAdmin);
+            var rolesList = adminRole.ToList();
+            var roleName = rolesList.FirstOrDefault() ?? "Admin";
+            var roleGuid = Guid.Empty; // Ideally we fetch this from RoleManager, but Seeders might not have it injected.
+            
+            // To properly get RoleId, we can find it via EF context.Roles or we can inject RoleManager.
+            // Since we only have context and userManager, we can lookup the role from DbContext.
+            var dbRole = context.Roles.FirstOrDefault(r => r.Name == roleName);
+            if (dbRole != null)
+            {
+                roleGuid = dbRole.Id;
+            }
+
             var domainUserExists = context.Users_Domain.Any(u => u.IdentityId == existingAdmin.Id);
             if (!domainUserExists)
             {
@@ -42,8 +55,9 @@ public static class AdminUserSeeder
                 {
                     IdentityId = existingAdmin.Id,
                     FullName = existingAdmin.FullName,
-                    Email = existingAdmin.Email,
-                    Role = SPIP.Domain.Enums.UserRole.Admin,
+                    Email = existingAdmin.Email!,
+                    RoleId = roleGuid,
+                    RoleName = roleName,
                     IsActive = true
                 };
                 

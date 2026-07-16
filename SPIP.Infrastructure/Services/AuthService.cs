@@ -14,13 +14,20 @@ public class AuthService : IAuthService
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     private readonly ITokenService _tokenService;
     private readonly ApplicationDbContext _context;
+    private readonly SPIP.Application.Common.JwtSettings _jwtSettings;
 
-    public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, ITokenService tokenService, ApplicationDbContext context)
+    public AuthService(
+        UserManager<ApplicationUser> userManager, 
+        RoleManager<IdentityRole<Guid>> roleManager, 
+        ITokenService tokenService, 
+        ApplicationDbContext context,
+        Microsoft.Extensions.Options.IOptions<SPIP.Application.Common.JwtSettings> jwtOptions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _tokenService = tokenService;
         _context = context;
+        _jwtSettings = jwtOptions.Value;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -50,12 +57,16 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, DefaultRegistrationRole);
 
+        var roleObj = await _roleManager.FindByNameAsync(DefaultRegistrationRole);
+        var roleGuid = roleObj?.Id ?? Guid.Empty;
+
         var domainUser = new SPIP.Domain.Entities.User
         {
             IdentityId = user.Id,
             FullName = user.FullName,
             Email = user.Email!,
-            Role = SPIP.Domain.Enums.UserRole.Accountant,
+            RoleId = roleGuid,
+            RoleName = DefaultRegistrationRole,
             IsActive = true
         };
         _context.Users_Domain.Add(domainUser);
@@ -65,6 +76,10 @@ public class AuthService : IAuthService
         var permissions = await GetPermissionsForRolesAsync(roles);
         var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles, permissions);
 
+        var refreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+        await _userManager.UpdateAsync(user);
+
         return new AuthResponseDto
         {
             UserId = user.Id,
@@ -73,8 +88,10 @@ public class AuthService : IAuthService
             Email = user.Email!,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
             Token = token,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            Roles = roles
+            RefreshToken = refreshToken,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
+            Roles = roles,
+            Permissions = permissions
         };
     }
 
@@ -96,6 +113,11 @@ public class AuthService : IAuthService
         var permissions = await GetPermissionsForRolesAsync(roles);
         var token = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles, permissions);
 
+        var refreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+        await _userManager.UpdateAsync(user);
+
         return new AuthResponseDto
         {
             UserId = user.Id,
@@ -104,8 +126,50 @@ public class AuthService : IAuthService
             Email = user.Email!,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
             Token = token,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            Roles = roles
+            RefreshToken = refreshToken,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
+            Roles = roles,
+            Permissions = permissions
+        };
+    }
+
+    public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request)
+    {
+        var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(request.Token);
+        var userIdString = jwtToken.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+        {
+            throw new UnauthorizedAccessException("Invalid token.");
+        }
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            throw new UnauthorizedAccessException("Invalid client request.");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var permissions = await GetPermissionsForRolesAsync(roles);
+        var newAccessToken = _tokenService.GenerateToken(user.Id, user.Email!, user.UserName!, roles, permissions);
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+        await _userManager.UpdateAsync(user);
+
+        return new AuthResponseDto
+        {
+            UserId = user.Id,
+            FullName = user.FullName,
+            UserName = user.UserName!,
+            Email = user.Email!,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Token = newAccessToken,
+            RefreshToken = newRefreshToken,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
+            Roles = roles,
+            Permissions = permissions
         };
     }
 

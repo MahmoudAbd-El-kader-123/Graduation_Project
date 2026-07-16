@@ -175,4 +175,45 @@ public class ClosedXmlImportService : IClosedXmlImportService
             return Result<PurchaseOrder>.Failure($"Failed to process Excel file: {ex.Message}");
         }
     }
+    public async Task<Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>> GetExcelPreviewAsync(Stream excelStream, int rowsToExtract = 50)
+    {
+        if (excelStream == null || excelStream.Length == 0)
+            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("File is empty.");
+
+        try
+        {
+            using var workbook = new XLWorkbook(excelStream);
+            var worksheet = workbook.Worksheets.FirstOrDefault();
+
+            if (worksheet == null) 
+                return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("No worksheet found.");
+
+            var result = new SPIP.Application.DTOs.Import.ExcelPreviewDto();
+            var maxRow = Math.Min(rowsToExtract, worksheet.LastRowUsed()?.RowNumber() ?? 0);
+            
+            result.TotalRowsFound = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+
+            for (int r = 1; r <= maxRow; r++)
+            {
+                var row = worksheet.Row(r);
+                var rowData = new List<string>();
+                
+                // Get the max column used in this row (or the whole sheet to keep grid square)
+                var maxCol = worksheet.LastColumnUsed()?.ColumnNumber() ?? 0;
+                
+                for (int c = 1; c <= maxCol; c++)
+                {
+                    rowData.Add(row.Cell(c).GetString().Trim());
+                }
+                
+                result.DataGrid.Add(rowData);
+            }
+
+            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure($"Failed to read Excel preview: {ex.Message}");
+        }
+    }
 }
