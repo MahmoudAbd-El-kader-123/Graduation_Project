@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SPIP.Domain.Entities;
 using SPIP.Infrastructure.Identity;
+using SPIP.Domain.Constants;
+using System.Reflection;
 
 namespace SPIP.Infrastructure.Persistence.Context;
 
@@ -30,11 +32,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    public DbSet<PermissionCatalog> PermissionCatalogs => Set<PermissionCatalog>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+        builder.Entity<PermissionCatalog>().HasData(GetPermissionSeeds());
 
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
@@ -44,6 +50,36 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                     CreateIsDeletedFilter(entityType.ClrType));
             }
         }
+    }
+
+    private static List<PermissionCatalog> GetPermissionSeeds()
+    {
+        var seeds = new List<PermissionCatalog>();
+        int idCounter = 1;
+        var permissionsType = typeof(Permissions);
+        var nestedTypes = permissionsType.GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
+
+        foreach (var nestedType in nestedTypes)
+        {
+            var moduleName = nestedType.Name;
+            var fields = nestedType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            foreach (var field in fields)
+            {
+                if (field.IsLiteral && !field.IsInitOnly && field.FieldType == typeof(string))
+                {
+                    var systemName = (string)field.GetRawConstantValue()!;
+                    var actionName = field.Name;
+                    seeds.Add(new PermissionCatalog
+                    {
+                        Id = idCounter++,
+                        Module = moduleName,
+                        SystemName = systemName,
+                        DisplayName = $"{actionName} {moduleName}"
+                    });
+                }
+            }
+        }
+        return seeds;
     }
 
     private static System.Linq.Expressions.LambdaExpression CreateIsDeletedFilter(Type type)

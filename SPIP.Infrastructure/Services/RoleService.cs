@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SPIP.Application.DTOs.Role;
 using SPIP.Application.Interfaces.Services;
+using SPIP.Infrastructure.Persistence.Context;
 using SPIP.Shared.Pagination;
 using SPIP.Shared.Result;
 using System.Security.Claims;
@@ -11,10 +12,12 @@ namespace SPIP.Infrastructure.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+    private readonly ApplicationDbContext _context;
 
-    public RoleService(RoleManager<IdentityRole<Guid>> roleManager)
+    public RoleService(RoleManager<IdentityRole<Guid>> roleManager, ApplicationDbContext context)
     {
         _roleManager = roleManager;
+        _context = context;
     }
 
     public async Task<Result<PagedResult<RoleDto>>> GetPagedAsync(RoleParameters p)
@@ -38,11 +41,17 @@ public class RoleService : IRoleService
         foreach (var role in roles)
         {
             var claims = await _roleManager.GetClaimsAsync(role);
+            var claimValues = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList();
+            var permissionIds = await _context.PermissionCatalogs
+                .Where(p => claimValues.Contains(p.SystemName))
+                .Select(p => p.Id)
+                .ToListAsync();
+
             roleDtos.Add(new RoleDto
             {
                 Id = role.Id,
                 Name = role.Name!,
-                Permissions = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList()
+                PermissionIds = permissionIds
             });
         }
 
@@ -61,11 +70,17 @@ public class RoleService : IRoleService
         if (role == null) return Result<RoleDto>.Failure("Role not found.");
 
         var claims = await _roleManager.GetClaimsAsync(role);
+        var claimValues = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList();
+        var permissionIds = await _context.PermissionCatalogs
+            .Where(p => claimValues.Contains(p.SystemName))
+            .Select(p => p.Id)
+            .ToListAsync();
+
         return Result<RoleDto>.Success(new RoleDto
         {
             Id = role.Id,
             Name = role.Name!,
-            Permissions = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList()
+            PermissionIds = permissionIds
         });
     }
 
@@ -92,11 +107,17 @@ public class RoleService : IRoleService
             return Result<RoleDto>.Failure(string.Join(" | ", result.Errors.Select(e => e.Description)));
 
         var claims = await _roleManager.GetClaimsAsync(role);
+        var claimValues = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList();
+        var permissionIds = await _context.PermissionCatalogs
+            .Where(p => claimValues.Contains(p.SystemName))
+            .Select(p => p.Id)
+            .ToListAsync();
+
         return Result<RoleDto>.Success(new RoleDto
         {
             Id = role.Id,
             Name = role.Name!,
-            Permissions = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList()
+            PermissionIds = permissionIds
         });
     }
 
@@ -123,15 +144,31 @@ public class RoleService : IRoleService
         var role = await _roleManager.FindByIdAsync(id.ToString());
         if (role == null) return Result<bool>.Failure("Role not found.");
 
+        if (dto.PermissionIds == null || !dto.PermissionIds.Any())
+        {
+            return Result<bool>.Failure("No permissions provided.");
+        }
+
+        var distinctIds = dto.PermissionIds.Distinct().ToList();
+        var validPermissions = await _context.PermissionCatalogs
+            .Where(p => distinctIds.Contains(p.Id))
+            .ToListAsync();
+
+        if (validPermissions.Count != distinctIds.Count)
+        {
+            var invalidIds = distinctIds.Except(validPermissions.Select(p => p.Id)).ToList();
+            return Result<bool>.Failure($"Invalid Permission IDs provided: {string.Join(", ", invalidIds)}");
+        }
+
         var existingClaims = await _roleManager.GetClaimsAsync(role);
         foreach (var claim in existingClaims.Where(c => c.Type == "Permission"))
         {
             await _roleManager.RemoveClaimAsync(role, claim);
         }
 
-        foreach (var permission in dto.Permissions.Distinct())
+        foreach (var permission in validPermissions)
         {
-            await _roleManager.AddClaimAsync(role, new Claim("Permission", permission));
+            await _roleManager.AddClaimAsync(role, new Claim("Permission", permission.SystemName));
         }
 
         return Result<bool>.Success(true);
