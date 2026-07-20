@@ -45,3 +45,8 @@ On startup, the system automatically seeds a default Admin account:
 2. Open the Package Manager Console (Tools > NuGet Package Manager > Package Manager Console).
 3. Set "Default project" to `SPIP.Infrastructure`.
 4. Run `Update-Database -StartupProject SPIP.API` to apply the migrations to your local SQL Server.
+
+### Key Features
+- **Smart Purchase Order Import:** High-speed Excel parsing (`ClosedXML`) with strict `SkuSupplier` mapping and dynamic VAT deduction algorithms.
+- **Secure Permission Catalog:** Database-driven integer-based permission verification ensuring robust Role-Based Access Control (RBAC).
+- **Vendor Mapping System:** Flexible system mapping vendor-specific Excel columns to internal domain fields.
