@@ -43,12 +43,12 @@ public class PurchaseOrderService : IPurchaseOrderService
         return Result<PurchaseOrderDto>.Success(MapToDto(po));
     }
 
-    public async Task<Result<int>> ImportFromExcelAsync(Stream fileStream, string fileName, int vendorId)
+    public async Task<Result<int>> ImportFromExcelAsync(Stream fileStream, string fileName, int vendorId, bool hasMixedVatRates)
     {
         var vendor = await _vendorRepository.GetByIdAsync(vendorId);
         if (vendor == null) return Result<int>.Failure("Vendor not found.");
 
-        var result = await _importService.ParsePurchaseOrderExcelAsync(fileStream, vendorId);
+        var result = await _importService.ParsePurchaseOrderExcelAsync(fileStream, vendorId, hasMixedVatRates);
         if (!result.Succeeded) return Result<int>.Failure(result.Error!);
 
         var po = result.Data!;

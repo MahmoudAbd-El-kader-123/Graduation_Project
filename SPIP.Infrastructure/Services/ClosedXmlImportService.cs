@@ -26,7 +26,7 @@ public class ClosedXmlImportService : IClosedXmlImportService
         _userRepository = userRepository;
     }
 
-    public async Task<Result<PurchaseOrder>> ParsePurchaseOrderExcelAsync(Stream fileStream, int vendorId)
+    public async Task<Result<PurchaseOrder>> ParsePurchaseOrderExcelAsync(Stream fileStream, int vendorId, bool hasMixedVatRates = false)
     {
         if (fileStream == null || fileStream.Length == 0)
             return Result<PurchaseOrder>.Failure("File is empty.");
@@ -79,11 +79,10 @@ public class ClosedXmlImportService : IClosedXmlImportService
                 }
             }
 
-            // We need at minimum a Product Identifier (SKU, ERPID, Barcode) and Quantity.
-            var hasProductIdentifier = columnIndexes.ContainsKey("ErpId") || columnIndexes.ContainsKey("Sku") || columnIndexes.ContainsKey("Barcode");
-            if (!hasProductIdentifier || !columnIndexes.ContainsKey("Quantity"))
+            // We need at minimum SkuSupplier, Quantity, and UnitPrice.
+            if (!columnIndexes.ContainsKey("SkuSupplier") || !columnIndexes.ContainsKey("Quantity") || !columnIndexes.ContainsKey("UnitPrice"))
             {
-                return Result<PurchaseOrder>.Failure("Required columns (Product Identifier and Quantity) are missing or not mapped correctly.");
+                return Result<PurchaseOrder>.Failure("Required columns (SKU Supplier, Quantity, Price) are missing or not mapped correctly.");
             }
 
             int domainUserId = 1;
@@ -95,7 +94,7 @@ public class ClosedXmlImportService : IClosedXmlImportService
 
             var po = new PurchaseOrder
             {
-                OrderNumber = "PO-" + DateTime.Now.ToString("yyyyMMddHHmmss"), // Mock order number for now, ERP might provide it
+                OrderNumber = "PO-" + DateTime.Now.ToString("yyyyMMddHHmmss"),
                 VendorId = vendorId,
                 RequestedByUserId = domainUserId,
                 Status = Domain.Enums.PurchaseOrderStatus.Draft,
@@ -105,63 +104,105 @@ public class ClosedXmlImportService : IClosedXmlImportService
             var rowCount = worksheet.LastRowUsed().RowNumber();
             decimal totalAmount = 0;
 
-            // Load products for this vendor to match against
-            // (In a real scenario with millions of products, you'd do a batch lookup based on the parsed codes)
-            // For now, load all products of the vendor (assuming manageable size) or lookup per row.
-            // Let's do a simple lookup list.
+            // Load products for this vendor
             var (vendorProducts, _) = await _productRepository.GetPagedAsync(new Application.DTOs.Product.ProductParameters { VendorId = vendorId, PageNumber = 1, PageSize = 10000 });
-
             var productsList = vendorProducts.ToList();
+
+            // --- SMART VAT DEDUCTION ALGORITHM ---
+            decimal? deducedVatPercentage = null;
+            bool useDeduction = false;
+
+            if (!hasMixedVatRates && columnIndexes.ContainsKey("VatAmount"))
+            {
+                var first3Vats = new List<decimal>();
+                for (int r = headerRow.RowNumber() + 1; r <= Math.Min(headerRow.RowNumber() + 3, rowCount); r++)
+                {
+                    var row = worksheet.Row(r);
+                    if (row.IsEmpty()) continue;
+                    
+                    if (int.TryParse(row.Cell(columnIndexes["Quantity"]).GetString(), out var q) && 
+                        decimal.TryParse(row.Cell(columnIndexes["UnitPrice"]).GetString(), out var p) &&
+                        decimal.TryParse(row.Cell(columnIndexes["VatAmount"]).GetString(), out var v))
+                    {
+                        var lineTotal = q * p;
+                        if (lineTotal > 0)
+                        {
+                            var vatPerc = Math.Round((v / lineTotal) * 100m, 2);
+                            first3Vats.Add(vatPerc);
+                        }
+                    }
+                }
+
+                // If we found VAT in the first rows and they all match identically, use it!
+                if (first3Vats.Count > 0 && first3Vats.All(v => v == first3Vats.First()))
+                {
+                    deducedVatPercentage = first3Vats.First();
+                    useDeduction = true;
+                }
+            }
+            // -------------------------------------
 
             for (int r = headerRow.RowNumber() + 1; r <= rowCount; r++)
             {
                 var row = worksheet.Row(r);
                 if (row.IsEmpty()) continue;
 
-                string? productErpId = columnIndexes.ContainsKey("ErpId") ? row.Cell(columnIndexes["ErpId"]).GetString() : null;
-                string? productSku = columnIndexes.ContainsKey("Sku") ? row.Cell(columnIndexes["Sku"]).GetString() : null;
+                string? productSku = columnIndexes.ContainsKey("SkuSupplier") ? row.Cell(columnIndexes["SkuSupplier"]).GetString() : null;
                 string? productBarcode = columnIndexes.ContainsKey("Barcode") ? row.Cell(columnIndexes["Barcode"]).GetString() : null;
                 
                 int quantity = 0;
-                if (columnIndexes.ContainsKey("Quantity") && int.TryParse(row.Cell(columnIndexes["Quantity"]).GetString(), out var q))
-                {
-                    quantity = q;
-                }
+                if (columnIndexes.ContainsKey("Quantity") && int.TryParse(row.Cell(columnIndexes["Quantity"]).GetString(), out var q)) quantity = q;
 
                 decimal unitPrice = 0;
-                if (columnIndexes.ContainsKey("UnitPrice") && decimal.TryParse(row.Cell(columnIndexes["UnitPrice"]).GetString(), out var u))
+                if (columnIndexes.ContainsKey("UnitPrice") && decimal.TryParse(row.Cell(columnIndexes["UnitPrice"]).GetString(), out var u)) unitPrice = u;
+
+                if (quantity <= 0 || unitPrice <= 0 || string.IsNullOrWhiteSpace(productSku)) continue; 
+
+                // Match Product prioritizing SkuSupplier
+                var product = productsList.FirstOrDefault(p => p.SkuSupplier == productSku);
+                
+                // Fallback to barcode if strictly needed
+                if (product == null && !string.IsNullOrWhiteSpace(productBarcode))
                 {
-                    unitPrice = u;
+                     product = productsList.FirstOrDefault(p => p.Barcode == productBarcode);
                 }
-
-                if (quantity <= 0) continue; // Skip invalid rows
-
-                // Match Product
-                var product = productsList.FirstOrDefault(p => 
-                    (productErpId != null && p.ErpId == productErpId) ||
-                    (productSku != null && p.Sku == productSku) ||
-                    (productBarcode != null && p.Barcode == productBarcode)
-                );
 
                 if (product != null)
                 {
-                    // If unit price not mapped or zero, take from Product
-                    if (unitPrice == 0) unitPrice = product.UnitPrice;
-
                     var lineTotal = unitPrice * quantity;
-                    totalAmount += lineTotal;
+                    decimal vatAmount = 0;
+                    decimal vatPercentage = 0;
+
+                    if (useDeduction && deducedVatPercentage.HasValue)
+                    {
+                        // Formula mode
+                        vatPercentage = deducedVatPercentage.Value;
+                        vatAmount = lineTotal * (vatPercentage / 100m);
+                    }
+                    else if (columnIndexes.ContainsKey("VatAmount") && decimal.TryParse(row.Cell(columnIndexes["VatAmount"]).GetString(), out var v))
+                    {
+                        // Extraction mode
+                        vatAmount = v;
+                        vatPercentage = lineTotal > 0 ? (vatAmount / lineTotal) * 100m : 0;
+                    }
+
+                    var finalAmount = lineTotal + vatAmount;
+                    totalAmount += finalAmount;
 
                     po.Items.Add(new PurchaseOrderItem
                     {
                         ProductId = product.Id,
                         Quantity = quantity,
                         UnitPrice = unitPrice,
-                        LineTotal = lineTotal
+                        LineTotal = lineTotal,
+                        VatPercentage = Math.Round(vatPercentage, 2),
+                        VatAmount = Math.Round(vatAmount, 2),
+                        Amount = Math.Round(finalAmount, 2)
                     });
                 }
             }
 
-            po.TotalAmount = totalAmount;
+            po.TotalAmount = Math.Round(totalAmount, 2);
 
             if (!po.Items.Any())
             {

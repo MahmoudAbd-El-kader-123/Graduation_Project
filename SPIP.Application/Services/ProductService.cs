@@ -46,7 +46,8 @@ public class ProductService : IProductService
         {
             ErpId = dto.ErpId,
             Name = dto.Name,
-            Sku = dto.Sku,
+            SkuSupplier = dto.SkuSupplier,
+            SkuRetailer = dto.SkuRetailer,
             Barcode = dto.Barcode,
             Description = dto.Description,
             UnitPrice = dto.UnitPrice,
@@ -75,7 +76,8 @@ public class ProductService : IProductService
 
         product.ErpId = dto.ErpId;
         product.Name = dto.Name;
-        product.Sku = dto.Sku;
+        product.SkuSupplier = dto.SkuSupplier;
+        product.SkuRetailer = dto.SkuRetailer;
         product.Barcode = dto.Barcode;
         product.Description = dto.Description;
         product.UnitPrice = dto.UnitPrice;
@@ -105,7 +107,8 @@ public class ProductService : IProductService
         Id = p.Id,
         ErpId = p.ErpId,
         Name = p.Name,
-        Sku = p.Sku,
+        SkuSupplier = p.SkuSupplier,
+        SkuRetailer = p.SkuRetailer,
         Barcode = p.Barcode,
         Description = p.Description,
         UnitPrice = p.UnitPrice,
