@@ -26,9 +26,9 @@
 
 **Purpose**: Project-wide configuration changes that enable all subsequent phases
 
-- [ ] T001 Add Hangfire configuration in `SPIP.API/Program.cs` — Register Hangfire services with `builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString))` and `builder.Services.AddHangfireServer()`. Add the Hangfire dashboard endpoint `app.UseHangfireDashboard("/hangfire")` behind admin authorization. The connection string should come from `appsettings.json` under `"ConnectionStrings:HangfireConnection"` (can reuse the same DB connection string as the main database). Also add `"HangfireConnection"` key to `appsettings.json` and `appsettings.Development.json`.
+- [X] T001 Add Hangfire configuration in `SPIP.API/Program.cs` — Register Hangfire services with `builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString))` and `builder.Services.AddHangfireServer()`. Add the Hangfire dashboard endpoint `app.UseHangfireDashboard("/hangfire")` behind admin authorization. The connection string should come from `appsettings.json` under `"ConnectionStrings:HangfireConnection"` (can reuse the same DB connection string as the main database). Also add `"HangfireConnection"` key to `appsettings.json` and `appsettings.Development.json`.
 
-- [ ] T002 Add file storage configuration in `appsettings.json` — Add a `"FileStorage"` section with `"BasePath": "App_Data/Invoices"` (a directory outside wwwroot). This path is used by `LocalFileStorageService`. Also add the `"AIService"` section with `"BaseUrl": "https://your-ai-service-url"`, `"TimeoutSeconds": 30`, and `"ApiKey": ""` (placeholder). Example:
+- [X] T002 Add file storage configuration in `appsettings.json` — Add a `"FileStorage"` section with `"BasePath": "App_Data/Invoices"` (a directory outside wwwroot). This path is used by `LocalFileStorageService`. Also add the `"AIService"` section with `"BaseUrl": "https://your-ai-service-url"`, `"TimeoutSeconds": 30`, and `"ApiKey": ""` (placeholder). Example:
   ```json
   "FileStorage": {
     "BasePath": "App_Data/Invoices"
@@ -40,7 +40,7 @@
   }
   ```
 
-- [ ] T002b Register authorization policies for Invoice permissions in `SPIP.API/Program.cs` (or wherever policies are configured) — Add policy registrations following the existing pattern used for `Permissions.POImports.*`. Register: `Permissions.Invoices.Upload`, `Permissions.Invoices.View`, `Permissions.Invoices.Download`, `Permissions.Invoices.ViewAll`. This MUST be done in Setup so policies exist before any controller endpoints are tested in later phases.
+- [X] T002b Register authorization policies for Invoice permissions in `SPIP.API/Program.cs` (or wherever policies are configured) — Add policy registrations following the existing pattern used for `Permissions.POImports.*`. Register: `Permissions.Invoices.Upload`, `Permissions.Invoices.View`, `Permissions.Invoices.Download`, `Permissions.Invoices.ViewAll`. This MUST be done in Setup so policies exist before any controller endpoints are tested in later phases.
 
 ---
 
@@ -52,7 +52,7 @@
 
 ### Enums
 
-- [ ] T003 [P] Modify `InvoiceStatus` enum in `SPIP.Domain/Enums/InvoiceStatus.cs` — Replace the current enum values (`Pending=1, Matched=2, Discrepant=3, Approved=4, Paid=5, Rejected=6`) with the pipeline lifecycle statuses. The new enum must be:
+- [X] T003 [P] Modify `InvoiceStatus` enum in `SPIP.Domain/Enums/InvoiceStatus.cs` — Replace the current enum values (`Pending=1, Matched=2, Discrepant=3, Approved=4, Paid=5, Rejected=6`) with the pipeline lifecycle statuses. The new enum must be:
   ```csharp
   namespace SPIP.Domain.Enums;
 
@@ -70,7 +70,7 @@
   }
   ```
 
-- [ ] T004 [P] Create `DiscrepancyType` enum in `SPIP.Domain/Enums/DiscrepancyType.cs` — New file. Define:
+- [X] T004 [P] Create `DiscrepancyType` enum in `SPIP.Domain/Enums/DiscrepancyType.cs` — New file. Define:
   ```csharp
   namespace SPIP.Domain.Enums;
 
@@ -86,7 +86,7 @@
 
 ### Domain Entities
 
-- [ ] T005 [P] Modify `Invoice` entity in `SPIP.Domain/Entities/Invoice.cs` — Add the following properties to the existing class. Keep ALL existing properties and navigation properties unchanged. Add:
+- [X] T005 [P] Modify `Invoice` entity in `SPIP.Domain/Entities/Invoice.cs` — Add the following properties to the existing class. Keep ALL existing properties and navigation properties unchanged. Add:
   ```csharp
   public string VendorName { get; set; } = string.Empty;  // AI-extracted vendor name
   public string Currency { get; set; } = "USD";            // AI-extracted currency
@@ -98,13 +98,13 @@
   ```
   Also add `using SPIP.Domain.Enums;` if not already present. Change the default `Status` from `InvoiceStatus.Pending` to `InvoiceStatus.Uploaded`. **IMPORTANT**: Change `PurchaseOrderId` from `int?` (nullable) to `int` (non-nullable) since the spec requires a PO ID at upload time. Update the navigation property accordingly: `public PurchaseOrder? PurchaseOrder { get; set; }` can remain nullable for EF navigation, but the FK `PurchaseOrderId` must be `int`.
 
-- [ ] T006 [P] Modify `InvoiceItem` entity in `SPIP.Domain/Entities/InvoiceItem.cs` — Add a `SupplierSku` property:
+- [X] T006 [P] Modify `InvoiceItem` entity in `SPIP.Domain/Entities/InvoiceItem.cs` — Add a `SupplierSku` property:
   ```csharp
   public string SupplierSku { get; set; } = string.Empty;  // AI-extracted supplier SKU, used for PO matching
   ```
   Keep all existing properties unchanged.
 
-- [ ] T007 [P] Modify `Discrepancy` entity in `SPIP.Domain/Entities/Discrepancy.cs` — Add `DiscrepancyType` enum property and optional FK to `InvoiceItem`:
+- [X] T007 [P] Modify `Discrepancy` entity in `SPIP.Domain/Entities/Discrepancy.cs` — Add `DiscrepancyType` enum property and optional FK to `InvoiceItem`:
   ```csharp
   using SPIP.Domain.Enums;
   // ... existing usings ...
@@ -115,14 +115,14 @@
   ```
   Keep all existing properties unchanged.
 
-- [ ] T008 [P] Modify `UploadedFile` entity in `SPIP.Domain/Entities/UploadedFile.cs` — Add two properties for distinguishing original and stored filenames:
+- [X] T008 [P] Modify `UploadedFile` entity in `SPIP.Domain/Entities/UploadedFile.cs` — Add two properties for distinguishing original and stored filenames:
   ```csharp
   public string OriginalFileName { get; set; } = string.Empty;  // User's original filename
   public string StoredFileName { get; set; } = string.Empty;    // GUID-based filename on disk
   ```
   Keep all existing properties unchanged. The existing `FileName` property remains for backward compatibility.
 
-- [ ] T009 [P] Create `InvoiceProcessingLog` entity in `SPIP.Domain/Entities/InvoiceProcessingLog.cs` — New file:
+- [X] T009 [P] Create `InvoiceProcessingLog` entity in `SPIP.Domain/Entities/InvoiceProcessingLog.cs` — New file:
   ```csharp
   using SPIP.Domain.Common;
   using SPIP.Domain.Enums;
@@ -142,7 +142,7 @@
 
 ### Permissions
 
-- [ ] T010 [P] Add `Invoices` permission group in `SPIP.Domain/Constants/Permissions.cs` — Add a new static class inside the `Permissions` class:
+- [X] T010 [P] Add `Invoices` permission group in `SPIP.Domain/Constants/Permissions.cs` — Add a new static class inside the `Permissions` class:
   ```csharp
   public static class Invoices
   {
@@ -156,7 +156,7 @@
 
 ### DTOs
 
-- [ ] T011 [P] Create request DTOs in `SPIP.Application/DTOs/Invoice/` — Create the following new files:
+- [X] T011 [P] Create request DTOs in `SPIP.Application/DTOs/Invoice/` — Create the following new files:
 
   **`UploadInvoiceRequest.cs`**:
   ```csharp
@@ -183,7 +183,7 @@
   }
   ```
 
-- [ ] T012 [P] Create response DTOs in `SPIP.Application/DTOs/Invoice/` — Create the following new files:
+- [X] T012 [P] Create response DTOs in `SPIP.Application/DTOs/Invoice/` — Create the following new files:
 
   **`InvoiceUploadResultDto.cs`**:
   ```csharp
@@ -279,7 +279,7 @@
   }
   ```
 
-- [ ] T013 [P] Create AI extraction DTOs in `SPIP.Application/DTOs/AI/` — Create the following new files (do NOT modify existing `AIExtractionResultDto.cs`):
+- [X] T013 [P] Create AI extraction DTOs in `SPIP.Application/DTOs/AI/` — Create the following new files (do NOT modify existing `AIExtractionResultDto.cs`):
 
   **`AIExtractionResponseDto.cs`**:
   ```csharp
@@ -314,7 +314,7 @@
 
 ### Modify existing InvoiceDto
 
-- [ ] T014 [P] Update existing `InvoiceDto` in `SPIP.Application/DTOs/Invoice/InvoiceDto.cs` — Add the new fields to the existing class:
+- [X] T014 [P] Update existing `InvoiceDto` in `SPIP.Application/DTOs/Invoice/InvoiceDto.cs` — Add the new fields to the existing class:
   ```csharp
   public string VendorName { get; set; } = string.Empty;
   public int? PurchaseOrderId { get; set; }
@@ -327,7 +327,7 @@
 
 ### Service Interfaces
 
-- [ ] T015 [P] Create `IInvoiceService` interface in `SPIP.Application/Interfaces/Services/IInvoiceService.cs` — New file:
+- [X] T015 [P] Create `IInvoiceService` interface in `SPIP.Application/Interfaces/Services/IInvoiceService.cs` — New file:
   ```csharp
   using SPIP.Application.DTOs.Invoice;
   using SPIP.Shared.Pagination;
@@ -344,7 +344,7 @@
   }
   ```
 
-- [ ] T016 [P] Create `IInvoiceProcessingService` interface in `SPIP.Application/Interfaces/Services/IInvoiceProcessingService.cs` — New file. This service orchestrates the entire background pipeline (extraction → validation → reconciliation):
+- [X] T016 [P] Create `IInvoiceProcessingService` interface in `SPIP.Application/Interfaces/Services/IInvoiceProcessingService.cs` — New file. This service orchestrates the entire background pipeline (extraction → validation → reconciliation):
   ```csharp
   namespace SPIP.Application.Interfaces.Services;
 
@@ -354,7 +354,7 @@
   }
   ```
 
-- [ ] T017 [P] Create `IReconciliationService` interface in `SPIP.Application/Interfaces/Services/IReconciliationService.cs` — New file:
+- [X] T017 [P] Create `IReconciliationService` interface in `SPIP.Application/Interfaces/Services/IReconciliationService.cs` — New file:
   ```csharp
   namespace SPIP.Application.Interfaces.Services;
 
@@ -364,7 +364,7 @@
   }
   ```
 
-- [ ] T018 [P] Modify `IAIExtractionService` interface in `SPIP.Application/Interfaces/AI/IAIExtractionService.cs` — Change the return type from `Task<string>` to return a typed DTO. The new interface:
+- [X] T018 [P] Modify `IAIExtractionService` interface in `SPIP.Application/Interfaces/AI/IAIExtractionService.cs` — Change the return type from `Task<string>` to return a typed DTO. The new interface:
   ```csharp
   using SPIP.Application.DTOs.AI;
 
@@ -376,7 +376,7 @@
   }
   ```
 
-- [ ] T019 [P] Modify `IFileStorageService` interface in `SPIP.Application/Interfaces/Storage/IFileStorageService.cs` — Add a method that saves with a GUID filename and returns both the stored path and GUID filename:
+- [X] T019 [P] Modify `IFileStorageService` interface in `SPIP.Application/Interfaces/Storage/IFileStorageService.cs` — Add a method that saves with a GUID filename and returns both the stored path and GUID filename:
   ```csharp
   namespace SPIP.Application.Interfaces.Storage;
 
@@ -391,7 +391,7 @@
 
 ### Repository Interfaces
 
-- [ ] T020 [P] Create `IInvoiceRepository` interface in `SPIP.Application/Interfaces/Repositories/IInvoiceRepository.cs` — New file:
+- [X] T020 [P] Create `IInvoiceRepository` interface in `SPIP.Application/Interfaces/Repositories/IInvoiceRepository.cs` — New file:
   ```csharp
   using SPIP.Application.DTOs.Invoice;
   using SPIP.Domain.Entities;
@@ -406,7 +406,7 @@
   }
   ```
 
-- [ ] T021 [P] Create `IInvoiceProcessingLogRepository` interface in `SPIP.Application/Interfaces/Repositories/IInvoiceProcessingLogRepository.cs` — New file:
+- [X] T021 [P] Create `IInvoiceProcessingLogRepository` interface in `SPIP.Application/Interfaces/Repositories/IInvoiceProcessingLogRepository.cs` — New file:
   ```csharp
   using SPIP.Domain.Entities;
 
@@ -420,7 +420,7 @@
 
 ### FluentValidation
 
-- [ ] T022 [P] Create `UploadInvoiceRequestValidator` in `SPIP.Application/Validators/UploadInvoiceRequestValidator.cs` — New file. Validates the upload request DTO:
+- [X] T022 [P] Create `UploadInvoiceRequestValidator` in `SPIP.Application/Validators/UploadInvoiceRequestValidator.cs` — New file. Validates the upload request DTO:
   ```csharp
   using FluentValidation;
   using SPIP.Application.DTOs.Invoice;
@@ -452,7 +452,7 @@
 
 ### AutoMapper Profile
 
-- [ ] T023 [P] Create `InvoiceMappingProfile` in `SPIP.Application/Mapping/InvoiceMappingProfile.cs` — New file. Define AutoMapper mappings for all invoice-related entities → DTOs:
+- [X] T023 [P] Create `InvoiceMappingProfile` in `SPIP.Application/Mapping/InvoiceMappingProfile.cs` — New file. Define AutoMapper mappings for all invoice-related entities → DTOs:
   ```csharp
   using AutoMapper;
   using SPIP.Application.DTOs.Invoice;
@@ -493,7 +493,7 @@
 
 ### EF Core Configurations
 
-- [ ] T024 [P] Update `InvoiceConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceConfiguration.cs` — Add precision for new decimal columns, max lengths for string columns, and indexes:
+- [X] T024 [P] Update `InvoiceConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceConfiguration.cs` — Add precision for new decimal columns, max lengths for string columns, and indexes:
   ```csharp
   builder.Property(i => i.InvoiceNumber).HasMaxLength(100);
   builder.Property(i => i.VendorName).HasMaxLength(200);
@@ -506,12 +506,12 @@
   builder.HasOne(i => i.UploadedByUser).WithMany().HasForeignKey(i => i.UploadedByUserId).OnDelete(DeleteBehavior.Restrict);
   ```
 
-- [ ] T025 [P] Update `InvoiceItemConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceItemConfiguration.cs` — Add `SupplierSku` max length:
+- [X] T025 [P] Update `InvoiceItemConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceItemConfiguration.cs` — Add `SupplierSku` max length:
   ```csharp
   builder.Property(ii => ii.SupplierSku).HasMaxLength(50).IsRequired();
   ```
 
-- [ ] T026 [P] Create `DiscrepancyConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/DiscrepancyConfiguration.cs` — New file:
+- [X] T026 [P] Create `DiscrepancyConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/DiscrepancyConfiguration.cs` — New file:
   ```csharp
   using Microsoft.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -531,7 +531,7 @@
   }
   ```
 
-- [ ] T027 [P] Create `UploadedFileConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/UploadedFileConfiguration.cs` — New file:
+- [X] T027 [P] Create `UploadedFileConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/UploadedFileConfiguration.cs` — New file:
   ```csharp
   using Microsoft.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -551,7 +551,7 @@
   }
   ```
 
-- [ ] T028 [P] Create `InvoiceProcessingLogConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceProcessingLogConfiguration.cs` — New file:
+- [X] T028 [P] Create `InvoiceProcessingLogConfiguration` in `SPIP.Infrastructure/Persistence/Configurations/InvoiceProcessingLogConfiguration.cs` — New file:
   ```csharp
   using Microsoft.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -572,13 +572,13 @@
 
 ### DbContext & Migration
 
-- [ ] T029 Add DbSets to `ApplicationDbContext` in `SPIP.Infrastructure/Persistence/Context/ApplicationDbContext.cs` — Add the following DbSet properties (if not already present):
+- [X] T029 Add DbSets to `ApplicationDbContext` in `SPIP.Infrastructure/Persistence/Context/ApplicationDbContext.cs` — Add the following DbSet properties (if not already present):
   ```csharp
   public DbSet<InvoiceProcessingLog> InvoiceProcessingLogs => Set<InvoiceProcessingLog>();
   ```
   Ensure `DbSet<Invoice>`, `DbSet<InvoiceItem>`, `DbSet<Discrepancy>`, `DbSet<UploadedFile>`, `DbSet<AIExtractionResult>` also exist. If any are missing, add them. Make sure the `OnModelCreating` method calls `ApplyConfigurationsFromAssembly` or explicitly applies each new configuration.
 
-- [ ] T030 Generate EF Core migration — Run from repository root:
+- [X] T030 Generate EF Core migration — Run from repository root:
   ```bash
   dotnet ef migrations add AddInvoicePipeline --project SPIP.Infrastructure --startup-project SPIP.API
   ```
@@ -586,17 +586,17 @@
 
 ### Repository Implementations
 
-- [ ] T031 [P] Create `InvoiceRepository` in `SPIP.Infrastructure/Repositories/InvoiceRepository.cs` — New file. Extend `GenericRepository<Invoice>` and implement `IInvoiceRepository`. Use `.Include()` for eager loading in detail methods:
+- [X] T031 [P] Create `InvoiceRepository` in `SPIP.Infrastructure/Repositories/InvoiceRepository.cs` — New file. Extend `GenericRepository<Invoice>` and implement `IInvoiceRepository`. Use `.Include()` for eager loading in detail methods:
   - `GetWithDetailsByIdAsync`: Include `Items`, `Discrepancies`, `ProcessingLogs`, `UploadedFiles`, `UploadedByUser`. Order `ProcessingLogs` by `CreatedAt`.
   - `GetPagedAsync`: Support optional `Status` filter (parse string to `InvoiceStatus` enum). Include `UploadedByUser` for email. Order by `CreatedAt` descending. Return `(items, totalCount)` for pagination.
   - `GetByUserIdAsync`: Filter by `UploadedByUserId`, order by `CreatedAt` descending.
 
-- [ ] T032 [P] Create `InvoiceProcessingLogRepository` in `SPIP.Infrastructure/Repositories/InvoiceProcessingLogRepository.cs` — New file. Extend `GenericRepository<InvoiceProcessingLog>` and implement `IInvoiceProcessingLogRepository`:
+- [X] T032 [P] Create `InvoiceProcessingLogRepository` in `SPIP.Infrastructure/Repositories/InvoiceProcessingLogRepository.cs` — New file. Extend `GenericRepository<InvoiceProcessingLog>` and implement `IInvoiceProcessingLogRepository`:
   - `GetByInvoiceIdAsync`: Filter by `InvoiceId`, order by `CreatedAt` ascending.
 
 ### UnitOfWork Update
 
-- [ ] T033 Update `IUnitOfWork` in `SPIP.Application/Interfaces/Repositories/IUnitOfWork.cs` and `UnitOfWork` in `SPIP.Infrastructure/Repositories/UnitOfWork.cs` — Add invoice-related repository properties:
+- [X] T033 Update `IUnitOfWork` in `SPIP.Application/Interfaces/Repositories/IUnitOfWork.cs` and `UnitOfWork` in `SPIP.Infrastructure/Repositories/UnitOfWork.cs` — Add invoice-related repository properties:
   ```csharp
   // In IUnitOfWork interface:
   IInvoiceRepository Invoices { get; }
@@ -612,7 +612,7 @@
 
 ### DI Registration
 
-- [ ] T034 Update DI registrations in `SPIP.Infrastructure/DependencyInjection/DependencyInjection.cs` — Add registrations for all new services and repositories. Add these lines in the `AddInfrastructure` method:
+- [X] T034 Update DI registrations in `SPIP.Infrastructure/DependencyInjection/DependencyInjection.cs` — Add registrations for all new services and repositories. Add these lines in the `AddInfrastructure` method:
   ```csharp
   // Repositories
   services.AddScoped<IInvoiceRepository, InvoiceRepository>();
@@ -646,20 +646,20 @@
 
 ### Implementation for User Story 1
 
-- [ ] T035 [US1] Implement `LocalFileStorageService` in `SPIP.Infrastructure/Services/LocalFileStorageService.cs` — New file. Implements `IFileStorageService`. Constructor takes `IConfiguration` to read `FileStorage:BasePath`. Implement `SaveFileWithGuidAsync`:
+- [X] T035 [US1] Implement `LocalFileStorageService` in `SPIP.Infrastructure/Services/LocalFileStorageService.cs` — New file. Implements `IFileStorageService`. Constructor takes `IConfiguration` to read `FileStorage:BasePath`. Implement `SaveFileWithGuidAsync`:
   1. Generate a GUID filename: `$"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}"`.
   2. Create the base directory if it doesn't exist.
   3. Write the stream to `Path.Combine(basePath, guidFileName)`.
   4. Return `(fullPath, guidFileName)`.
   Also implement `GetFileAsync` (return `new FileStream(path, FileMode.Open, FileAccess.Read)`) and `DeleteFileAsync` (`File.Delete(path)`). Keep existing `SaveFileAsync` for backward compatibility (delegate to `SaveFileWithGuidAsync` internally).
 
-- [ ] T036 [US1] Create file validation utility in `SPIP.Application/Helpers/FileValidationHelper.cs` — New file. Static class with a method `ValidateFileSignature(Stream fileStream, string extension)` that validates magic numbers (file signatures):
+- [X] T036 [US1] Create file validation utility in `SPIP.Application/Helpers/FileValidationHelper.cs` — New file. Static class with a method `ValidateFileSignature(Stream fileStream, string extension)` that validates magic numbers (file signatures):
   - PDF: first 4 bytes = `0x25 0x50 0x44 0x46` (`%PDF`)
   - JPEG: first 2 bytes = `0xFF 0xD8`
   - PNG: first 4 bytes = `0x89 0x50 0x4E 0x47`
   Returns `bool`. The method must reset the stream position to 0 after reading. Also add a method `GetContentTypeFromExtension(string extension)` returning the MIME type string.
 
-- [ ] T037 [US1] Implement `InvoiceService.UploadInvoiceAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — New file. Implements `IInvoiceService`. Constructor takes: `IInvoiceRepository`, `IInvoiceProcessingLogRepository`, `IFileStorageService`, `ICurrentUserService`, `IPurchaseOrderRepository`, `IUnitOfWork`, `IMapper`, `Hangfire.IBackgroundJobClient`, `ILogger<InvoiceService>`. Implement `UploadInvoiceAsync`:
+- [X] T037 [US1] Implement `InvoiceService.UploadInvoiceAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — New file. Implements `IInvoiceService`. Constructor takes: `IInvoiceRepository`, `IInvoiceProcessingLogRepository`, `IFileStorageService`, `ICurrentUserService`, `IPurchaseOrderRepository`, `IUnitOfWork`, `IMapper`, `Hangfire.IBackgroundJobClient`, `ILogger<InvoiceService>`. Implement `UploadInvoiceAsync`:
   1. Get current user ID from `ICurrentUserService.UserId`. If null, return `Result<>.Failure("User not authenticated.")`.
   2. Validate PO exists: `await _purchaseOrderRepo.GetByIdAsync(request.PurchaseOrderId)`. If null, return `Result<>.Failure("Purchase Order not found.")`.
   3. Validate file signature using `FileValidationHelper.ValidateFileSignature`. If invalid, return `Result<>.Failure("File content does not match the declared type.")`.
@@ -674,7 +674,7 @@
   12. Return `Result<InvoiceUploadResultDto>.Success(new InvoiceUploadResultDto(invoice.Id, "Queued", request.File.FileName))`.
   Log at each significant step using `_logger.LogInformation(...)`.
 
-- [ ] T038 [US1] Create `InvoiceProcessingJob` in `SPIP.Infrastructure/BackgroundJobs/InvoiceProcessingJob.cs` — New file. This is the Hangfire job class that delegates to `IInvoiceProcessingService`:
+- [X] T038 [US1] Create `InvoiceProcessingJob` in `SPIP.Infrastructure/BackgroundJobs/InvoiceProcessingJob.cs` — New file. This is the Hangfire job class that delegates to `IInvoiceProcessingService`:
   ```csharp
   using Hangfire;
   using SPIP.Application.Interfaces.Services;
@@ -698,7 +698,7 @@
   }
   ```
 
-- [ ] T039 [US1] Create `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs` — New file. Thin controller following the existing pattern in `PurchaseOrdersController.cs`:
+- [X] T039 [US1] Create `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs` — New file. Thin controller following the existing pattern in `PurchaseOrdersController.cs`:
   ```csharp
   [ApiController]
   [Route("api/invoices")]
@@ -737,7 +737,7 @@
 
 ### Implementation for User Story 2
 
-- [ ] T040 [US2] Implement `AIExtractionService` in `SPIP.Infrastructure/Services/AIExtractionService.cs` — New file. Implements `IAIExtractionService`. Constructor takes `HttpClient` (injected by `IHttpClientFactory`), `ILogger<AIExtractionService>`. Implement `ExtractInvoiceDataAsync`:
+- [X] T040 [US2] Implement `AIExtractionService` in `SPIP.Infrastructure/Services/AIExtractionService.cs` — New file. Implements `IAIExtractionService`. Constructor takes `HttpClient` (injected by `IHttpClientFactory`), `ILogger<AIExtractionService>`. Implement `ExtractInvoiceDataAsync`:
   1. Create a `MultipartFormDataContent` with the file stream as `StreamContent`.
   2. Send `POST` to the AI service endpoint (path configured or hardcoded as `/extract` — adjust as needed).
   3. Read the response body as string.
@@ -746,7 +746,7 @@
   6. Return the typed `AIExtractionResponseDto`.
   7. Log the request/response (without sensitive data). Handle `TaskCanceledException` (timeout) by logging and rethrowing.
 
-- [ ] T041 [US2] Implement `InvoiceProcessingService` in `SPIP.Infrastructure/Services/InvoiceProcessingService.cs` — New file. Implements `IInvoiceProcessingService`. Constructor takes `IInvoiceRepository`, `IInvoiceProcessingLogRepository`, `IAIExtractionService`, `IFileStorageService`, `IReconciliationService`, `IUnitOfWork`, `ILogger<InvoiceProcessingService>`. Implement `ProcessInvoiceAsync(int invoiceId, CancellationToken ct)`:
+- [X] T041 [US2] Implement `InvoiceProcessingService` in `SPIP.Infrastructure/Services/InvoiceProcessingService.cs` — New file. Implements `IInvoiceProcessingService`. Constructor takes `IInvoiceRepository`, `IInvoiceProcessingLogRepository`, `IAIExtractionService`, `IFileStorageService`, `IReconciliationService`, `IUnitOfWork`, `ILogger<InvoiceProcessingService>`. Implement `ProcessInvoiceAsync(int invoiceId, CancellationToken ct)`:
   1. Load invoice with details: `await _invoiceRepo.GetWithDetailsByIdAsync(invoiceId)`. If null, throw `InvalidOperationException`.
   2. **Transition to Processing**: Update `invoice.Status = InvoiceStatus.Processing`. Add processing log. Save.
   3. **Call AI service**: Get the file stream via `_fileStorageService.GetFileAsync(uploadedFile.StoragePath)`. Call `_aiService.ExtractInvoiceDataAsync(stream, uploadedFile.OriginalFileName, ct)`.
@@ -774,7 +774,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T042 [US3] Implement `ReconciliationService` in `SPIP.Infrastructure/Services/ReconciliationService.cs` — New file. Implements `IReconciliationService`. Constructor takes `IInvoiceRepository`, `IPurchaseOrderRepository`, `IInvoiceProcessingLogRepository`, `IUnitOfWork`, `ILogger<ReconciliationService>`. Implement `ReconcileAsync(int invoiceId, CancellationToken ct)`:
+- [X] T042 [US3] Implement `ReconciliationService` in `SPIP.Infrastructure/Services/ReconciliationService.cs` — New file. Implements `IReconciliationService`. Constructor takes `IInvoiceRepository`, `IPurchaseOrderRepository`, `IInvoiceProcessingLogRepository`, `IUnitOfWork`, `ILogger<ReconciliationService>`. Implement `ReconcileAsync(int invoiceId, CancellationToken ct)`:
   1. Load invoice with items: `await _invoiceRepo.GetWithDetailsByIdAsync(invoiceId)`.
   2. Load PO with items: `await _poRepo.GetWithItemsByIdAsync(invoice.PurchaseOrderId.Value)`. If PO is null, set `Status = NeedsReview`, log "Purchase Order not found", save, return.
   3. **Transition to Compared**: Update status. Add log. Save.
@@ -806,14 +806,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T043 [US4] Implement `InvoiceService.GetByIdAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService` class:
+- [X] T043 [US4] Implement `InvoiceService.GetByIdAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService` class:
   1. Get current user ID from `ICurrentUserService`.
   2. Load invoice with details: `await _invoiceRepo.GetWithDetailsByIdAsync(invoiceId)`. If null, return `Result<>.Failure("Invoice not found.")`.
   3. **Enforce data ownership (FR-024)**: If `invoice.UploadedByUserId != currentUserId` and the current user does NOT have the `Invoices.ViewAll` permission, return `Result<>.Failure("Access denied.")`. (Check permissions via claims or role check.)
   4. Map to `InvoiceDetailDto` using AutoMapper. For `LastError`, manually extract the most recent `ProcessingLog` with `EventType` containing "Error" or `ToStatus == Failed`.
   5. Return `Result<InvoiceDetailDto>.Success(dto)`.
 
-- [ ] T044 [US4] Add `GetById` endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
+- [X] T044 [US4] Add `GetById` endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
   ```csharp
   [HttpGet("{id:int}")]
   [Authorize(Policy = Permissions.Invoices.View)]
@@ -842,7 +842,7 @@
 
 ### Implementation for User Story 5
 
-- [ ] T045 [US5] Implement `InvoiceService.DownloadFileAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService`:
+- [X] T045 [US5] Implement `InvoiceService.DownloadFileAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService`:
   1. Get current user ID.
   2. Load invoice with `UploadedFiles` included.
   3. Enforce data ownership (same as T043).
@@ -850,7 +850,7 @@
   5. Get file stream: `await _fileStorageService.GetFileAsync(uploadedFile.StoragePath)`.
   6. Return `Result<(Stream, string, string)>.Success((stream, uploadedFile.ContentType ?? "application/octet-stream", uploadedFile.OriginalFileName))`.
 
-- [ ] T046 [US5] Add `Download` endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
+- [X] T046 [US5] Add `Download` endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
   ```csharp
   [HttpGet("{id:int}/download")]
   [Authorize(Policy = Permissions.Invoices.Download)]
@@ -880,13 +880,13 @@
 
 ### Implementation for User Story 6
 
-- [ ] T047 [US6] Implement `InvoiceService.GetAllPagedAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService`:
+- [X] T047 [US6] Implement `InvoiceService.GetAllPagedAsync` in `SPIP.Infrastructure/Services/InvoiceService.cs` — Add to the existing `InvoiceService`:
   1. Call `await _invoiceRepo.GetPagedAsync(parameters)`.
   2. Map to `InvoiceListItemDto` using AutoMapper.
   3. For each item, populate `LastError` by querying the most recent `InvoiceProcessingLog` with `ToStatus == InvoiceStatus.Failed` for that invoice.
   4. Return `Result<PagedResult<InvoiceListItemDto>>.Success(pagedResult)`.
 
-- [ ] T048 [US6] Add admin list endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
+- [X] T048 [US6] Add admin list endpoint to `InvoicesController` in `SPIP.API/Controllers/InvoicesController.cs`:
   ```csharp
   [HttpGet]
   [Authorize(Policy = Permissions.Invoices.ViewAll)]
@@ -907,11 +907,11 @@
 
 **Purpose**: Security hardening, logging completeness, and final validation
 
-- [ ] T050 [P] Seed Invoice permissions into the database — Add `Invoices.Upload`, `Invoices.View`, `Invoices.Download`, `Invoices.ViewAll` to the permission seed data in `SPIP.Infrastructure/Persistence/Seed/` or `SPIP.Domain/Entities/PermissionCatalog.cs` (follow the existing pattern for how permissions like `POImports.View` are seeded).
+- [X] T050 [P] Seed Invoice permissions into the database — Add `Invoices.Upload`, `Invoices.View`, `Invoices.Download`, `Invoices.ViewAll` to the permission seed data in `SPIP.Infrastructure/Persistence/Seed/` or `SPIP.Domain/Entities/PermissionCatalog.cs` (follow the existing pattern for how permissions like `POImports.View` are seeded).
 
-- [ ] T051 [P] Add Swagger/OpenAPI documentation attributes to all `InvoicesController` endpoints — Add `[ProducesResponseType]` attributes for 200, 400, 401, 403, 404 as appropriate. Add `[Consumes("multipart/form-data")]` for the upload endpoint. Add XML doc comments describing each endpoint.
+- [X] T051 [P] Add Swagger/OpenAPI documentation attributes to all `InvoicesController` endpoints — Add `[ProducesResponseType]` attributes for 200, 400, 401, 403, 404 as appropriate. Add `[Consumes("multipart/form-data")]` for the upload endpoint. Add XML doc comments describing each endpoint.
 
-- [ ] T052 Verify build compiles with zero warnings — Run `dotnet build` from the repository root and fix any warnings or errors. Ensure all `using` statements are correct and no unused imports exist.
+- [X] T052 Verify build compiles with zero warnings — Run `dotnet build` from the repository root and fix any warnings or errors. Ensure all `using` statements are correct and no unused imports exist.
 
 - [ ] T053 Run quickstart.md validation scenarios — Execute the 6 validation scenarios described in `specs/001-invoice-processing-pipeline/quickstart.md` to verify end-to-end functionality. Document results.
 

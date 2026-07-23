@@ -1,6 +1,8 @@
+using SPIP.Application.DTOs.AI;
+
 namespace SPIP.Application.Interfaces.AI;
 
 public interface IAIExtractionService
 {
-    Task<string> ExtractInvoiceDataAsync(Stream fileStream, string fileName);
+    Task<AIExtractionResponseDto> ExtractInvoiceDataAsync(Stream fileStream, string fileName, CancellationToken cancellationToken = default);
 }

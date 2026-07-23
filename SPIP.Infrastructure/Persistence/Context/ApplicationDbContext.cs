@@ -26,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
     public DbSet<AIExtractionResult> AIExtractionResults => Set<AIExtractionResult>();
     public DbSet<Discrepancy> Discrepancies => Set<Discrepancy>();
+    public DbSet<InvoiceProcessingLog> InvoiceProcessingLogs => Set<InvoiceProcessingLog>();
     public DbSet<Approval> Approvals => Set<Approval>();
     public DbSet<ApprovalHistory> ApprovalHistories => Set<ApprovalHistory>();
     public DbSet<VendorPriceHistory> VendorPriceHistories => Set<VendorPriceHistory>();

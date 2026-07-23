@@ -7,6 +7,8 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
     private IUserRepository? _users;
+    private IInvoiceRepository? _invoices;
+    private IInvoiceProcessingLogRepository? _invoiceProcessingLogs;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -14,6 +16,8 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public IUserRepository Users => _users ??= new UserRepository(_context);
+    public IInvoiceRepository Invoices => _invoices ??= new InvoiceRepository(_context);
+    public IInvoiceProcessingLogRepository InvoiceProcessingLogs => _invoiceProcessingLogs ??= new InvoiceProcessingLogRepository(_context);
 
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 

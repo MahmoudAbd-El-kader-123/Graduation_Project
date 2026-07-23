@@ -17,3 +17,8 @@ obj/
 appsettings.json
 appsettings.*.json
 *.env
+.env*
+*.log
+*.tmp
+*.swp
+Thumbs.db

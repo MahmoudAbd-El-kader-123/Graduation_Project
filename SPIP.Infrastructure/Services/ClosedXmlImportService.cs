@@ -102,7 +102,7 @@ public class ClosedXmlImportService : IClosedXmlImportService
                 OrderDate = DateTime.UtcNow
             };
 
-            var rowCount = worksheet.LastRowUsed().RowNumber();
+            var rowCount = worksheet.LastRowUsed()?.RowNumber() ?? headerRow.RowNumber();
             decimal totalAmount = 0;
 
             // Load products for this vendor to match against
@@ -175,10 +175,10 @@ public class ClosedXmlImportService : IClosedXmlImportService
             return Result<PurchaseOrder>.Failure($"Failed to process Excel file: {ex.Message}");
         }
     }
-    public async Task<Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>> GetExcelPreviewAsync(Stream excelStream, int rowsToExtract = 50)
+    public Task<Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>> GetExcelPreviewAsync(Stream excelStream, int rowsToExtract = 50)
     {
         if (excelStream == null || excelStream.Length == 0)
-            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("File is empty.");
+            return Task.FromResult(Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("File is empty."));
 
         try
         {
@@ -186,7 +186,7 @@ public class ClosedXmlImportService : IClosedXmlImportService
             var worksheet = workbook.Worksheets.FirstOrDefault();
 
             if (worksheet == null) 
-                return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("No worksheet found.");
+                return Task.FromResult(Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure("No worksheet found."));
 
             var result = new SPIP.Application.DTOs.Import.ExcelPreviewDto();
             var maxRow = Math.Min(rowsToExtract, worksheet.LastRowUsed()?.RowNumber() ?? 0);
@@ -209,11 +209,11 @@ public class ClosedXmlImportService : IClosedXmlImportService
                 result.DataGrid.Add(rowData);
             }
 
-            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Success(result);
+            return Task.FromResult(Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Success(result));
         }
         catch (Exception ex)
         {
-            return Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure($"Failed to read Excel preview: {ex.Message}");
+            return Task.FromResult(Result<SPIP.Application.DTOs.Import.ExcelPreviewDto>.Failure($"Failed to read Excel preview: {ex.Message}"));
         }
     }
 }

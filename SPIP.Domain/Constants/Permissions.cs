@@ -41,6 +41,14 @@ public static class Permissions
         public const string Delete = "POImports.Delete";
     }
 
+    public static class Invoices
+    {
+        public const string Upload = "Invoices.Upload";
+        public const string View = "Invoices.View";
+        public const string Download = "Invoices.Download";
+        public const string ViewAll = "Invoices.ViewAll";
+    }
+
     public static class VendorMappings
     {
         public const string View = "VendorMappings.View";

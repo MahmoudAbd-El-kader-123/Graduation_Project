@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,6 +90,12 @@ public class Program
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
 
+        var hangfireConnection = builder.Configuration.GetConnectionString("HangfireConnection")
+            ?? builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("HangfireConnection or DefaultConnection is not configured.");
+        builder.Services.AddHangfire(config => config.UseSqlServerStorage(hangfireConnection));
+        builder.Services.AddHangfireServer();
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
@@ -149,6 +156,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.MapHangfireDashboard("/hangfire").RequireAuthorization(SPIP.Domain.Constants.Permissions.Invoices.ViewAll);
         app.MapControllers();
     }
 }

@@ -8,6 +8,7 @@ public class InvoiceItem : BaseEntity
     public Invoice? Invoice { get; set; }
     public int? ProductId { get; set; }
     public Product? Product { get; set; }
+    public string SupplierSku { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }

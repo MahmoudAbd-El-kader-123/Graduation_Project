@@ -5,8 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SPIP.Application.Common;
+using SPIP.Application.Interfaces.AI;
 using SPIP.Application.Interfaces.Repositories;
 using SPIP.Application.Interfaces.Services;
+using SPIP.Application.Interfaces.Storage;
 using SPIP.Infrastructure.Authentication;
 using SPIP.Infrastructure.Identity;
 using SPIP.Infrastructure.Persistence.Context;
@@ -86,6 +88,8 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IVendorColumnMappingRepository, VendorColumnMappingRepository>();
         services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IInvoiceProcessingLogRepository, InvoiceProcessingLogRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ITokenService, TokenService>();
@@ -99,6 +103,18 @@ public static class DependencyInjection
         services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
         services.AddScoped<IClosedXmlImportService, ClosedXmlImportService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IInvoiceProcessingService, InvoiceProcessingService>();
+        services.AddScoped<IReconciliationService, ReconciliationService>();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
+
+        services.AddHttpClient<IAIExtractionService, AIExtractionService>((sp, client) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var baseUrl = config["AIService:BaseUrl"] ?? "https://your-ai-service-url";
+            client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(config.GetValue("AIService:TimeoutSeconds", 30));
+        });
 
         return services;
     }
