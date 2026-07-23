@@ -1,6 +1,6 @@
 # Feature Specification: Intelligent Invoice Processing Pipeline
 
-**Feature Branch**: `Sprint_three`
+**Feature Branch**: `001-invoice-processing-pipeline`
 
 **Created**: 2026-07-22
 
@@ -220,7 +220,7 @@ The external AI service returns a structured JSON response with the following sc
 - **InvoiceItem**: Represents a single line item extracted from an invoice. Contains supplier SKU, description, quantity, unit price, and line amount.
 - **UploadedFile**: Represents the physical file stored on the server. Contains original filename, stored filename (GUID), file path, content type, file size, and upload timestamp.
 - **InvoiceProcessingLog**: Represents a single event in the processing history. Contains the event type, status transition, message/description, and timestamp.
-- **InvoiceDiscrepancy**: Represents a mismatch found during PO reconciliation. Contains discrepancy type, field name, expected value, actual value, and the linked invoice item.
+- **Discrepancy**: Represents a mismatch found during PO reconciliation. Contains discrepancy type, field name, expected value, actual value, and the linked invoice item.
 
 ## Success Criteria *(mandatory)*
 
