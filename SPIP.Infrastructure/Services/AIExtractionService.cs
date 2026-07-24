@@ -1,8 +1,10 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SPIP.Application.DTOs.AI;
 using SPIP.Application.Interfaces.AI;
+using SPIP.Infrastructure.Configuration;
 
 namespace SPIP.Infrastructure.Services;
 
@@ -10,11 +12,16 @@ public class AIExtractionService : IAIExtractionService
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
     private readonly HttpClient _httpClient;
+    private readonly AIServiceSettings _settings;
     private readonly ILogger<AIExtractionService> _logger;
 
-    public AIExtractionService(HttpClient httpClient, ILogger<AIExtractionService> logger)
+    public AIExtractionService(
+        HttpClient httpClient,
+        IOptions<AIServiceSettings> settings,
+        ILogger<AIExtractionService> logger)
     {
         _httpClient = httpClient;
+        _settings = settings.Value;
         _logger = logger;
     }
 
@@ -28,23 +35,35 @@ public class AIExtractionService : IAIExtractionService
             content.Add(fileContent, "file", fileName);
 
             _logger.LogInformation("Sending invoice {FileName} to AI extraction service", fileName);
-            using var response = await _httpClient.PostAsync("/extract", content, cancellationToken);
+            using var response = await _httpClient.PostAsync(_settings.ExtractionEndpoint, content, cancellationToken);
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"AI extraction failed with status {(int)response.StatusCode}: {responseBody}");
+                throw new HttpRequestException(
+                    $"AI extraction failed with HTTP status {(int)response.StatusCode}.",
+                    null,
+                    response.StatusCode);
 
-            var result = JsonSerializer.Deserialize<AIExtractionResponseDto>(responseBody, JsonOptions);
-            if (result is null)
+            AIExtractionResponseDto? extractionResponse;
+            try
+            {
+                extractionResponse = JsonSerializer.Deserialize<AIExtractionResponseDto>(responseBody, JsonOptions);
+            }
+            catch (JsonException ex)
+            {
+                throw new HttpRequestException("AI extraction service returned invalid JSON.", ex);
+            }
+
+            if (extractionResponse is null)
                 throw new HttpRequestException("AI extraction response could not be deserialized.");
 
             _logger.LogInformation("AI extraction completed for invoice {FileName}", fileName);
-            return result;
+            return extractionResponse;
         }
-        catch (TaskCanceledException ex)
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogError(ex, "AI extraction timed out for invoice {FileName}", fileName);
-            throw;
+            throw new TimeoutException("AI extraction service timed out.", ex);
         }
     }
 

@@ -2,6 +2,9 @@ namespace SPIP.Application.DTOs.AI;
 
 public class AIExtractionResponseDto
 {
+    public string? SchemaVersion { get; set; }
+    public string? ModelUsed { get; set; }
+    public double? ConfidenceScore { get; set; }
     public string VendorName { get; set; } = string.Empty;
     public string InvoiceNumber { get; set; } = string.Empty;
     public string InvoiceDate { get; set; } = string.Empty;

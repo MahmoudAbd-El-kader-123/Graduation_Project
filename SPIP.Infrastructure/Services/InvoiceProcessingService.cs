@@ -13,6 +13,7 @@ namespace SPIP.Infrastructure.Services;
 
 public class InvoiceProcessingService : IInvoiceProcessingService
 {
+    private const decimal CurrencyTolerance = 0.01m;
     private readonly IInvoiceRepository _invoiceRepository;
     private readonly IAIExtractionService _aiExtractionService;
     private readonly IFileStorageService _fileStorageService;
@@ -65,8 +66,8 @@ public class InvoiceProcessingService : IInvoiceProcessingService
             invoice.AIExtractionResults.Add(new AIExtractionResult
             {
                 RawExtractedJson = JsonSerializer.Serialize(aiResponse),
-                ConfidenceScore = 1.0,
-                ModelUsed = "external-ai"
+                ConfidenceScore = aiResponse.ConfidenceScore ?? 0,
+                ModelUsed = aiResponse.ModelUsed ?? "not-provided"
             });
 
             await TransitionAsync(invoice, InvoiceStatus.Validated, "StatusChange", "Invoice data validated.", cancellationToken);
@@ -75,8 +76,9 @@ public class InvoiceProcessingService : IInvoiceProcessingService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Invoice processing failed for invoice {InvoiceId}", invoiceId);
+            var previousStatus = invoice.Status;
             invoice.Status = InvoiceStatus.Failed;
-            invoice.ProcessingLogs.Add(CreateLog(invoice.Status, InvoiceStatus.Failed, "ProcessingError", ex.Message));
+            invoice.ProcessingLogs.Add(CreateLog(previousStatus, InvoiceStatus.Failed, "ProcessingError", ex.Message));
             await _invoiceRepository.UpdateAsync(invoice);
             await _unitOfWork.SaveChangesAsync();
             throw;
@@ -100,12 +102,21 @@ public class InvoiceProcessingService : IInvoiceProcessingService
             errors.Add("VendorName is required.");
         if (string.IsNullOrWhiteSpace(response.InvoiceNumber))
             errors.Add("InvoiceNumber is required.");
-        if (string.IsNullOrWhiteSpace(response.InvoiceDate))
-            errors.Add("InvoiceDate is required.");
+        if (!TryParseInvoiceDate(response.InvoiceDate, out _))
+            errors.Add("InvoiceDate must use the yyyy-MM-dd format.");
+        if (string.IsNullOrWhiteSpace(response.Currency))
+            errors.Add("Currency is required.");
+        if (response.Subtotal is < 0)
+            errors.Add("Subtotal must not be negative.");
+        if (response.Vat is < 0)
+            errors.Add("Vat must not be negative.");
         if (response.Total <= 0)
             errors.Add("Total must be greater than zero.");
-        if (response.Items.Count == 0)
+        if (response.Items is null || response.Items.Count == 0)
+        {
             errors.Add("At least one invoice item is required.");
+            return errors;
+        }
 
         foreach (var item in response.Items)
         {
@@ -115,20 +126,22 @@ public class InvoiceProcessingService : IInvoiceProcessingService
                 errors.Add("Each item quantity must be greater than zero.");
             if (item.UnitPrice <= 0)
                 errors.Add("Each item unit price must be greater than zero.");
+            if (item.Amount <= 0)
+                errors.Add("Each item amount must be greater than zero.");
         }
 
+        ValidateInvoiceAmounts(response, errors);
         return errors;
     }
 
     private static void MapAIResponse(Invoice invoice, AIExtractionResponseDto response)
     {
+        TryParseInvoiceDate(response.InvoiceDate, out var invoiceDate);
         invoice.InvoiceNumber = response.InvoiceNumber;
         invoice.VendorName = response.VendorName;
-        invoice.InvoiceDate = DateTime.TryParseExact(response.InvoiceDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var invoiceDate)
-            ? invoiceDate
-            : DateTime.UtcNow;
-        invoice.Currency = response.Currency ?? "USD";
-        invoice.Subtotal = response.Subtotal ?? response.Items.Sum(i => i.Amount);
+        invoice.InvoiceDate = invoiceDate;
+        invoice.Currency = response.Currency!;
+        invoice.Subtotal = response.Subtotal ?? response.Items.Sum(i => i.Quantity * i.UnitPrice);
         invoice.Vat = response.Vat ?? 0;
         invoice.TotalAmount = response.Total;
 
@@ -145,6 +158,36 @@ public class InvoiceProcessingService : IInvoiceProcessingService
             });
         }
     }
+
+    private static void ValidateInvoiceAmounts(AIExtractionResponseDto response, ICollection<string> errors)
+    {
+        var calculatedSubtotal = response.Items.Sum(item => item.Quantity * item.UnitPrice);
+        var grossItemsTotal = response.Items.Sum(item => item.Amount);
+
+        if (response.Subtotal.HasValue &&
+            Math.Abs(response.Subtotal.Value - calculatedSubtotal) > CurrencyTolerance)
+        {
+            errors.Add("Subtotal does not match the sum of quantity multiplied by unit price.");
+        }
+
+        if (Math.Abs(response.Total - grossItemsTotal) > CurrencyTolerance)
+            errors.Add("Total does not match the sum of VAT-inclusive item amounts.");
+
+        if (response.Subtotal.HasValue &&
+            response.Vat.HasValue &&
+            Math.Abs(response.Total - (response.Subtotal.Value + response.Vat.Value)) > CurrencyTolerance)
+        {
+            errors.Add("Total does not match subtotal plus VAT.");
+        }
+    }
+
+    private static bool TryParseInvoiceDate(string invoiceDate, out DateTime parsedDate) =>
+        DateTime.TryParseExact(
+            invoiceDate,
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out parsedDate);
 
     private static InvoiceProcessingLog CreateLog(InvoiceStatus? fromStatus, InvoiceStatus toStatus, string eventType, string message) =>
         new()

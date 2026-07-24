@@ -10,6 +10,7 @@ using SPIP.Application.Interfaces.Repositories;
 using SPIP.Application.Interfaces.Services;
 using SPIP.Application.Interfaces.Storage;
 using SPIP.Infrastructure.Authentication;
+using SPIP.Infrastructure.Configuration;
 using SPIP.Infrastructure.Identity;
 using SPIP.Infrastructure.Persistence.Context;
 using SPIP.Infrastructure.Repositories;
@@ -108,12 +109,25 @@ public static class DependencyInjection
         services.AddScoped<IReconciliationService, ReconciliationService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
+        services.AddOptions<AIServiceSettings>()
+            .Bind(configuration.GetSection(AIServiceSettings.SectionName))
+            .Validate(settings =>
+                    !string.IsNullOrWhiteSpace(settings.BaseUrl) &&
+                    Uri.TryCreate(settings.BaseUrl, UriKind.Absolute, out _),
+                "AIService:BaseUrl must be an absolute URL.")
+            .Validate(settings =>
+                    !string.IsNullOrWhiteSpace(settings.ExtractionEndpoint) &&
+                    Uri.TryCreate(settings.ExtractionEndpoint, UriKind.Relative, out _),
+                "AIService:ExtractionEndpoint must be a relative URL.")
+            .Validate(settings => settings.TimeoutSeconds > 0,
+                "AIService:TimeoutSeconds must be greater than zero.")
+            .ValidateOnStart();
+
         services.AddHttpClient<IAIExtractionService, AIExtractionService>((sp, client) =>
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-            var baseUrl = config["AIService:BaseUrl"] ?? "https://your-ai-service-url";
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(config.GetValue("AIService:TimeoutSeconds", 30));
+            var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AIServiceSettings>>().Value;
+            client.BaseAddress = new Uri(settings.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
         });
 
         return services;
