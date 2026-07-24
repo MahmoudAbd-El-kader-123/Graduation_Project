@@ -13,7 +13,12 @@ export class AuthStorageService {
 
   readonly role = computed(() => this.session()?.role ?? null);
   readonly permissions = computed(() => this.session()?.permissions ?? []);
-  readonly isAuthenticated = computed(() => !!this.session() && !!this.getAccessToken());
+  readonly isAuthenticated = computed(() => {
+    const hasAccessToken = !!this.getAccessToken();
+    const hasRefreshCredentials = !!this.getLastAccessToken() && !!this.getRefreshToken();
+
+    return !!this.session() && (hasAccessToken || hasRefreshCredentials);
+  });
 
   getAccessToken(): string | null {
     return this.getCookie(AUTH_COOKIE_KEYS.accessToken);

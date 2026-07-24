@@ -20,38 +20,25 @@ export class AuthService {
 
   async initializeAuth(): Promise<void> {
     try {
-      const token = this.authStorage.getAccessToken();
+      const activeToken = this.authStorage.getAccessToken();
+      const token = activeToken ?? this.authStorage.getLastAccessToken();
       const refreshTokenValue = this.authStorage.getRefreshToken();
 
-      if (token && isTokenExpired(token)) {
-        if (refreshTokenValue) {
-          try {
-            const response = await firstValueFrom(
-              this.apiService.post<ApiResponse<AuthResponse>>(AUTH_ENDPOINTS.refreshToken || '/auth/refresh-token', {
-                token,
-                refreshToken: refreshTokenValue
-              })
-            );
+      if (activeToken && !isTokenExpired(activeToken)) {
+        this.authStorage.rebuildMinimalSessionFromToken();
+      } else if (token && refreshTokenValue) {
+        try {
+          const response = await firstValueFrom(
+            this.refreshToken(token, refreshTokenValue)
+          );
 
-            if (response.success && response.data) {
-              const authData = response.data;
-              // Make handleAuthSuccess public or use it here
-              // Since handleAuthSuccess is private, we can call it directly inside the same class.
-              this.handleAuthSuccess(authData);
-            } else {
-              this.logout();
-            }
-          } catch {
+          if (!response.success || !response.data) {
             this.logout();
           }
-        } else {
+        } catch {
           this.logout();
         }
-      } else if (token) {
-        // Token valid, rebuild minimal session
-        this.authStorage.rebuildMinimalSessionFromToken();
       } else {
-        // No token, ensure clean state
         this.authStorage.clearSession();
       }
     } catch (e) {

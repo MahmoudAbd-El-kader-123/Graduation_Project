@@ -31,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !isAuthEndpoint) {
+      if (error.status === 401 && !isAuthEndpoint && !req.context.get(IS_RETRY)) {
         return handle401Error(authReq, next, authStorage, authService);
       }
       return throwError(() => error);
@@ -66,6 +66,8 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authStorage:
         refreshPromise = null;
       });
     } else {
+      isRefreshing.set(false);
+      refreshPromise = null;
       authService.logout();
       return throwError(() => new Error('No refresh token available'));
     }
