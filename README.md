@@ -44,6 +44,10 @@ To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use th
 ng test
 ```
 
+For the complete test inventory, setup instructions, Windows commands,
+single-spec execution, extension examples, and troubleshooting, see
+[TESTING.md](./TESTING.md).
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:
