@@ -13,6 +13,9 @@ obj/
 [Dd]ebug/
 [Rr]elease/
 
+## Runtime storage
+SPIP.API/App_Data/
+
 ## Configuration
 appsettings.json
 appsettings.*.json
