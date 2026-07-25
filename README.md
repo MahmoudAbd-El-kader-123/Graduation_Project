@@ -24,8 +24,8 @@ On startup, the system automatically seeds a default Admin account:
 - **Role**: `Admin`
 
 **How to authenticate in Swagger:**
-1. Call the `POST /api/Auth/login` endpoint using the credentials above.
-2. Copy the `token` string from the response.
+1. Call the `POST /api/auth/login` endpoint using the credentials above.
+2. Copy the `data.token` string from the response.
 3. Scroll to the top of the Swagger page, click the green **Authorize** button.
 4. Type `Bearer <paste-your-token-here>` and click Authorize.
 
@@ -50,3 +50,9 @@ On startup, the system automatically seeds a default Admin account:
 - **Smart Purchase Order Import:** High-speed Excel parsing (`ClosedXML`) with strict `SkuSupplier` mapping and dynamic VAT deduction algorithms.
 - **Secure Permission Catalog:** Database-driven integer-based permission verification ensuring robust Role-Based Access Control (RBAC).
 - **Vendor Mapping System:** Flexible system mapping vendor-specific Excel columns to internal domain fields.
+
+### Sprint 3 AI Pipeline Test
+
+Use the [manual test guide](docs/sprint3-ai-manual-test.md) and its
+[idempotent SQL fixture](scripts/sql/seed-sprint3-ai-demo.sql) to recreate the
+verified nine-item invoice reconciliation scenario.
