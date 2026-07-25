@@ -13,5 +13,14 @@ public class PurchaseOrderItemConfiguration : IEntityTypeConfiguration<PurchaseO
 
         builder.Property(poi => poi.LineTotal)
             .HasPrecision(18, 2);
+
+        builder.Property(poi => poi.VatPercentage)
+            .HasPrecision(18, 2);
+
+        builder.Property(poi => poi.VatAmount)
+            .HasPrecision(18, 2);
+
+        builder.Property(poi => poi.Amount)
+            .HasPrecision(18, 2);
     }
 }

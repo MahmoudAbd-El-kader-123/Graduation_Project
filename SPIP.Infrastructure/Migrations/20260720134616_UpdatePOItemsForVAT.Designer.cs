@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SPIP.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using SPIP.Infrastructure.Persistence.Context;
 namespace SPIP.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720134616_UpdatePOItemsForVAT")]
+    partial class UpdatePOItemsForVAT
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,29 +319,20 @@ namespace SPIP.Infrastructure.Migrations
 
                     b.Property<string>("ActualValue")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DiscrepancyType")
-                        .HasColumnType("int");
-
                     b.Property<string>("ExpectedValue")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FieldName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("InvoiceItemId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -354,8 +348,6 @@ namespace SPIP.Infrastructure.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.HasIndex("InvoiceItemId");
-
                     b.ToTable("Discrepancies");
                 });
 
@@ -370,33 +362,21 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
-                        .HasDefaultValue("USD");
-
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PurchaseOrderId")
+                    b.Property<int?>("PurchaseOrderId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
@@ -405,28 +385,12 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UploadedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Vat")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("VendorId")
                         .HasColumnType("int");
-
-                    b.Property<string>("VendorName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PurchaseOrderId");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("UploadedByUserId");
 
                     b.HasIndex("VendorId");
 
@@ -464,11 +428,6 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("SupplierSku")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -483,48 +442,6 @@ namespace SPIP.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("InvoiceItems");
-                });
-
-            modelBuilder.Entity("SPIP.Domain.Entities.InvoiceProcessingLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("FromStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("ToStatus")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId", "CreatedAt");
-
-                    b.ToTable("InvoiceProcessingLogs");
                 });
 
             modelBuilder.Entity("SPIP.Domain.Entities.Notification", b =>
@@ -725,55 +642,27 @@ namespace SPIP.Infrastructure.Migrations
                         new
                         {
                             Id = 20,
-                            DisplayName = "Upload Invoices",
-                            Module = "Invoices",
-                            SystemName = "Invoices.Upload"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            DisplayName = "View Invoices",
-                            Module = "Invoices",
-                            SystemName = "Invoices.View"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            DisplayName = "Download Invoices",
-                            Module = "Invoices",
-                            SystemName = "Invoices.Download"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            DisplayName = "ViewAll Invoices",
-                            Module = "Invoices",
-                            SystemName = "Invoices.ViewAll"
-                        },
-                        new
-                        {
-                            Id = 24,
                             DisplayName = "View VendorMappings",
                             Module = "VendorMappings",
                             SystemName = "VendorMappings.View"
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 21,
                             DisplayName = "Manage VendorMappings",
                             Module = "VendorMappings",
                             SystemName = "VendorMappings.Manage"
                         },
                         new
                         {
-                            Id = 26,
+                            Id = 22,
                             DisplayName = "View Dashboard",
                             Module = "Dashboard",
                             SystemName = "Dashboard.View"
                         },
                         new
                         {
-                            Id = 27,
+                            Id = 23,
                             DisplayName = "View Reports",
                             Module = "Reports",
                             SystemName = "Reports.View"
@@ -973,16 +862,14 @@ namespace SPIP.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ContentType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("FileSizeBytes")
                         .HasColumnType("bigint");
@@ -993,19 +880,9 @@ namespace SPIP.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OriginalFileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("StoragePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StoredFileName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1372,29 +1249,14 @@ namespace SPIP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SPIP.Domain.Entities.InvoiceItem", "InvoiceItem")
-                        .WithMany()
-                        .HasForeignKey("InvoiceItemId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("Invoice");
-
-                    b.Navigation("InvoiceItem");
                 });
 
             modelBuilder.Entity("SPIP.Domain.Entities.Invoice", b =>
                 {
                     b.HasOne("SPIP.Domain.Entities.PurchaseOrder", "PurchaseOrder")
                         .WithMany("Invoices")
-                        .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SPIP.Domain.Entities.User", "UploadedByUser")
-                        .WithMany()
-                        .HasForeignKey("UploadedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("PurchaseOrderId");
 
                     b.HasOne("SPIP.Domain.Entities.Vendor", "Vendor")
                         .WithMany("Invoices")
@@ -1403,8 +1265,6 @@ namespace SPIP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("PurchaseOrder");
-
-                    b.Navigation("UploadedByUser");
 
                     b.Navigation("Vendor");
                 });
@@ -1424,17 +1284,6 @@ namespace SPIP.Infrastructure.Migrations
                     b.Navigation("Invoice");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("SPIP.Domain.Entities.InvoiceProcessingLog", b =>
-                {
-                    b.HasOne("SPIP.Domain.Entities.Invoice", "Invoice")
-                        .WithMany("ProcessingLogs")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("SPIP.Domain.Entities.Notification", b =>
@@ -1548,8 +1397,6 @@ namespace SPIP.Infrastructure.Migrations
                     b.Navigation("Discrepancies");
 
                     b.Navigation("Items");
-
-                    b.Navigation("ProcessingLogs");
 
                     b.Navigation("UploadedFiles");
                 });

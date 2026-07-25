@@ -21,7 +21,7 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             var search = p.SearchTerm.ToLower();
             query = query.Where(v => v.Name.ToLower().Contains(search) || 
                                      (v.ErpId != null && v.ErpId.ToLower().Contains(search)) ||
-                                     (v.Sku != null && v.Sku.ToLower().Contains(search)) ||
+                                     (v.SkuSupplier != null && v.SkuSupplier.ToLower().Contains(search)) ||
                                      (v.Barcode != null && v.Barcode.ToLower().Contains(search)));
         }
 

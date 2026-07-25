@@ -11,4 +11,7 @@ public class PurchaseOrderItem : BaseEntity
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal LineTotal { get; set; }
+    public decimal VatPercentage { get; set; }
+    public decimal VatAmount { get; set; }
+    public decimal Amount { get; set; }
 }

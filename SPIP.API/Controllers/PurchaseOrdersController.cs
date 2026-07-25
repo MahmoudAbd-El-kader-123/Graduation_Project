@@ -13,6 +13,7 @@ public class ImportPurchaseOrderRequest
 {
     public IFormFile File { get; set; } = null!;
     public int VendorId { get; set; }
+    public bool HasMixedVatRates { get; set; }
 }
 
 [ApiController]
@@ -57,7 +58,7 @@ public class PurchaseOrdersController : ControllerBase
             return BadRequest(ApiResponse<int>.FailureResponse("No file uploaded."));
 
         using var stream = request.File.OpenReadStream();
-        var result = await _poService.ImportFromExcelAsync(stream, request.File.FileName, request.VendorId);
+        var result = await _poService.ImportFromExcelAsync(stream, request.File.FileName, request.VendorId, request.HasMixedVatRates);
         return result.Succeeded
             ? Ok(ApiResponse<int>.SuccessResponse(result.Data!, "Purchase order imported successfully."))
             : BadRequest(ApiResponse<int>.FailureResponse(result.Error!));

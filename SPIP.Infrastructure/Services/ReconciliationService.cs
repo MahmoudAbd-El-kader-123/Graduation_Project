@@ -9,6 +9,8 @@ namespace SPIP.Infrastructure.Services;
 
 public class ReconciliationService : IReconciliationService
 {
+    private const decimal AmountTolerance = 0.01m;
+
     private readonly IInvoiceRepository _invoiceRepository;
     private readonly IPurchaseOrderRepository _purchaseOrderRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -17,7 +19,6 @@ public class ReconciliationService : IReconciliationService
     public ReconciliationService(
         IInvoiceRepository invoiceRepository,
         IPurchaseOrderRepository purchaseOrderRepository,
-        IInvoiceProcessingLogRepository logRepository,
         IUnitOfWork unitOfWork,
         ILogger<ReconciliationService> logger)
     {
@@ -45,7 +46,7 @@ public class ReconciliationService : IReconciliationService
         foreach (var invoiceItem in invoice.Items)
         {
             var poItem = purchaseOrder.Items.FirstOrDefault(item =>
-                string.Equals(item.Product?.Sku, invoiceItem.SupplierSku, StringComparison.OrdinalIgnoreCase));
+                string.Equals(item.Product?.SkuSupplier, invoiceItem.SupplierSku, StringComparison.OrdinalIgnoreCase));
 
             if (poItem is null)
             {
@@ -58,24 +59,26 @@ public class ReconciliationService : IReconciliationService
 
             if (invoiceItem.UnitPrice != poItem.UnitPrice)
                 invoice.Discrepancies.Add(CreateDiscrepancy(invoice.Id, invoiceItem.Id, DiscrepancyType.UnitPriceMismatch, "UnitPrice", poItem.UnitPrice.ToString(CultureInfo.InvariantCulture), invoiceItem.UnitPrice.ToString(CultureInfo.InvariantCulture)));
+
+            if (Math.Abs(invoiceItem.LineTotal - poItem.Amount) > AmountTolerance)
+                invoice.Discrepancies.Add(CreateDiscrepancy(invoice.Id, invoiceItem.Id, DiscrepancyType.AmountMismatch, "Amount", poItem.Amount.ToString(CultureInfo.InvariantCulture), invoiceItem.LineTotal.ToString(CultureInfo.InvariantCulture)));
         }
 
         foreach (var poItem in purchaseOrder.Items)
         {
-            var poSku = poItem.Product?.Sku ?? string.Empty;
+            var poSku = poItem.Product?.SkuSupplier ?? string.Empty;
             if (!invoice.Items.Any(item => string.Equals(item.SupplierSku, poSku, StringComparison.OrdinalIgnoreCase)))
                 invoice.Discrepancies.Add(CreateDiscrepancy(invoice.Id, null, DiscrepancyType.MissingFromInvoice, "SupplierSku", poSku, "N/A"));
         }
 
-        var lineTotalSum = invoice.Items.Sum(i => i.LineTotal);
-        if (invoice.TotalAmount != lineTotalSum)
+        if (Math.Abs(invoice.TotalAmount - purchaseOrder.TotalAmount) > AmountTolerance)
         {
             invoice.Discrepancies.Add(CreateDiscrepancy(
                 invoice.Id,
                 null,
                 DiscrepancyType.AmountMismatch,
                 "TotalAmount",
-                lineTotalSum.ToString(CultureInfo.InvariantCulture),
+                purchaseOrder.TotalAmount.ToString(CultureInfo.InvariantCulture),
                 invoice.TotalAmount.ToString(CultureInfo.InvariantCulture)));
         }
 

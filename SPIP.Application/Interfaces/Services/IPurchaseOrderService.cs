@@ -10,5 +10,5 @@ public interface IPurchaseOrderService
     Task<Result<PagedResult<PurchaseOrderDto>>> GetPagedAsync(PurchaseOrderParameters parameters);
     Task<Result<PurchaseOrderDto>> GetByIdAsync(int id);
     Task<Result<bool>> DeleteAsync(int id);
-    Task<Result<int>> ImportFromExcelAsync(Stream fileStream, string fileName, int vendorId);
+    Task<Result<int>> ImportFromExcelAsync(Stream fileStream, string fileName, int vendorId, bool hasMixedVatRates);
 }
