@@ -43,23 +43,27 @@ public class PurchaseOrderService : IPurchaseOrderService
         return Result<PurchaseOrderDto>.Success(MapToDto(po));
     }
 
-    public async Task<Result<int>> ImportFromExcelAsync(Stream fileStream, string fileName, int vendorId, bool hasMixedVatRates)
+    public async Task<Result<PurchaseOrderImportResultDto>> ImportFromExcelAsync(Stream fileStream, int vendorId, bool hasMixedVatRates)
     {
         var vendor = await _vendorRepository.GetByIdAsync(vendorId);
-        if (vendor == null) return Result<int>.Failure("Vendor not found.");
+        if (vendor == null) return Result<PurchaseOrderImportResultDto>.Failure("Vendor not found.");
 
-        var result = await _importService.ParsePurchaseOrderExcelAsync(fileStream, vendorId, hasMixedVatRates);
-        if (!result.Succeeded) return Result<int>.Failure(result.Error!);
+        var parseResult = await _importService.ParsePurchaseOrderExcelAsync(fileStream, vendorId, hasMixedVatRates);
+        if (!parseResult.Succeeded)
+            return Result<PurchaseOrderImportResultDto>.Failure(parseResult.Error!);
 
-        var po = result.Data!;
-
-        // Attempt to generate a unique order number if the parser created a mock one, or keep it.
-        // If the order already exists by order number, you might reject or update. For simplicity, we just save.
-        
-        var created = await _poRepository.AddAsync(po);
+        var parsedImport = parseResult.Data!;
+        var created = await _poRepository.AddAsync(parsedImport.PurchaseOrder);
         await _poRepository.SaveChangesAsync();
 
-        return Result<int>.Success(created.Id);
+        return Result<PurchaseOrderImportResultDto>.Success(new PurchaseOrderImportResultDto
+        {
+            PurchaseOrderId = created.Id,
+            ItemsImported = created.Items.Count,
+            ProductsCreated = parsedImport.ProductsCreated,
+            ProductsMatched = parsedImport.ProductsMatched,
+            RowsSkipped = parsedImport.RowsSkipped
+        });
     }
 
     public async Task<Result<bool>> DeleteAsync(int id)

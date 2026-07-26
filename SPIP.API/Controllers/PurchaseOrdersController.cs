@@ -52,16 +52,16 @@ public class PurchaseOrdersController : ControllerBase
 
     [HttpPost("import")]
     [Authorize(Policy = Permissions.POImports.Import)]
-    public async Task<ActionResult<ApiResponse<int>>> Import([FromForm] ImportPurchaseOrderRequest request)
+    public async Task<ActionResult<ApiResponse<PurchaseOrderImportResultDto>>> Import([FromForm] ImportPurchaseOrderRequest request)
     {
         if (request.File == null || request.File.Length == 0)
-            return BadRequest(ApiResponse<int>.FailureResponse("No file uploaded."));
+            return BadRequest(ApiResponse<PurchaseOrderImportResultDto>.FailureResponse("No file uploaded."));
 
         using var stream = request.File.OpenReadStream();
-        var result = await _poService.ImportFromExcelAsync(stream, request.File.FileName, request.VendorId, request.HasMixedVatRates);
+        var result = await _poService.ImportFromExcelAsync(stream, request.VendorId, request.HasMixedVatRates);
         return result.Succeeded
-            ? Ok(ApiResponse<int>.SuccessResponse(result.Data!, "Purchase order imported successfully."))
-            : BadRequest(ApiResponse<int>.FailureResponse(result.Error!));
+            ? Ok(ApiResponse<PurchaseOrderImportResultDto>.SuccessResponse(result.Data!, "Purchase order imported successfully."))
+            : BadRequest(ApiResponse<PurchaseOrderImportResultDto>.FailureResponse(result.Error!));
     }
 
     [HttpPost("import-preview")]

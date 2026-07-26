@@ -56,3 +56,7 @@ On startup, the system automatically seeds a default Admin account:
 Use the [manual test guide](docs/sprint3-ai-manual-test.md) and its
 [idempotent SQL fixture](scripts/sql/seed-sprint3-ai-demo.sql) to recreate the
 verified nine-item invoice reconciliation scenario.
+
+The Angular PO workflow, column-mapping contract, automatic product creation,
+and import response are documented in the
+[PO import frontend guide](docs/po-import-frontend-flow.md).
