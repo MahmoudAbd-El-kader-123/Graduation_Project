@@ -92,6 +92,12 @@ import { MessageService } from 'primeng/api';
                     icon="pi pi-arrow-left" 
                     (onClick)="onStepChange(2)">
                   </p-button>
+                  <p-button 
+                    label="Import Purchase Order" 
+                    icon="pi pi-check" 
+                    [loading]="store.savingMappings() || store.importing()"
+                    (onClick)="onImportClicked()">
+                  </p-button>
                 </div>
               }
             }
@@ -140,13 +146,21 @@ export class PoImportPageComponent implements OnDestroy {
         this.messageService.add({
             severity: 'warn',
             summary: 'Missing requirements',
-            detail: errors.join('\\n')
+            detail: errors.join('\n')
         });
 
         return;
     }
 
     this.onStepChange(2);
+  }
+  
+  async onImportClicked() {
+    try {
+      await this.store.importPurchaseOrder();
+    } catch (error) {
+      // Error handled by store toasts
+    }
   }
 
   ngOnDestroy() {

@@ -20,7 +20,7 @@ export interface ColumnMapping {
   excelColumn: string;
 }
 
-export const REQUIRED_SYSTEM_FIELDS = [
+export const SYSTEM_FIELDS = [
   'Product Name',
   'Barcode',
   'SKU Supplier',
@@ -33,7 +33,7 @@ export const REQUIRED_SYSTEM_FIELDS = [
   'Unit Type'
 ] as const;
 
-export type SystemField = typeof REQUIRED_SYSTEM_FIELDS[number];
+export type SystemField = typeof SYSTEM_FIELDS[number];
 
 export interface PoImportPayload {
   vendorId: string;

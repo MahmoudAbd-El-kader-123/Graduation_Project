@@ -59,27 +59,17 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
         permissions: [PERMISSIONS.products.view]
     },
     {
-        id: 'po-imports',
-        title: 'PO Imports',
+        id: 'purchase-orders',
+        title: 'Purchase Orders',
         icon: 'FileDown',
-        route: '/dashboard/po-imports',
+        route: '/dashboard/purchase-orders',
         group: 'Operations',
         showInSidebar: true,
         sidebarOrder: 5,
         homePriority: 5,
         permissions: [PERMISSIONS.poImports.view]
     },
-    {
-        id: 'vendor-mappings',
-        title: 'Vendor Mappings',
-        icon: 'GitMerge',
-        route: '/dashboard/vendor-mappings',
-        group: 'Operations',
-        showInSidebar: true,
-        sidebarOrder: 6,
-        homePriority: 6,
-        permissions: [PERMISSIONS.vendorMappings.view]
-    },
+
     {
         id: 'reports',
         title: 'Reports',

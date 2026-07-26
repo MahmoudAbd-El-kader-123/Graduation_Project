@@ -11,7 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { PoImportStoreService } from '../../services/po-import-store.service';
-import { PoImportApiService } from '../../services/po-import-api.service';
+import { PurchaseOrderApiService } from '../../../services/purchase-order-api.service';
 import { VendorService } from '../../../../vendors/services/vendor.service';
 import { Vendor } from '../../../../vendors/models/vendor.model';
 import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview-panel.component';
@@ -50,6 +50,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
           [filter]="true" 
           filterPlaceholder="Search vendors..."
           [loading]="loadingVendors()"
+          appendTo="body"
           styleClass="w-full sm:max-w-md">
         </p-select>
       </div>
@@ -93,7 +94,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
       </div>
 
       <!-- Preview Section -->
-      <div *ngIf="store.loading()" class="flex flex-col items-center justify-center p-12">
+      <div *ngIf="store.previewLoading()" class="flex flex-col items-center justify-center p-12">
         <p-progress-spinner styleClass="w-12 h-12" strokeWidth="4"></p-progress-spinner>
         <p class="mt-4 text-surface-600 font-medium">Extracting preview data...</p>
       </div>
@@ -106,7 +107,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
         </div>
       </div>
 
-      <div *ngIf="store.hasPreview()" class="flex flex-col gap-4 transition-opacity duration-200" [class.pointer-events-none]="store.loading()" [class.opacity-50]="store.loading()">
+      <div *ngIf="store.hasPreview()" class="flex flex-col gap-4 transition-opacity duration-200" [class.pointer-events-none]="store.previewLoading()" [class.opacity-50]="store.previewLoading()">
         
         <app-excel-preview-panel
           [data]="store.previewData()"
@@ -119,7 +120,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
 })
 export class UploadStepComponent implements OnInit {
   store = inject(PoImportStoreService);
-  private api = inject(PoImportApiService);
+  private api = inject(PurchaseOrderApiService);
   private vendorService = inject(VendorService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
@@ -196,10 +197,10 @@ export class UploadStepComponent implements OnInit {
     }
 
     this.errorMsg.set(null);
-    this.store.setLoading(true);
+    this.store.setPreviewLoading(true);
 
     this.api.previewImport(file).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.success && res.data) {
           // Robust fallback just in case the backend returns raw array on data
           if (Array.isArray(res.data)) {
@@ -216,11 +217,11 @@ export class UploadStepComponent implements OnInit {
           this.errorMsg.set(res.message || 'Failed to extract preview data from the file.');
           this.store.removeFile();
         }
-        this.store.setLoading(false);
+        this.store.setPreviewLoading(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.errorMsg.set(err.error?.message || 'Failed to extract preview data from the file.');
-        this.store.setLoading(false);
+        this.store.setPreviewLoading(false);
         this.store.removeFile(); // Reset on error
       }
     });

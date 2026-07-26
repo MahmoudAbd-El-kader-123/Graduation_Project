@@ -56,22 +56,14 @@ export const DASHBOARD_ROUTES: Routes = [
     loadChildren: () => import('../products/products.routes').then(m => m.PRODUCTS_ROUTES)
   },
   {
-    path: 'po-imports',
+    path: 'purchase-orders',
     data: {
-      title: 'PO Imports',
-      breadcrumb: 'PO Imports'
+      title: 'Purchase Orders',
+      breadcrumb: 'Purchase Orders'
     } as DashboardRouteData,
     loadChildren: () => import('../purchase-orders/purchase-orders.routes').then(m => m.PURCHASE_ORDERS_ROUTES)
   },
-  {
-    path: 'vendor-mappings',
-    canActivate: [accessGuard],
-    data: {
-      title: 'Vendor Mappings',
-      permissions: [PERMISSIONS.vendorMappings.view]
-    } as DashboardRouteData,
-    loadComponent: () => import('./pages/vendor-mappings/vendor-mappings.component').then(m => m.VendorMappingsComponent)
-  },
+
   {
     path: 'reports',
     canActivate: [accessGuard],

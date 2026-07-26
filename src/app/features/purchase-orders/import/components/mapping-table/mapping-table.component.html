@@ -1,0 +1,44 @@
+<p-table [value]="systemFields" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-sm">
+  <ng-template #header>
+    <tr>
+      <th class="w-1/2">System Field</th>
+      <th class="w-1/2">Excel Column</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-field>
+    <tr>
+      <td>
+        <span class="font-medium text-surface-900 dark:text-surface-0">{{ field.label }}</span>
+        <span *ngIf="field.required" class="text-red-500 ml-1" title="Required">*</span>
+      </td>
+      <td>
+        <ng-container *ngIf="!readonly; else readonlyView">
+          <p-select 
+            [options]="optionsPerField[field.id]" 
+            [ngModel]="localMappings[field.id]" 
+            (ngModelChange)="onMappingChange(field.id, $event)"
+            [filter]="true" 
+            filterBy="label" 
+            [showClear]="!field.required"
+            placeholder="Select Excel Column"
+            optionValue="value"
+            optionDisabled="disabled"
+            appendTo="body"
+            styleClass="w-full max-w-sm">
+            <ng-template let-option pTemplate="item">
+              <div class="flex items-center gap-2" [class.opacity-50]="option.disabled">
+                <span>{{ option.label }}</span>
+                <span *ngIf="option.disabled" class="text-xs text-red-500 ml-auto italic">(Mapped)</span>
+              </div>
+            </ng-template>
+          </p-select>
+        </ng-container>
+        <ng-template #readonlyView>
+          <span class="text-surface-600 dark:text-surface-300">
+            {{ getMappedHeader(field.id) }}
+          </span>
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

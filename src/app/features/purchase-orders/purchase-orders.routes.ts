@@ -5,17 +5,32 @@ import { PERMISSIONS } from '../../core/auth/constants/permissions';
 export const PURCHASE_ORDERS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'import',
-    pathMatch: 'full'
+    canActivate: [accessGuard],
+    data: {
+      title: 'Purchase Orders',
+      breadcrumb: 'Purchase Orders',
+      permissions: [PERMISSIONS.poImports.view] 
+    },
+    loadComponent: () => import('./pages/purchase-order-list/purchase-order-list.component').then(m => m.PurchaseOrderListComponent)
   },
   {
     path: 'import',
     canActivate: [accessGuard],
     data: {
-      title: 'Import PO',
-      breadcrumb: 'Import PO',
-      permissions: [PERMISSIONS.poImports.view] // Use the appropriate permission from constants
+      title: 'Import Purchase Order',
+      breadcrumb: 'Import',
+      permissions: [PERMISSIONS.poImports.view]
     },
     loadComponent: () => import('./import/pages/po-import-page/po-import-page.component').then(m => m.PoImportPageComponent)
+  },
+  {
+    path: ':id',
+    canActivate: [accessGuard],
+    data: {
+      title: 'Purchase Order Details',
+      breadcrumb: 'Details',
+      permissions: [PERMISSIONS.poImports.view]
+    },
+    loadComponent: () => import('./pages/purchase-order-details/purchase-order-details.component').then(m => m.PurchaseOrderDetailsComponent)
   }
 ];
