@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ProductService } from '../api/services/product.service';
 import { ProductStore } from '../stores/product.store';
-import { CreateProductRequest, UpdateProductRequest } from '../models/product.model';
+import { ProductRequest } from '../models/product.model';
 import { MessageService } from 'primeng/api';
 
 @Injectable()
@@ -85,7 +85,7 @@ export class ProductFacade {
     });
   }
 
-  createProduct(product: CreateProductRequest, router: any) {
+  createProduct(product: ProductRequest, router: any) {
     this.store.crud.setCreateLoading(true);
     this.service.createProduct(product).subscribe({
       next: (response) => {
@@ -97,14 +97,20 @@ export class ProductFacade {
         }
         this.store.crud.setCreateLoading(false);
       },
-      error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred' });
+      error: (err) => {
+        let detail = 'An error occurred';
+        if (err.status === 400) {
+          detail = err.error?.message || 'Validation error';
+        } else if (err.status === 404) {
+          detail = 'Product not found.';
+        }
+        this.messageService.add({ severity: 'error', summary: 'Error', detail });
         this.store.crud.setCreateLoading(false);
       }
     });
   }
 
-  updateProduct(id: number | string, product: UpdateProductRequest, router: any) {
+  updateProduct(id: number | string, product: ProductRequest, router: any) {
     this.store.crud.setUpdateLoading(true);
     this.service.updateProduct(id, product).subscribe({
       next: (response) => {
@@ -116,8 +122,14 @@ export class ProductFacade {
         }
         this.store.crud.setUpdateLoading(false);
       },
-      error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred' });
+      error: (err) => {
+        let detail = 'An error occurred';
+        if (err.status === 400) {
+          detail = err.error?.message || 'Validation error';
+        } else if (err.status === 404) {
+          detail = 'Product not found.';
+        }
+        this.messageService.add({ severity: 'error', summary: 'Error', detail });
         this.store.crud.setUpdateLoading(false);
       }
     });

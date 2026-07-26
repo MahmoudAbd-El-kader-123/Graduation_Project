@@ -2,11 +2,12 @@ import { Component, viewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopbarComponent } from './topbar/topbar.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-authenticated-layout',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, TopbarComponent],
+  imports: [RouterOutlet, SidebarComponent, TopbarComponent, ConfirmDialogModule],
   template: `
     <div class="flex h-screen w-full bg-surface-50 dark:bg-surface-950 overflow-hidden">
       <!-- Sidebar -->
@@ -25,6 +26,7 @@ import { TopbarComponent } from './topbar/topbar.component';
         </main>
       </div>
     </div>
+    <p-confirmdialog />
   `
 })
 export class AuthenticatedLayoutComponent {

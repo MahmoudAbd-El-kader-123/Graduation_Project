@@ -1,5 +1,4 @@
-export interface Product {
-    id: number;
+export interface ProductRequest {
     erpId: string;
     name: string;
     skuSupplier: string | null;
@@ -7,7 +6,6 @@ export interface Product {
     barcode: string | null;
     description: string | null;
     unitPrice: number;
-    uom: string | null;
+    uom: string;
     vendorId: number;
-    vendorName: string;
 }

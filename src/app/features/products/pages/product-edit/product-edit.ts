@@ -1,10 +1,12 @@
 import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductFacade } from '../../facades/product.facade';
 import { VendorLookupService } from '../../../../shared/lookups/services/vendor-lookup.service';
-import { PRODUCT_FORM_CONFIG } from '../../configs/product-form.config';
+import { PRODUCT_FORM_CONFIG, ProductFormControls } from '../../configs/product-form.config';
+import { ProductMapper } from '../../api/mappers/product.mapper';
+import { CanComponentDeactivate } from '../../../../core/guards/can-deactivate.interface';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -26,7 +28,7 @@ import { SkeletonModule } from 'primeng/skeleton';
   ],
   templateUrl: './product-edit.html'
 })
-export class ProductEditComponent implements OnInit {
+export class ProductEditComponent implements OnInit, CanComponentDeactivate {
   private readonly fb = inject(FormBuilder);
   readonly facade = inject(ProductFacade);
   readonly vendorLookup = inject(VendorLookupService);
@@ -35,22 +37,14 @@ export class ProductEditComponent implements OnInit {
 
   private productId: string | null = null;
 
-  form = this.fb.nonNullable.group(PRODUCT_FORM_CONFIG);
+  form = this.fb.group(PRODUCT_FORM_CONFIG) as unknown as FormGroup<ProductFormControls>;
 
   constructor() {
     effect(() => {
       const product = this.facade.selectedItem();
       if (product && product.id.toString() === this.productId) {
-        this.form.patchValue({
-          erpId: product.erpId,
-          name: product.name,
-          sku: product.sku,
-          barcode: product.barcode,
-          description: product.description,
-          unitPrice: product.unitPrice,
-          uom: product.uom,
-          vendorId: product.vendorId
-        });
+        ProductMapper.mapResponseToForm(product, this.form);
+        this.form.markAsPristine();
       }
     });
   }
@@ -65,12 +59,14 @@ export class ProductEditComponent implements OnInit {
     });
   }
 
+  canDeactivate(): boolean {
+    return !this.form.dirty;
+  }
+
   onSubmit() {
     if (this.form.valid && this.productId) {
-      const payload = {
-        id: this.productId,
-        ...this.form.getRawValue()
-      } as unknown as import('../../models/product.model').UpdateProductRequest;
+      const payload = ProductMapper.mapFormToRequest(this.form);
+      this.form.markAsPristine(); // Bypass dirty check on save
       this.facade.updateProduct(this.productId, payload, this.router);
     } else {
       this.form.markAllAsTouched();

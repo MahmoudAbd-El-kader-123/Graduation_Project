@@ -4,9 +4,7 @@ import { ApiService } from '../../../../shared/api/services/api.service';
 import { ApiResponse } from '../../../../shared/api/models/api-response.model';
 import { PagedResult } from '../../../../shared/api/models/paged-result.model';
 import { Product } from '../dtos/product-response.dto';
-import { CreateProductRequest } from '../dtos/create-product.dto';
-import { UpdateProductRequest } from '../dtos/update-product.dto';
-
+import { ProductRequest } from '../../models/product.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,11 +24,11 @@ export class ProductService {
     return this.apiService.get<ApiResponse<Product>>(`${this.baseUrl}/${id}`);
   }
 
-  createProduct(product: CreateProductRequest): Observable<ApiResponse<Product>> {
+  createProduct(product: ProductRequest): Observable<ApiResponse<Product>> {
     return this.apiService.post<ApiResponse<Product>>(this.baseUrl, product);
   }
 
-  updateProduct(id: number | string, product: UpdateProductRequest): Observable<ApiResponse<Product>> {
+  updateProduct(id: number | string, product: ProductRequest): Observable<ApiResponse<Product>> {
     return this.apiService.put<ApiResponse<Product>>(`${this.baseUrl}/${id}`, product);
   }
 

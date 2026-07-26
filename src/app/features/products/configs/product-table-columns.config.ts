@@ -1,7 +1,7 @@
 export const PRODUCT_TABLE_COLUMNS = [
   { field: 'erpId', header: 'ERP ID' },
   { field: 'name', header: 'Name' },
-  { field: 'sku', header: 'SKU' },
+  { field: 'skuSupplier', header: 'Supplier SKU' },
   { field: 'barcode', header: 'Barcode' },
   { field: 'description', header: 'Description' },
   { field: 'unitPrice', header: 'Unit Price' },
