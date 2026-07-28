@@ -60,3 +60,7 @@ verified nine-item invoice reconciliation scenario.
 The Angular PO workflow, column-mapping contract, automatic product creation,
 and import response are documented in the
 [PO import frontend guide](docs/po-import-frontend-flow.md).
+
+The Angular invoice upload, background-processing, reconciliation,
+discrepancy, and download contract is documented in the
+[invoice frontend guide](docs/invoice-frontend-flow.md).
