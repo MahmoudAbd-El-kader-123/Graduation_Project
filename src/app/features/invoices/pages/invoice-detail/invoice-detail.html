@@ -1,0 +1,186 @@
+<div class="p-6">
+
+  <!-- Header -->
+  <div class="flex items-center gap-4 mb-6">
+    <p-button
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      pTooltip="Back to Invoices"
+      (onClick)="goBack()"
+      aria-label="Back to invoices list">
+    </p-button>
+    <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Invoice Detail</h1>
+  </div>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-8 text-center">
+      <i class="pi pi-spin pi-spinner text-3xl text-surface-400"></i>
+      <p class="text-surface-500 mt-3">Loading invoice details…</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (!loading() && error()) {
+    <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-8 text-center">
+      <i class="pi pi-exclamation-triangle text-3xl text-red-400"></i>
+      <p class="text-red-500 mt-3">{{ error() }}</p>
+      <p-button label="Go Back" severity="secondary" outlined (onClick)="goBack()" class="mt-4"></p-button>
+    </div>
+  }
+
+  <!-- Invoice content -->
+  @if (!loading() && !error() && invoice()) {
+    <div class="space-y-6">
+
+      <!-- Summary card -->
+      <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+          <div>
+            <p class="text-sm text-surface-500 mb-1">Invoice Number</p>
+            <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{ invoice()!.invoiceNumber ?? '—' }}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <p-tag
+              [value]="invoice()!.status ?? 'Unknown'"
+              [severity]="getStatusSeverity(invoice()!.status)"
+              [rounded]="true"
+              styleClass="text-sm px-3 py-1">
+            </p-tag>
+            @if (facade.canDownload) {
+              <p-button
+                label="Download"
+                icon="pi pi-download"
+                severity="info"
+                outlined
+                [loading]="facade.downloadingId() === invoice()!.id"
+                (onClick)="downloadInvoice()">
+              </p-button>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t border-surface-100 dark:border-surface-800">
+          <div>
+            <p class="text-xs text-surface-400 uppercase tracking-wide">Vendor</p>
+            <p class="text-surface-800 dark:text-surface-200 font-medium mt-1">{{ invoice()!.vendorName ?? '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-surface-400 uppercase tracking-wide">Invoice Date</p>
+            <p class="text-surface-800 dark:text-surface-200 font-medium mt-1">{{ formatDate(invoice()!.invoiceDate) }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-surface-400 uppercase tracking-wide">Total Amount</p>
+            <p class="text-surface-800 dark:text-surface-200 font-medium mt-1">{{ formatAmount(invoice()!.totalAmount) }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-surface-400 uppercase tracking-wide">Uploaded At</p>
+            <p class="text-surface-800 dark:text-surface-200 font-medium mt-1">{{ formatDate(invoice()!.uploadedAt) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line items -->
+      @if (invoice()!.items && invoice()!.items!.length > 0) {
+        <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Line Items</h2>
+          <p-table [value]="invoice()!.items!" [tableStyle]="{ 'min-width': '40rem' }">
+            <ng-template #header>
+              <tr>
+                <th>Supplier SKU</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Line Total</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-item>
+              <tr>
+                <td>{{ item.supplierSku ?? '—' }}</td>
+                <td>{{ item.description ?? '—' }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ formatAmount(item.unitPrice) }}</td>
+                <td class="font-medium">{{ formatAmount(item.lineTotal) }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      }
+
+      <!-- Discrepancies -->
+      @if (invoice()!.discrepancies && invoice()!.discrepancies!.length > 0) {
+        <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Discrepancies</h2>
+          <p-table [value]="invoice()!.discrepancies!" [tableStyle]="{ 'min-width': '40rem' }">
+            <ng-template #header>
+              <tr>
+                <th>Type</th>
+                <th>Field</th>
+                <th>Expected</th>
+                <th>Actual</th>
+                <th>Resolved</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-d>
+              <tr>
+                <td>{{ d.discrepancyType ?? '—' }}</td>
+                <td>{{ d.fieldName ?? '—' }}</td>
+                <td>{{ d.expectedValue ?? '—' }}</td>
+                <td>{{ d.actualValue ?? '—' }}</td>
+                <td>
+                  <p-tag
+                    [value]="d.isResolved ? 'Resolved' : 'Open'"
+                    [severity]="d.isResolved ? 'success' : 'warn'"
+                    [rounded]="true">
+                  </p-tag>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      }
+
+      <!-- Processing logs -->
+      @if (invoice()!.processingLogs && invoice()!.processingLogs!.length > 0) {
+        <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Processing History</h2>
+          <p-table [value]="invoice()!.processingLogs!" [tableStyle]="{ 'min-width': '40rem' }">
+            <ng-template #header>
+              <tr>
+                <th>Timestamp</th>
+                <th>Event</th>
+                <th>From Status</th>
+                <th>To Status</th>
+                <th>Message</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-log>
+              <tr>
+                <td class="text-sm">{{ formatDate(log.timestamp) }}</td>
+                <td>{{ log.eventType ?? '—' }}</td>
+                <td>
+                  @if (log.fromStatus) {
+                    <p-tag [value]="log.fromStatus" [severity]="getStatusSeverity(log.fromStatus)" [rounded]="true"></p-tag>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+                <td>
+                  @if (log.toStatus) {
+                    <p-tag [value]="log.toStatus" [severity]="getStatusSeverity(log.toStatus)" [rounded]="true"></p-tag>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+                <td class="text-sm text-surface-600 dark:text-surface-400">{{ log.message ?? '—' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      }
+
+    </div>
+  }
+</div>

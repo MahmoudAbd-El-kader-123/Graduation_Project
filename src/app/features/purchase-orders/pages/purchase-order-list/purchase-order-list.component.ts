@@ -19,6 +19,8 @@ import { LoadingSkeletonComponent } from '../../../../shared/table/components/lo
 import { ErrorStateComponent } from '../../../../shared/table/components/error-state/error-state';
 import { DeleteConfirmationComponent } from '../../../../shared/dialogs/components/delete-confirmation/delete-confirmation';
 
+import { InvoiceUploadContextService } from '../../../invoices/services/invoice-upload-context.service';
+
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
@@ -41,6 +43,7 @@ export class PurchaseOrderListComponent implements OnInit {
   store = inject(PurchaseOrderStoreService);
   authService = inject(AuthService);
   router = inject(Router);
+  uploadContextService = inject(InvoiceUploadContextService);
 
   columns = [
     { field: 'orderNumber', header: 'Order Number' },
@@ -51,15 +54,21 @@ export class PurchaseOrderListComponent implements OnInit {
     { field: 'requestedBy', header: 'Requested By' }
   ];
   
-  canImport = this.authService.hasPermission(PERMISSIONS.poImports.view);
+  canImport = this.authService.hasPermission(PERMISSIONS.poImports.import);
   canViewDetails = this.authService.hasPermission(PERMISSIONS.poImports.view);
   canDelete = this.authService.hasPermission(PERMISSIONS.poImports.delete);
+  canUploadInvoice = this.authService.hasPermission(PERMISSIONS.invoices.upload);
 
+  // Modal State
   deleteDialogVisible = false;
+  selectedPoIdToDelete: string | null = null;
   purchaseOrderToDelete: string | null = null;
 
-  ngOnInit() {
+  constructor() {
     this.store.loadPurchaseOrders();
+  }
+
+  ngOnInit() {
   }
 
   onImport() {
@@ -68,6 +77,11 @@ export class PurchaseOrderListComponent implements OnInit {
 
   onViewDetails(id: string) {
     this.router.navigate(['/dashboard/purchase-orders', id]);
+  }
+
+  onUploadInvoice(po: PurchaseOrder) {
+    this.uploadContextService.setPurchaseOrder(po);
+    this.router.navigate(['/dashboard/invoices']);
   }
 
   confirmDelete(id: string) {

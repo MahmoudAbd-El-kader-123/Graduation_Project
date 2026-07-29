@@ -15,6 +15,9 @@ import { LucideAngularModule, ArrowLeft, Download, Printer, FileDown } from 'luc
 
 import { EmptyStateComponent } from '../../../../shared/table/components/empty-state/empty-state';
 import { ErrorStateComponent } from '../../../../shared/table/components/error-state/error-state';
+import { AuthService } from '../../../../core/auth/services/auth.service';
+import { PERMISSIONS } from '../../../../core/auth/constants/permissions';
+import { InvoiceUploadContextService } from '../../../invoices/services/invoice-upload-context.service';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -38,8 +41,12 @@ export class PurchaseOrderDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private authService = inject(AuthService);
+  private uploadContextService = inject(InvoiceUploadContextService);
 
   readonly icons = { ArrowLeft, Download, Printer, FileDown };
+
+  canUploadInvoice = this.authService.hasPermission(PERMISSIONS.invoices.upload);
 
   ngOnInit() {
     this.route.paramMap
@@ -77,6 +84,14 @@ export class PurchaseOrderDetailsComponent implements OnInit {
       case PurchaseOrderStatus.Fulfilled: return 'info';
       case PurchaseOrderStatus.Cancelled: return 'danger';
       default: return 'secondary';
+    }
+  }
+
+  onUploadInvoice() {
+    const po = this.store.selectedPurchaseOrder();
+    if (po) {
+      this.uploadContextService.setPurchaseOrder(po);
+      this.router.navigate(['/dashboard/invoices']);
     }
   }
 }

@@ -1,0 +1,383 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Invoices</h1>
+  </div>
+
+  <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
+
+    <!-- Toolbar: Refresh + Upload only (search hidden until backend adds SearchTerm) -->
+    <div class="flex justify-end items-center gap-2 mb-4">
+      <p-button
+        icon="pi pi-refresh"
+        [loading]="facade.loading()"
+        [disabled]="facade.loading()"
+        (onClick)="facade.refresh()"
+        severity="secondary"
+        outlined
+        pTooltip="Refresh">
+      </p-button>
+
+      @if (facade.canUpload) {
+        <p-button
+          id="uploadInvoiceBtn"
+          label="Upload Invoice"
+          icon="pi pi-upload"
+          (onClick)="openUploadDialog()">
+        </p-button>
+      }
+    </div>
+
+    <!-- Table states -->
+    @switch (facade.state()) {
+      @case ('loading') {
+        <app-loading-skeleton [columns]="columns.length + 1" [rows]="facade.pageSize()"></app-loading-skeleton>
+      }
+
+      @case ('empty') {
+        <app-empty-state
+          [isSearch]="false"
+          emptyMessage="No invoices found."
+          searchEmptyMessage="No invoices match your search.">
+        </app-empty-state>
+      }
+
+      @case ('error') {
+        <app-error-state></app-error-state>
+      }
+
+      @case ('data') {
+        <p-table [value]="facade.items()" [tableStyle]="{ 'min-width': '60rem' }" dataKey="id">
+          <ng-template #header>
+            <tr>
+              @for (col of columns; track col.field) {
+                <th>{{ col.header }}</th>
+              }
+              <th class="w-32 text-center">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template #body let-invoice>
+            <tr>
+              <!-- Invoice Number -->
+              <td class="font-medium">{{ invoice.invoiceNumber ?? '—' }}</td>
+
+              <!-- Vendor -->
+              <td>{{ invoice.vendorName ?? '—' }}</td>
+
+              <!-- Status badge -->
+              <td>
+                <p-tag
+                  [value]="invoice.status ?? 'Unknown'"
+                  [severity]="getStatusSeverity(invoice.status)"
+                  [rounded]="true">
+                </p-tag>
+              </td>
+
+              <!-- Invoice Date -->
+              <td>{{ formatDate(invoice.invoiceDate) }}</td>
+
+              <!-- Total Amount -->
+              <td>{{ formatAmount(invoice.totalAmount) }}</td>
+
+              <!-- Uploaded At -->
+              <td>{{ formatDate(invoice.uploadedAt) }}</td>
+
+              <!-- Uploaded By -->
+              <td class="text-sm text-surface-600 dark:text-surface-400">
+                {{ invoice.uploadedByUserEmail ?? '—' }}
+              </td>
+
+              <!-- Actions -->
+              <td>
+                <div class="flex gap-1 justify-center">
+                  <!-- View Detail -->
+                  <p-button
+                    icon="pi pi-eye"
+                    severity="secondary"
+                    [rounded]="true"
+                    [text]="true"
+                    pTooltip="View Details"
+                    (onClick)="viewDetail(invoice)">
+                  </p-button>
+
+                  <!-- Download -->
+                  @if (facade.canDownload) {
+                    <p-button
+                      icon="pi pi-download"
+                      severity="info"
+                      [rounded]="true"
+                      [text]="true"
+                      [loading]="isDownloading(invoice.id)"
+                      [disabled]="facade.downloadingId() !== null"
+                      pTooltip="Download Invoice"
+                      (onClick)="downloadInvoice(invoice)">
+                    </p-button>
+                  }
+                </div>
+
+                <!-- Last error indicator -->
+                @if (invoice.lastError) {
+                  <div class="flex justify-center mt-1">
+                    <span
+                      class="text-xs text-red-500 cursor-help"
+                      [pTooltip]="invoice.lastError"
+                      tooltipPosition="left">
+                      <i class="pi pi-exclamation-triangle mr-1"></i>Error
+                    </span>
+                  </div>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <app-pagination
+          class="mt-4 block"
+          [totalCount]="facade.totalCount()"
+          [pageNumber]="facade.pageNumber()"
+          [pageSize]="facade.pageSize()"
+          (pageChange)="facade.setPage($event.pageNumber, $event.pageSize)">
+        </app-pagination>
+      }
+    }
+  </div>
+</div>
+
+<!-- ── Upload Invoice Dialog ──────────────────────────────────────────── -->
+<p-dialog
+  header="Upload Invoice"
+  [visible]="uploadDialogVisible()"
+  (visibleChange)="uploadDialogVisible.set($event)"
+  [modal]="true"
+  [closable]="!facade.uploadLoading()"
+  [style]="{ width: '540px' }"
+  [draggable]="false"
+  [resizable]="false">
+
+  <div class="space-y-5 pt-2">
+
+    <!-- ── Purchase Order Selector ──────────────────────────────── -->
+    <div class="flex flex-col gap-2">
+      @if (!contextPo()) {
+        <label for="purchaseOrderSearch" class="font-medium text-surface-700 dark:text-surface-200">
+          Purchase Order <span class="text-red-500">*</span>
+        </label>
+
+      <p-autocomplete
+        inputId="purchaseOrderSearch"
+        [ngModel]="selectedPurchaseOrder()"
+        (ngModelChange)="selectedPurchaseOrder.set($event)"
+        [suggestions]="poLookup.suggestions()"
+        (completeMethod)="searchPurchaseOrders($event)"
+        (onClear)="onPOCleared()"
+        optionLabel="orderNumber"
+        placeholder="Search by order number or vendor..."
+        [showClear]="true"
+        [forceSelection]="true"
+        [completeOnFocus]="true"
+        [dropdown]="true"
+        [class]="poInvalid ? 'ng-invalid ng-dirty w-full block' : 'w-full block'"
+        [inputStyle]="{ width: '100%' }">
+
+        <!-- Rich option template -->
+        <ng-template #item let-po>
+          <div class="flex flex-col gap-0.5 py-1">
+            <span class="font-semibold text-surface-900 dark:text-surface-0">{{ po.orderNumber }}</span>
+            <span class="text-sm text-surface-600 dark:text-surface-400">{{ po.vendorName }}</span>
+            <div class="flex items-center gap-2 mt-0.5">
+              <p-tag
+                [value]="getPOStatusLabel(po.status)"
+                [severity]="getPOStatusSeverity(po.status)"
+                [rounded]="true"
+                styleClass="text-xs !py-0">
+              </p-tag>
+              <span class="text-xs text-surface-400">{{ formatDate(po.orderDate) }}</span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Empty state -->
+        <ng-template #empty>
+          <div class="p-4 text-center">
+            @if (poLookup.loading()) {
+              <p class="text-surface-500 text-sm">Loading purchase orders…</p>
+            } @else {
+              <div class="flex flex-col items-center gap-3">
+                <i class="pi pi-inbox text-2xl text-surface-400"></i>
+                <div>
+                  <p class="text-surface-600 dark:text-surface-400 text-sm font-medium">No Purchase Orders found.</p>
+                  <p class="text-surface-400 text-xs mt-1">Import a Purchase Order before uploading an invoice.</p>
+                </div>
+                <p-button
+                  label="Go to Purchase Orders"
+                  icon="pi pi-arrow-right"
+                  severity="secondary"
+                  outlined
+                  size="small"
+                  (onClick)="goToPurchaseOrders()">
+                </p-button>
+              </div>
+            }
+          </div>
+        </ng-template>
+      </p-autocomplete>
+
+        <!-- PO validation message -->
+        @if (poInvalid) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle"></i>
+            Purchase Order is required.
+          </small>
+        }
+      }
+
+      <!-- ── Selected PO summary card ─────────────────────────── -->
+      @if (selectedPurchaseOrder()) {
+        <div class="rounded-lg border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950 p-3 mt-1">
+          <p class="text-xs text-primary-500 uppercase tracking-wide font-medium mb-2">Selected Purchase Order</p>
+          <div class="grid grid-cols-3 gap-3 text-sm">
+            <div>
+              <p class="text-xs text-surface-400 mb-0.5">Order Number</p>
+              <p class="font-semibold text-surface-900 dark:text-surface-0">{{ selectedPurchaseOrder()!.orderNumber }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-surface-400 mb-0.5">Vendor</p>
+              <p class="font-medium text-surface-700 dark:text-surface-200">{{ selectedPurchaseOrder()!.vendorName }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-surface-400 mb-1">Status</p>
+              <p-tag
+                [value]="getPOStatusLabel(selectedPurchaseOrder()!.status)"
+                [severity]="getPOStatusSeverity(selectedPurchaseOrder()!.status)"
+                [rounded]="true"
+                styleClass="text-xs">
+              </p-tag>
+            </div>
+            <div class="col-span-3">
+              <p class="text-xs text-surface-400 mb-0.5">Order Date</p>
+              <p class="font-medium text-surface-700 dark:text-surface-200">{{ formatDate(selectedPurchaseOrder()!.orderDate) }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Invoice File ──────────────────────────────────────────── -->
+    <div class="flex flex-col gap-2">
+      <label class="font-medium text-surface-700 dark:text-surface-200">
+        Invoice File <span class="text-red-500">*</span>
+      </label>
+
+      @if (!selectedFile()) {
+        <!-- Drop zone -->
+        <div
+          class="border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer"
+          [class.border-primary-400]="isDragOver()"
+          [class.bg-primary-50]="isDragOver()"
+          [class.dark:bg-primary-950]="isDragOver()"
+          [class.border-red-400]="fileInvalid"
+          [class.border-surface-300]="!isDragOver() && !fileInvalid"
+          [class.dark:border-surface-600]="!isDragOver() && !fileInvalid"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+          role="button"
+          tabindex="0"
+          aria-label="Drop invoice file here or click to browse"
+          (keydown.enter)="fileInput.click()"
+          (keydown.space)="fileInput.click()">
+
+          <div class="flex flex-col items-center gap-3 pointer-events-none">
+            <div class="w-14 h-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+              <i class="pi pi-cloud-upload text-2xl text-primary-600 dark:text-primary-400"></i>
+            </div>
+            <div>
+              <p class="text-surface-700 dark:text-surface-200 font-medium">Drag & drop your invoice here</p>
+              <p class="text-surface-500 text-sm mt-1">or click to browse</p>
+            </div>
+            <div class="flex gap-2 flex-wrap justify-center">
+              <span class="px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs font-mono text-surface-600 dark:text-surface-400">.pdf</span>
+              <span class="px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs font-mono text-surface-600 dark:text-surface-400">.xml</span>
+              <span class="px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs font-mono text-surface-600 dark:text-surface-400">.zip</span>
+            </div>
+            <p class="text-surface-400 text-xs">Maximum size: 20 MB</p>
+          </div>
+        </div>
+      } @else {
+        <!-- Selected file preview -->
+        <div class="border border-surface-200 dark:border-surface-700 rounded-xl p-4 flex items-center gap-3 bg-surface-50 dark:bg-surface-800">
+          <div class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900 flex items-center justify-center flex-shrink-0">
+            <i [class]="getFileIcon(selectedFile()!.name) + ' text-primary-600 dark:text-primary-400'"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">{{ selectedFile()!.name }}</p>
+            <p class="text-xs text-surface-500 mt-0.5">{{ formatFileSize(selectedFile()!.size) }}</p>
+          </div>
+          <p-button
+            icon="pi pi-times"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            pTooltip="Remove file"
+            (onClick)="removeFile()"
+            aria-label="Remove selected file">
+          </p-button>
+        </div>
+
+        <!-- Replace file link -->
+        <button
+          type="button"
+          class="text-sm text-primary-600 dark:text-primary-400 hover:underline text-left"
+          (click)="fileInput.click()">
+          Replace file
+        </button>
+      }
+
+      <!-- File error -->
+      @if (fileError()) {
+        <small class="text-red-500 flex items-center gap-1">
+          <i class="pi pi-exclamation-circle"></i>
+          {{ fileError() }}
+        </small>
+      }
+
+      <!-- File validation message -->
+      @if (fileInvalid && !fileError()) {
+        <small class="text-red-500 flex items-center gap-1">
+          <i class="pi pi-exclamation-circle"></i>
+          Invoice file is required.
+        </small>
+      }
+
+      <!-- Hidden file input -->
+      <input
+        #fileInput
+        type="file"
+        accept=".pdf,.xml,.zip"
+        class="hidden"
+        (change)="onFileSelect($event)"
+        aria-hidden="true" />
+    </div>
+  </div>
+
+  <!-- Dialog footer -->
+  <ng-template #footer>
+    <div class="flex gap-2 justify-end pt-2">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        outlined
+        [disabled]="facade.uploadLoading()"
+        (onClick)="closeUploadDialog()">
+      </p-button>
+      <p-button
+        label="Upload"
+        icon="pi pi-upload"
+        [loading]="facade.uploadLoading()"
+        [disabled]="facade.uploadLoading()"
+        (onClick)="submitUpload()">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

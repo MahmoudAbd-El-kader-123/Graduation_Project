@@ -19,7 +19,7 @@ export const PURCHASE_ORDERS_ROUTES: Routes = [
     data: {
       title: 'Import Purchase Order',
       breadcrumb: 'Import',
-      permissions: [PERMISSIONS.poImports.view]
+      permissions: [PERMISSIONS.poImports.import]
     },
     loadComponent: () => import('./import/pages/po-import-page/po-import-page.component').then(m => m.PoImportPageComponent)
   },

@@ -12,6 +12,7 @@
     </div>
     
     <div class="flex gap-2">
+      <p-button *ngIf="canUploadInvoice" label="Upload Invoice" icon="pi pi-upload" severity="primary" (onClick)="onUploadInvoice()"></p-button>
       <p-button label="Download" icon="pi pi-download" severity="secondary" [disabled]="true" pTooltip="Coming Soon" tooltipPosition="bottom"></p-button>
       <p-button label="Print" icon="pi pi-print" severity="secondary" [disabled]="true" pTooltip="Coming Soon" tooltipPosition="bottom"></p-button>
       <p-button label="Export PDF" icon="pi pi-file-pdf" severity="secondary" [disabled]="true" pTooltip="Coming Soon" tooltipPosition="bottom"></p-button>

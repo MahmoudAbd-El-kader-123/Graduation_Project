@@ -30,7 +30,11 @@ import {
   ChartColumn,
   UserCheck,
   UserX,
-  Key
+  Key,
+  FileUp,
+  Download,
+  Receipt,
+  Eye
 } from 'lucide-angular';
 
 export const APP_LUCIDE_ICONS = {
@@ -65,7 +69,11 @@ export const APP_LUCIDE_ICONS = {
   ChartColumn,
   UserCheck,
   UserX,
-  Key
+  Key,
+  FileUp,
+  Download,
+  Receipt,
+  Eye
 };
 
 export type AppIcon = keyof typeof APP_LUCIDE_ICONS;

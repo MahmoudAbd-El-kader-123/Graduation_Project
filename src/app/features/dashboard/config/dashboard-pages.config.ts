@@ -71,6 +71,17 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     },
 
     {
+        id: 'invoices',
+        title: 'Invoices',
+        icon: 'Receipt',
+        route: '/dashboard/invoices',
+        group: 'Operations',
+        showInSidebar: true,
+        sidebarOrder: 6,
+        homePriority: 6,
+        permissions: [PERMISSIONS.invoices.view]
+    },
+    {
         id: 'reports',
         title: 'Reports',
         icon: 'ChartColumn',

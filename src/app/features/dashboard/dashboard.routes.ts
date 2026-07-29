@@ -65,6 +65,15 @@ export const DASHBOARD_ROUTES: Routes = [
   },
 
   {
+    path: 'invoices',
+    data: {
+      title: 'Invoices',
+      breadcrumb: 'Invoices'
+    } as DashboardRouteData,
+    loadChildren: () => import('../invoices/invoices.routes').then(m => m.INVOICES_ROUTES)
+  },
+
+  {
     path: 'reports',
     canActivate: [accessGuard],
     data: {

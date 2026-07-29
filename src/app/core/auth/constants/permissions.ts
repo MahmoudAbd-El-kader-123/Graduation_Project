@@ -40,6 +40,12 @@ export const PERMISSIONS = {
     },
     reports: {
         view: 'reports.view'
+    },
+    invoices: {
+        view: 'Invoices.View',
+        upload: 'Invoices.Upload',
+        download: 'Invoices.Download',
+        viewAll: 'Invoices.ViewAll'
     }
 } as const;
 

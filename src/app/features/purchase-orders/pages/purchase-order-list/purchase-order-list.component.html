@@ -47,7 +47,7 @@
               </td>
               <td>{{ (po.orderDate | date) || '-' }}</td>
               <td>{{ po.totalAmount !== null ? (po.totalAmount | currency) : '-' }}</td>
-              <td>{{ po.requestedBy || '-' }}</td>
+              <td>{{ po.requestedByUserName || po.requestedBy || '-' }}</td>
               <td>
                 <div class="flex gap-2 justify-center">
                   <p-button 
@@ -58,6 +58,15 @@
                     [text]="true" 
                     pTooltip="View Details"
                     (onClick)="onViewDetails(po.id)">
+                  </p-button>
+                  <p-button 
+                    *ngIf="canUploadInvoice"
+                    icon="pi pi-upload" 
+                    severity="secondary" 
+                    [rounded]="true" 
+                    [text]="true" 
+                    pTooltip="Upload Invoice"
+                    (onClick)="onUploadInvoice(po)">
                   </p-button>
                   <p-button 
                     *ngIf="canDelete"
