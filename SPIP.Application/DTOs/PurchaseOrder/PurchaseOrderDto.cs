@@ -31,6 +31,7 @@ public class PurchaseOrderItemDto
 
 public class PurchaseOrderParameters : PaginationRequest
 {
+    public string? SearchTerm { get; set; }
     public string? OrderNumber { get; set; }
     public int? VendorId { get; set; }
     public PurchaseOrderStatus? Status { get; set; }

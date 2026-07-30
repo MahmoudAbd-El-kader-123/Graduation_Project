@@ -199,3 +199,20 @@ export interface PurchaseOrderImportResult {
 | Other HTTP `400` | Display the API `message` and preserve the selected file/mappings |
 
 Do not navigate away from the import page until `success` is `true`.
+
+## Search and filter purchase orders
+
+Use the existing paginated list endpoint:
+
+```http
+GET /api/purchase-orders?searchTerm=technology&vendorId=1&status=Draft&pageNumber=1&pageSize=10
+```
+
+`searchTerm` performs a partial, case-insensitive search across:
+
+- PO number;
+- vendor name.
+
+The existing `orderNumber` parameter remains available when the UI needs to
+filter only by PO number. `vendorId` and `status` are exact filters. Angular
+should reset `pageNumber` to `1` whenever the search term or a filter changes.

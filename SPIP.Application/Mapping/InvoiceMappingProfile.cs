@@ -37,6 +37,9 @@ public class InvoiceMappingProfile : Profile
         CreateMap<Invoice, InvoiceListItemDto>()
             .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
             .ForMember(d => d.UploadedAt, opt => opt.MapFrom(s => s.CreatedAt))
+            .ForMember(d => d.PurchaseOrderNumber, opt => opt.MapFrom(s => s.PurchaseOrder != null ? s.PurchaseOrder.OrderNumber : string.Empty))
+            .ForMember(d => d.DiscrepancyCount, opt => opt.MapFrom(s => s.Discrepancies.Count))
+            .ForMember(d => d.HasDiscrepancies, opt => opt.MapFrom(s => s.Discrepancies.Count > 0))
             .ForMember(d => d.UploadedByUserEmail, opt => opt.MapFrom(s => s.UploadedByUser != null ? s.UploadedByUser.Email : null));
     }
 }

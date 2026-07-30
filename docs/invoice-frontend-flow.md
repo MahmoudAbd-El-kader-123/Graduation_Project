@@ -289,11 +289,21 @@ downloadInvoice(invoiceId: number, fileName: string): void {
 ## 7. Administrator invoice list
 
 ```http
-GET /api/invoices?status=Completed&pageNumber=1&pageSize=10
+GET /api/invoices?searchTerm=2602506&vendorId=1&status=Completed&hasDiscrepancies=true&pageNumber=1&pageSize=10
 ```
 
-`status` is optional. `pageNumber` is normalized to at least `1`, and
-`pageSize` is limited to `1` through `50`.
+All filters are optional:
+
+| Parameter | Behavior |
+|---|---|
+| `searchTerm` | Partial, case-insensitive search over invoice number, vendor name, and PO number |
+| `vendorId` | Exact vendor ID |
+| `purchaseOrderId` | Exact PO ID |
+| `status` | Invoice status name |
+| `hasDiscrepancies` | `true` for invoices with discrepancies; `false` for invoices without them |
+| `pageNumber` | Normalized to at least `1` |
+| `pageSize` | Limited to `1` through `50` |
+
 Use one of the documented invoice status names for filtering. An unrecognized
 status is currently ignored rather than returned as an error.
 
@@ -308,9 +318,13 @@ Example response shape:
       {
         "id": 17,
         "invoiceNumber": "2602506000004",
+        "purchaseOrderId": 42,
+        "purchaseOrderNumber": "PO2600514032",
         "vendorName": "Vendor name",
         "status": "Completed",
         "totalAmount": 5294.16,
+        "discrepancyCount": 1,
+        "hasDiscrepancies": true,
         "invoiceDate": "2026-06-25T00:00:00",
         "uploadedAt": "2026-07-28T10:00:00Z",
         "uploadedByUserEmail": "user@example.com",
@@ -329,7 +343,8 @@ Example response shape:
 ```
 
 This endpoint requires the `Invoices.ViewAll` policy. Use the detail endpoint
-after selecting a row.
+after selecting a row. Angular should reset `pageNumber` to `1` whenever the
+search term or a filter changes.
 
 ## Suggested TypeScript contracts
 

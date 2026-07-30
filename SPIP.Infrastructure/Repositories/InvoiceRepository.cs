@@ -40,13 +40,12 @@ public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
         var query = DbSet
             .Include(i => i.UploadedByUser)
             .Include(i => i.ProcessingLogs)
+            .Include(i => i.PurchaseOrder)
+            .Include(i => i.Discrepancies)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(parameters.Status) &&
-            Enum.TryParse<InvoiceStatus>(parameters.Status, true, out var status))
-        {
-            query = query.Where(i => i.Status == status);
-        }
+        query = ApplySearch(query, parameters.SearchTerm);
+        query = ApplyFilters(query, parameters);
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
@@ -56,6 +55,50 @@ public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
             .ToListAsync(cancellationToken);
 
         return (items, totalCount);
+    }
+
+    private static IQueryable<Invoice> ApplySearch(
+        IQueryable<Invoice> query,
+        string? searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return query;
+
+        var normalizedSearchTerm = searchTerm.ToLower();
+        return query.Where(invoice =>
+            invoice.InvoiceNumber.ToLower().Contains(normalizedSearchTerm) ||
+            invoice.VendorName.ToLower().Contains(normalizedSearchTerm) ||
+            (invoice.PurchaseOrder != null &&
+             invoice.PurchaseOrder.OrderNumber.ToLower().Contains(normalizedSearchTerm)));
+    }
+
+    private static IQueryable<Invoice> ApplyFilters(
+        IQueryable<Invoice> query,
+        InvoiceListParameters parameters)
+    {
+        if (!string.IsNullOrWhiteSpace(parameters.Status) &&
+            Enum.TryParse<InvoiceStatus>(parameters.Status, true, out var status))
+            query = query.Where(invoice => invoice.Status == status);
+
+        if (parameters.VendorId.HasValue)
+            query = query.Where(invoice => invoice.VendorId == parameters.VendorId.Value);
+
+        if (parameters.PurchaseOrderId.HasValue)
+            query = query.Where(invoice => invoice.PurchaseOrderId == parameters.PurchaseOrderId.Value);
+
+        return ApplyDiscrepancyFilter(query, parameters.HasDiscrepancies);
+    }
+
+    private static IQueryable<Invoice> ApplyDiscrepancyFilter(
+        IQueryable<Invoice> query,
+        bool? hasDiscrepancies)
+    {
+        if (!hasDiscrepancies.HasValue)
+            return query;
+
+        return hasDiscrepancies.Value
+            ? query.Where(invoice => invoice.Discrepancies.Any())
+            : query.Where(invoice => !invoice.Discrepancies.Any());
     }
 
     public async Task<IReadOnlyList<Invoice>> GetByUserIdAsync(int userId, CancellationToken cancellationToken = default)

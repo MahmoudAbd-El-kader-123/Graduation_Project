@@ -4,9 +4,13 @@ public class InvoiceListItemDto
 {
     public int Id { get; set; }
     public string InvoiceNumber { get; set; } = string.Empty;
+    public int PurchaseOrderId { get; set; }
+    public string PurchaseOrderNumber { get; set; } = string.Empty;
     public string VendorName { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
+    public int DiscrepancyCount { get; set; }
+    public bool HasDiscrepancies { get; set; }
     public DateTime InvoiceDate { get; set; }
     public DateTime UploadedAt { get; set; }
     public string? UploadedByUserEmail { get; set; }

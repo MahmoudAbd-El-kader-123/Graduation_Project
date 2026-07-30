@@ -12,35 +12,53 @@ public class PurchaseOrderRepository : GenericRepository<PurchaseOrder>, IPurcha
     {
     }
 
-    public async Task<(IReadOnlyList<PurchaseOrder> Items, int TotalCount)> GetPagedAsync(PurchaseOrderParameters p)
+    public async Task<(IReadOnlyList<PurchaseOrder> Items, int TotalCount)> GetPagedAsync(PurchaseOrderParameters parameters)
     {
         var query = DbSet.Include(x => x.Vendor).Include(x => x.RequestedByUser).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(p.OrderNumber))
-        {
-            var search = p.OrderNumber.ToLower();
-            query = query.Where(v => v.OrderNumber.ToLower().Contains(search));
-        }
-
-        if (p.VendorId.HasValue)
-        {
-            query = query.Where(v => v.VendorId == p.VendorId.Value);
-        }
-
-        if (p.Status.HasValue)
-        {
-            query = query.Where(v => v.Status == p.Status.Value);
-        }
+        query = ApplySearch(query, parameters);
+        query = ApplyFilters(query, parameters);
 
         var totalCount = await query.CountAsync();
 
-        var items = await query
+        var purchaseOrders = await query
             .OrderByDescending(v => v.Id)
-            .Skip((p.PageNumber - 1) * p.PageSize)
-            .Take(p.PageSize)
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
             .ToListAsync();
 
-        return (items, totalCount);
+        return (purchaseOrders, totalCount);
+    }
+
+    private static IQueryable<PurchaseOrder> ApplySearch(
+        IQueryable<PurchaseOrder> query,
+        PurchaseOrderParameters parameters)
+    {
+        if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+        {
+            var searchTerm = parameters.SearchTerm.ToLower();
+            query = query.Where(po =>
+                po.OrderNumber.ToLower().Contains(searchTerm) ||
+                (po.Vendor != null && po.Vendor.Name.ToLower().Contains(searchTerm)));
+        }
+
+        if (string.IsNullOrWhiteSpace(parameters.OrderNumber))
+            return query;
+
+        var orderNumber = parameters.OrderNumber.ToLower();
+        return query.Where(po => po.OrderNumber.ToLower().Contains(orderNumber));
+    }
+
+    private static IQueryable<PurchaseOrder> ApplyFilters(
+        IQueryable<PurchaseOrder> query,
+        PurchaseOrderParameters parameters)
+    {
+        if (parameters.VendorId.HasValue)
+            query = query.Where(po => po.VendorId == parameters.VendorId.Value);
+
+        if (parameters.Status.HasValue)
+            query = query.Where(po => po.Status == parameters.Status.Value);
+
+        return query;
     }
     
     public async Task<PurchaseOrder?> GetByOrderNumberAsync(string orderNumber)
