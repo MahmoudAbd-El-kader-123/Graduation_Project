@@ -62,6 +62,29 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
+    /// Gets the reconciliation status and PO-versus-invoice discrepancies.
+    /// </summary>
+    [HttpGet("{id:int}/reconciliation")]
+    [Authorize(Policy = Permissions.Invoices.View)]
+    [ProducesResponseType(typeof(ApiResponse<InvoiceReconciliationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<InvoiceReconciliationDto>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<InvoiceReconciliationDto>>> GetReconciliation(int id)
+    {
+        var result = await _invoiceService.GetReconciliationAsync(id);
+        if (!result.Succeeded)
+        {
+            if (result.Error == "Access denied.")
+                return Forbid();
+
+            return NotFound(ApiResponse<InvoiceReconciliationDto>.FailureResponse(result.Error!));
+        }
+
+        return Ok(ApiResponse<InvoiceReconciliationDto>.SuccessResponse(result.Data!));
+    }
+
+    /// <summary>
     /// Downloads the original uploaded invoice file.
     /// </summary>
     [HttpGet("{id:int}/download")]

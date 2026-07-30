@@ -1,6 +1,7 @@
 using AutoMapper;
 using SPIP.Application.DTOs.Invoice;
 using SPIP.Domain.Entities;
+using SPIP.Domain.Enums;
 
 namespace SPIP.Application.Mapping;
 
@@ -15,6 +16,13 @@ public class InvoiceMappingProfile : Profile
         CreateMap<Invoice, InvoiceDetailDto>()
             .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
             .ForMember(d => d.UploadedAt, opt => opt.MapFrom(s => s.CreatedAt));
+
+        CreateMap<Invoice, InvoiceReconciliationDto>()
+            .ForMember(d => d.InvoiceId, opt => opt.MapFrom(s => s.Id))
+            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
+            .ForMember(d => d.IsReconciled, opt => opt.MapFrom(s => s.Status == InvoiceStatus.Completed))
+            .ForMember(d => d.HasDiscrepancies, opt => opt.MapFrom(s => s.Discrepancies.Count > 0))
+            .ForMember(d => d.DiscrepancyCount, opt => opt.MapFrom(s => s.Discrepancies.Count));
 
         CreateMap<InvoiceItem, InvoiceItemDto>();
 

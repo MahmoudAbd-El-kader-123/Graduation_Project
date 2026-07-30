@@ -135,7 +135,54 @@ pollInvoice(invoiceId: number) {
 
 The example uses `timer`, `switchMap`, and `takeWhile` from RxJS.
 
-## 4. Render invoice results
+## 4. Load the reconciliation result
+
+Angular can load the comparison without requesting the full invoice details:
+
+```http
+GET /api/invoices/{invoiceId}/reconciliation
+```
+
+Example response:
+
+```json
+{
+  "success": true,
+  "message": null,
+  "data": {
+    "invoiceId": 17,
+    "purchaseOrderId": 42,
+    "invoiceNumber": "2602506000004",
+    "status": "Completed",
+    "isReconciled": true,
+    "hasDiscrepancies": true,
+    "discrepancyCount": 1,
+    "discrepancies": [
+      {
+        "id": 7,
+        "discrepancyType": "QuantityMismatch",
+        "fieldName": "Quantity",
+        "expectedValue": "6",
+        "actualValue": "5",
+        "isResolved": false
+      }
+    ]
+  },
+  "errors": null
+}
+```
+
+Check `isReconciled` before interpreting the discrepancy list:
+
+- `false` means comparison has not completed, even when the list is empty;
+- `true` with `hasDiscrepancies: false` means the invoice matches the PO;
+- `true` with `hasDiscrepancies: true` means Angular should display the
+  discrepancy list.
+
+The endpoint requires `Invoices.View`. It is limited to the invoice uploader or
+an Admin, matching the invoice-detail access rules.
+
+## 5. Render invoice results
 
 Example completed detail response:
 
@@ -216,7 +263,7 @@ The current detail DTO does not expose `invoiceItemId` on a discrepancy.
 Render discrepancies in a separate table or summary. Angular cannot reliably
 attach an item discrepancy to one row until the backend exposes that relation.
 
-## 5. Download the original file
+## 6. Download the original file
 
 ```http
 GET /api/invoices/{invoiceId}/download
@@ -239,7 +286,7 @@ downloadInvoice(invoiceId: number, fileName: string): void {
 }
 ```
 
-## 6. Administrator invoice list
+## 7. Administrator invoice list
 
 ```http
 GET /api/invoices?status=Completed&pageNumber=1&pageSize=10
@@ -321,6 +368,17 @@ export interface InvoiceDiscrepancy {
   expectedValue: string;
   actualValue: string;
   isResolved: boolean;
+}
+
+export interface InvoiceReconciliation {
+  invoiceId: number;
+  purchaseOrderId: number | null;
+  invoiceNumber: string;
+  status: string;
+  isReconciled: boolean;
+  hasDiscrepancies: boolean;
+  discrepancyCount: number;
+  discrepancies: InvoiceDiscrepancy[];
 }
 
 export interface InvoiceProcessingLog {

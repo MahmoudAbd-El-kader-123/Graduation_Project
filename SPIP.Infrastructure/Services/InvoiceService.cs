@@ -130,6 +130,18 @@ public class InvoiceService : IInvoiceService
         return Result<InvoiceDetailDto>.Success(_mapper.Map<InvoiceDetailDto>(invoice));
     }
 
+    public async Task<Result<InvoiceReconciliationDto>> GetReconciliationAsync(int invoiceId, CancellationToken cancellationToken = default)
+    {
+        var invoice = await _invoiceRepository.GetWithDetailsByIdAsync(invoiceId, cancellationToken);
+        if (invoice is null)
+            return Result<InvoiceReconciliationDto>.Failure("Invoice not found.");
+
+        if (!await CanAccessInvoiceAsync(invoice))
+            return Result<InvoiceReconciliationDto>.Failure("Access denied.");
+
+        return Result<InvoiceReconciliationDto>.Success(_mapper.Map<InvoiceReconciliationDto>(invoice));
+    }
+
     public async Task<Result<(Stream FileStream, string ContentType, string FileName)>> DownloadFileAsync(int invoiceId, CancellationToken cancellationToken = default)
     {
         var invoice = await _invoiceRepository.GetWithDetailsByIdAsync(invoiceId, cancellationToken);
