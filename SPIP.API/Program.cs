@@ -133,6 +133,30 @@ public class Program
                         Window = TimeSpan.FromMinutes(1)
                     }));
 
+            // Dedicated AI chat rate-limit policy.
+            // Partitioned by authenticated user ID (not IP) because AI calls are expensive and per-user.
+            // Token bucket: allows short bursts (up to 20) while enforcing 10 req/min sustained.
+            options.AddPolicy("AIChatPolicy", httpContext =>
+            {
+                // Use the authenticated user's NameIdentifier claim as the partition key.
+                // Fall back to IP if the user is somehow unauthenticated (the [Authorize] attribute
+                // prevents this in practice, but the fallback is defensive).
+                var partitionKey = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                                   ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                                   ?? "anonymous";
+
+                return System.Threading.RateLimiting.RateLimitPartition.GetTokenBucketLimiter(
+                    partitionKey,
+                    _ => new System.Threading.RateLimiting.TokenBucketRateLimiterOptions
+                    {
+                        TokenLimit = 20,                             // burst capacity
+                        ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                        TokensPerPeriod = 10,                        // 10 req/min sustained
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    });
+            });
+
             options.RejectionStatusCode = 429;
         });
     }

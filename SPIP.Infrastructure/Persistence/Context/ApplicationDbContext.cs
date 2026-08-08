@@ -47,7 +47,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
-            if (typeof(Domain.Common.BaseEntity).IsAssignableFrom(entityType.ClrType))
+            if (typeof(Domain.Common.BaseEntity).IsAssignableFrom(entityType.ClrType) ||
+                typeof(Domain.Common.GuidBaseEntity).IsAssignableFrom(entityType.ClrType))
             {
                 builder.Entity(entityType.ClrType).HasQueryFilter(
                     CreateIsDeletedFilter(entityType.ClrType));

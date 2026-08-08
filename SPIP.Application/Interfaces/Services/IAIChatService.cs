@@ -6,10 +6,10 @@ namespace SPIP.Application.Interfaces.Services;
 
 public interface IAIChatService
 {
-    Task<Result<ChatSessionListDto>> CreateSessionAsync(CreateChatSessionDto dto);
-    Task<Result<PagedResult<ChatSessionListDto>>> GetSessionsAsync(PaginationRequest parameters);
-    Task<Result<ChatSessionDetailDto>> GetSessionByIdAsync(int sessionId);
-    Task<Result<ChatResponseDto>> SendMessageAsync(int sessionId, SendChatMessageDto dto);
-    Task<Result<bool>> DeleteSessionAsync(int sessionId);
-    Task<Result<bool>> UpdateSessionTitleAsync(int sessionId, UpdateSessionTitleDto dto);
+    Task<Result<ChatSessionListDto>> CreateSessionAsync(CreateChatSessionDto dto, CancellationToken ct = default);
+    Task<Result<PagedResult<ChatSessionListDto>>> GetSessionsAsync(PaginationRequest parameters, CancellationToken ct = default);
+    Task<Result<ChatSessionDetailDto>> GetSessionByIdAsync(Guid sessionId, CancellationToken ct = default);
+    Task<Result<ChatResponseDto>> SendMessageAsync(Guid sessionId, SendChatMessageDto dto, CancellationToken ct = default);
+    Task<Result<bool>> DeleteSessionAsync(Guid sessionId, CancellationToken ct = default);
+    Task<Result<bool>> UpdateSessionTitleAsync(Guid sessionId, UpdateSessionTitleDto dto, CancellationToken ct = default);
 }

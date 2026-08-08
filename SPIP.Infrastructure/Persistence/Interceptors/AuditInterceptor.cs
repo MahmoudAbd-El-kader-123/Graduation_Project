@@ -52,7 +52,9 @@ public class AuditInterceptor : SaveChangesInterceptor
 
         var auditEntries = new List<AuditLog>();
         var entries = context.ChangeTracker.Entries()
-            .Where(e => e.Entity is not AuditLog && 
+            .Where(e => e.Entity is not AuditLog &&
+                        // Exclude AI chat message content — prompts/responses must not be persisted to audit logs
+                        e.Entity is not Domain.Entities.AIChatMessage &&
                         (e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted))
             .ToList();
 
@@ -66,8 +68,12 @@ public class AuditInterceptor : SaveChangesInterceptor
                 CreatedAt = DateTime.UtcNow
             };
 
-            var properties = entry.Properties.Where(p => !p.IsTemporary).ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
-            
+            // Redact sensitive properties before serialisation (e.g. message Content on AIChatSession would be rare,
+            // but we defensively exclude any property named "Content" or "Password" from audit details).
+            var properties = entry.Properties
+                .Where(p => !p.IsTemporary && p.Metadata.Name is not ("Content" or "PasswordHash" or "SecurityStamp"))
+                .ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+
             // Try to extract an Id if it exists and is an integer
             var idProp = entry.Properties.FirstOrDefault(p => p.Metadata.Name == "Id" && p.CurrentValue is int);
             if (idProp != null)

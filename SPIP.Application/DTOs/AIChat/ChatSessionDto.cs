@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SPIP.Application.DTOs.AIChat;
 
 /// <summary>
@@ -5,11 +7,14 @@ namespace SPIP.Application.DTOs.AIChat;
 /// </summary>
 public class ChatSessionListDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>Content preview of the last message, truncated to 100 characters.</summary>
     public string? LastMessage { get; set; }
+
     public int MessageCount { get; set; }
 }
 
@@ -18,7 +23,7 @@ public class ChatSessionListDto
 /// </summary>
 public class ChatSessionDetailDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public List<ChatMessageDto> Messages { get; set; } = [];
@@ -29,11 +34,13 @@ public class ChatSessionDetailDto
 /// </summary>
 public class ChatMessageDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
+
+    /// <summary>"User" | "Assistant" | "System"</summary>
     public string Role { get; set; } = string.Empty;
+
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
-    public int? TokensUsed { get; set; }
 }
 
 /// <summary>
@@ -41,11 +48,14 @@ public class ChatMessageDto
 /// </summary>
 public class CreateChatSessionDto
 {
+    /// <summary>Optional title; defaults to "New Chat" if not provided.</summary>
+    [MaxLength(200, ErrorMessage = "Session title cannot exceed 200 characters.")]
     public string? Title { get; set; }
 }
 
 /// <summary>
 /// Request DTO for sending a message in a chat session.
+/// Validated by SendChatMessageDtoValidator.
 /// </summary>
 public class SendChatMessageDto
 {
@@ -57,13 +67,14 @@ public class SendChatMessageDto
 /// </summary>
 public class ChatResponseDto
 {
-    public int SessionId { get; set; }
+    public Guid SessionId { get; set; }
     public ChatMessageDto UserMessage { get; set; } = null!;
     public ChatMessageDto AssistantMessage { get; set; } = null!;
 }
 
 /// <summary>
 /// Request DTO for updating a session title.
+/// Validated by UpdateSessionTitleDtoValidator.
 /// </summary>
 public class UpdateSessionTitleDto
 {

@@ -124,7 +124,8 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddScoped<IAIChatRepository, AIChatRepository>();
-        services.AddScoped<IAIChatService, AIChatService>();
+        // NOTE: IAIChatService is NOT registered as AddScoped here.
+        // AddHttpClient<IAIChatService, AIChatService> below owns the service lifetime.
 
         services.AddHttpClient<IAIExtractionService, AIExtractionService>((sp, client) =>
         {
@@ -137,7 +138,9 @@ public static class DependencyInjection
         {
             var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AIServiceSettings>>().Value;
             client.BaseAddress = new Uri(settings.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+            // Use InfiniteTimeSpan so the CancellationToken from the request controls cancellation.
+            // This avoids a race between HttpClient.Timeout and the AI's legitimate slow responses.
+            client.Timeout = System.Threading.Timeout.InfiniteTimeSpan;
         });
 
         return services;

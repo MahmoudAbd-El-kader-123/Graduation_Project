@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,16 +11,21 @@ namespace SPIP.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Discrepancies_Invoices_InvoiceId",
-                table: "Discrepancies");
+            // Drop the previous AIChatMessages and AIChatSessions tables (created with int IDENTITY PKs).
+            // These tables are safe to drop — they were introduced in Sprint 4 development and contain no
+            // production data. We recreate them with the correct uniqueidentifier (GUID) primary keys.
 
+            // Drop messages first (FK child → parent order)
+            migrationBuilder.DropTable(name: "AIChatMessages");
+            migrationBuilder.DropTable(name: "AIChatSessions");
+
+            // ── AIChatSessions — correct schema with uniqueidentifier PK ──────────
             migrationBuilder.CreateTable(
                 name: "AIChatSessions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false,
+                        defaultValueSql: "NEWSEQUENTIALID()"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     IsArchived = table.Column<bool>(type: "bit", nullable: false),
@@ -39,13 +44,14 @@ namespace SPIP.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            // ── AIChatMessages — correct schema with uniqueidentifier PK and FK ──
             migrationBuilder.CreateTable(
                 name: "AIChatMessages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SessionId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false,
+                        defaultValueSql: "NEWSEQUENTIALID()"),
+                    SessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TokensUsed = table.Column<int>(type: "int", nullable: true),
@@ -64,55 +70,32 @@ namespace SPIP.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "PermissionCatalogs",
-                columns: new[] { "Id", "DisplayName", "Module", "SystemName" },
-                values: new object[] { 28, "Use AIChat", "AIChat", "AIChat.Use" });
+            // ── Indexes ────────────────────────────────────────────────────────────
 
-            migrationBuilder.CreateIndex(
-                name: "IX_AIChatMessages_SessionId_CreatedAt",
-                table: "AIChatMessages",
-                columns: new[] { "SessionId", "CreatedAt" });
-
+            // Single-column: filter sessions by user
             migrationBuilder.CreateIndex(
                 name: "IX_AIChatSessions_UserId",
                 table: "AIChatSessions",
                 column: "UserId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Discrepancies_Invoices_InvoiceId",
-                table: "Discrepancies",
-                column: "InvoiceId",
-                principalTable: "Invoices",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            // Composite: ordered session list per user (ORDER BY UpdatedAt DESC)
+            migrationBuilder.CreateIndex(
+                name: "IX_AIChatSessions_UserId_UpdatedAt",
+                table: "AIChatSessions",
+                columns: new[] { "UserId", "UpdatedAt" });
+
+            // Composite: message history for a session in chronological order
+            migrationBuilder.CreateIndex(
+                name: "IX_AIChatMessages_SessionId_CreatedAt",
+                table: "AIChatMessages",
+                columns: new[] { "SessionId", "CreatedAt" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Discrepancies_Invoices_InvoiceId",
-                table: "Discrepancies");
-
-            migrationBuilder.DropTable(
-                name: "AIChatMessages");
-
-            migrationBuilder.DropTable(
-                name: "AIChatSessions");
-
-            migrationBuilder.DeleteData(
-                table: "PermissionCatalogs",
-                keyColumn: "Id",
-                keyValue: 28);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Discrepancies_Invoices_InvoiceId",
-                table: "Discrepancies",
-                column: "InvoiceId",
-                principalTable: "Invoices",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(name: "AIChatMessages");
+            migrationBuilder.DropTable(name: "AIChatSessions");
         }
     }
 }
