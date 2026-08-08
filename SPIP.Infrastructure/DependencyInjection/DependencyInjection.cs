@@ -123,10 +123,19 @@ public static class DependencyInjection
                 "AIService:TimeoutSeconds must be greater than zero.")
             .ValidateOnStart();
 
+        services.AddScoped<IAIChatRepository, AIChatRepository>();
+        services.AddScoped<IAIChatService, AIChatService>();
+
         services.AddHttpClient<IAIExtractionService, AIExtractionService>((sp, client) =>
         {
             var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AIServiceSettings>>().Value;
             client.BaseAddress = new Uri(settings.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+        });
+
+        services.AddHttpClient<IAIChatService, AIChatService>((sp, client) =>
+        {
+            var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AIServiceSettings>>().Value;
             client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
         });
 

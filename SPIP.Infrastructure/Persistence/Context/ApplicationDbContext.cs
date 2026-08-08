@@ -34,6 +34,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     public DbSet<PermissionCatalog> PermissionCatalogs => Set<PermissionCatalog>();
+    public DbSet<AIChatSession> AIChatSessions => Set<AIChatSession>();
+    public DbSet<AIChatMessage> AIChatMessages => Set<AIChatMessage>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

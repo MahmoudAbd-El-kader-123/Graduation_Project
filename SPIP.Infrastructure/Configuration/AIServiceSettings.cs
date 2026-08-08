@@ -6,5 +6,6 @@ public sealed class AIServiceSettings
 
     public string BaseUrl { get; set; } = string.Empty;
     public string ExtractionEndpoint { get; set; } = string.Empty;
+    public string ChatWebhookEndpoint { get; set; } = string.Empty;
     public int TimeoutSeconds { get; set; } = 60;
 }

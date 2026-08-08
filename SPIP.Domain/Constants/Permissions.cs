@@ -64,4 +64,9 @@ public static class Permissions
     {
         public const string View = "Reports.View";
     }
+
+    public static class AIChat
+    {
+        public const string Use = "AIChat.Use";
+    }
 }
