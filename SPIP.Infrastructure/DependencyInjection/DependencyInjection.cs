@@ -136,6 +136,7 @@ public static class DependencyInjection
         services.AddHttpClient<IAIChatService, AIChatService>((sp, client) =>
         {
             var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AIServiceSettings>>().Value;
+            client.BaseAddress = new Uri(settings.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
         });
 
