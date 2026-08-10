@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ElementRef, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, ElementRef, ViewChild, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,16 +9,19 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { SelectModule } from 'primeng/select';
 
 import { PaginationComponent } from '../../../../shared/table/components/pagination/pagination';
 import { EmptyStateComponent } from '../../../../shared/table/components/empty-state/empty-state';
 import { LoadingSkeletonComponent } from '../../../../shared/table/components/loading-skeleton/loading-skeleton';
 import { ErrorStateComponent } from '../../../../shared/table/components/error-state/error-state';
+import { ToolbarComponent } from '../../../../shared/table/components/toolbar/toolbar';
 
 import { InvoiceFacade } from '../../facades/invoice.facade';
 import { INVOICE_TABLE_COLUMNS } from '../../constants/invoice-table-columns.constant';
 import { InvoiceListItemDto } from '../../models/invoice.model';
 import { PurchaseOrderLookupService } from '../../../../shared/lookups/services/purchase-order-lookup.service';
+import { VendorLookupService } from '../../../../shared/lookups/services/vendor-lookup.service';
 import { PurchaseOrder, PurchaseOrderStatus } from '../../../../features/purchase-orders/models/purchase-order.model';
 import { InvoiceUploadContextService } from '../../services/invoice-upload-context.service';
 
@@ -45,16 +48,19 @@ const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
     DialogModule,
     TagModule,
     AutoCompleteModule,
+    SelectModule,
     PaginationComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    LoadingSkeletonComponent
+    LoadingSkeletonComponent,
+    ToolbarComponent
   ],
   templateUrl: './invoice-list.html'
 })
 export class InvoiceListComponent implements OnInit {
   readonly facade    = inject(InvoiceFacade);
   readonly poLookup  = inject(PurchaseOrderLookupService);
+  readonly vendorLookup = inject(VendorLookupService);
   private readonly router = inject(Router);
   private readonly uploadContextService = inject(InvoiceUploadContextService);
 
@@ -73,6 +79,68 @@ export class InvoiceListComponent implements OnInit {
   /** Show validation messages only after first submit attempt */
   readonly submitted             = signal<boolean>(false);
 
+  // ── Filter Options ─────────────────────────────────────────────
+  readonly invoiceStatusOptions = [
+    { label: 'Pending', value: 'Pending' },
+    { label: 'Processing', value: 'Processing' },
+    { label: 'Matched', value: 'Matched' },
+    { label: 'Completed', value: 'Completed' },
+    { label: 'Failed', value: 'Failed' },
+  ];
+
+  readonly discrepancyOptions = [
+    { label: 'All', value: null },
+    { label: 'Has Discrepancies', value: true },
+    { label: 'No Discrepancies', value: false }
+  ];
+
+  readonly poFilterOptions = computed(() => {
+    const searchResults = this.poLookup.suggestions() || [];
+    const selectedId = this.facade.selectedPurchaseOrderId();
+    
+    if (!selectedId) {
+      return searchResults;
+    }
+    
+    if (searchResults.some(po => po.id === selectedId.toString())) {
+      return searchResults;
+    }
+    
+    const pos = this.facade.rawInvoices();
+    const invoiceWithSelectedPo = pos.find(inv => inv.purchaseOrderId === selectedId);
+    
+    if (invoiceWithSelectedPo) {
+      const retainedPo = {
+        id: selectedId.toString(),
+        orderNumber: invoiceWithSelectedPo.purchaseOrderNumber ?? ''
+      } as unknown as PurchaseOrder;
+      return [retainedPo, ...searchResults];
+    }
+    
+    return searchResults;
+  });
+
+  readonly vendorFilterOptions = computed(() => {
+    const searchResults = this.vendorLookup.vendors() || [];
+    const selectedName = this.facade.selectedVendorName();
+    
+    if (!selectedName) {
+      return searchResults;
+    }
+    
+    if (searchResults.some(v => v.name === selectedName)) {
+      return searchResults;
+    }
+    
+    // We only need the name for Invoices table filtering
+    const retainedVendor = {
+      id: '',
+      name: selectedName,
+      erpId: ''
+    };
+    return [retainedVendor, ...searchResults];
+  });
+
   // ── Validation helpers ──────────────────────────────────────────────
   get poInvalid():   boolean { return this.submitted() && !this.selectedPurchaseOrder(); }
   get fileInvalid(): boolean { return this.submitted() && !this.selectedFile(); }
@@ -88,6 +156,9 @@ export class InvoiceListComponent implements OnInit {
   // ── Lifecycle ───────────────────────────────────────────────────────
   ngOnInit(): void {
     this.facade.loadInvoices();
+    this.vendorLookup.search('');
+    this.poLookup.search('');
+
     const po = this.uploadContextService.consumePurchaseOrder();
     if (po) {
       this.contextPo.set(po);
@@ -96,11 +167,33 @@ export class InvoiceListComponent implements OnInit {
     }
   }
 
+  // ── Dropdown Handlers ───────────────────────────────────────────────
+  onVendorFilter(event: any) {
+    this.vendorLookup.search(event.filter);
+  }
+
+  onVendorLazyLoad(event: any) {
+    const currentOptionsCount = this.vendorLookup.vendors().length;
+    if (event.last >= currentOptionsCount && this.vendorLookup.hasMore()) {
+      this.vendorLookup.loadMore();
+    }
+  }
+
+  onPOFilter(event: any) {
+    this.poLookup.search(event.filter);
+  }
+
+  onPOLazyLoad(event: any) {
+    const currentOptionsCount = this.poLookup.suggestions().length;
+    if (event.last >= currentOptionsCount && this.poLookup.hasMore()) {
+      this.poLookup.loadMore();
+    }
+  }
+
   // ── Upload dialog ───────────────────────────────────────────────────
   openUploadDialog(): void {
     this._resetUploadForm();
     this.uploadDialogVisible.set(true);
-    // Pre-load recent Purchase Orders immediately on dialog open
     this.poLookup.search('');
   }
 
@@ -108,7 +201,6 @@ export class InvoiceListComponent implements OnInit {
     this.uploadDialogVisible.set(false);
     this._resetUploadForm();
     this.contextPo.set(null);
-    // Restore focus to the Upload button for accessibility
     setTimeout(() => {
       const btn = document.getElementById('uploadInvoiceBtn') as HTMLButtonElement | null;
       btn?.focus();
@@ -134,7 +226,7 @@ export class InvoiceListComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       this._processFile(input.files[0]);
     }
-    input.value = ''; // allow re-selection of the same file
+    input.value = '';
   }
 
   onDragOver(event: DragEvent): void {
@@ -259,20 +351,17 @@ export class InvoiceListComponent implements OnInit {
   private _processFile(file: File): void {
     this.fileError.set(null);
 
-    // Validate extension
     const ext = '.' + file.name.toLowerCase().split('.').pop();
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
       this.fileError.set(`Only PDF, XML, and ZIP files are accepted. Received: ${ext}`);
       return;
     }
 
-    // Validate MIME type (allow empty — some OSes omit MIME for .xml)
     if (file.type !== '' && !ALLOWED_MIME_TYPES.includes(file.type)) {
       this.fileError.set(`Invalid file type: ${file.type}`);
       return;
     }
 
-    // Validate size
     if (file.size > MAX_FILE_SIZE_BYTES) {
       this.fileError.set(`File exceeds the maximum allowed size of 20 MB`);
       return;

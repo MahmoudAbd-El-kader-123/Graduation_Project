@@ -3,43 +3,30 @@ import { Subject, switchMap, debounceTime, distinctUntilChanged, catchError, of 
 import { PurchaseOrderApiService } from '../../../features/purchase-orders/services/purchase-order-api.service';
 import { PurchaseOrder } from '../../../features/purchase-orders/models/purchase-order.model';
 
-/**
- * Provides debounced, server-side Purchase Order search for UI selectors.
- *
- * Architecture:
- *   PurchaseOrderLookupService
- *       └── PurchaseOrderApiService  (reused, not duplicated)
- *           └── HttpClient
- *
- * Usage:
- *   - Call `search(query)` from (completeMethod) of p-autocomplete.
- *   - Bind `suggestions()` and `loading()` signals to the template.
- *   - Call `clear()` when the dialog/form is reset.
- *
- * Data:
- *   - Returns at most 20 results per query (server-side, scalable).
- *   - Debounces 300ms; cancels in-flight requests via switchMap.
- *   - No client-side size limit — scales to any number of Purchase Orders.
- */
 @Injectable({ providedIn: 'root' })
 export class PurchaseOrderLookupService {
   private readonly api = inject(PurchaseOrderApiService);
 
-  readonly loading   = signal<boolean>(false);
+  readonly loading = signal<boolean>(false);
   readonly suggestions = signal<PurchaseOrder[]>([]);
+  readonly hasMore = signal<boolean>(false);
 
-  private readonly query$ = new Subject<string>();
+  private readonly query$ = new Subject<{ query: string, page: number }>();
+  
+  private currentQuery = '';
+  private currentPage = 1;
+  private readonly pageSize = 20;
 
   constructor() {
     this.query$.pipe(
       debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => {
+      distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
+      switchMap(({ query, page }) => {
         this.loading.set(true);
         return this.api.getPurchaseOrders({
           searchQuery: query?.trim() || undefined,
-          pageNumber:  1,
-          pageSize:    20
+          pageNumber:  page,
+          pageSize:    this.pageSize
         }).pipe(
           catchError(() => of(null))
         );
@@ -47,9 +34,17 @@ export class PurchaseOrderLookupService {
     ).subscribe(response => {
       this.loading.set(false);
       if (response?.success && response.data) {
-        this.suggestions.set(response.data.items ?? []);
-      } else {
+        const items = response.data.items ?? [];
+        if (this.currentPage === 1) {
+          this.suggestions.set(items);
+        } else {
+          this.suggestions.update(current => [...current, ...items]);
+        }
+        
+        this.hasMore.set(items.length === this.pageSize);
+      } else if (this.currentPage === 1) {
         this.suggestions.set([]);
+        this.hasMore.set(false);
       }
     });
   }
@@ -59,11 +54,26 @@ export class PurchaseOrderLookupService {
    * Pass an empty string to load the first page of recent Purchase Orders.
    */
   search(query: string): void {
-    this.query$.next(query ?? '');
+    this.currentQuery = query ?? '';
+    this.currentPage = 1;
+    this.query$.next({ query: this.currentQuery, page: this.currentPage });
+  }
+
+  /**
+   * Load the next page of results for the current search query.
+   */
+  loadMore(): void {
+    if (!this.loading() && this.hasMore()) {
+      this.currentPage++;
+      this.query$.next({ query: this.currentQuery, page: this.currentPage });
+    }
   }
 
   /** Reset suggestions without making a network request. */
   clear(): void {
     this.suggestions.set([]);
+    this.hasMore.set(false);
+    this.currentQuery = '';
+    this.currentPage = 1;
   }
 }

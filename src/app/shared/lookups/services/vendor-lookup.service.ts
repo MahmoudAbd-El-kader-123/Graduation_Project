@@ -1,67 +1,91 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, tap, of, map, catchError } from 'rxjs';
-import { ApiService } from '../../api/services/api.service';
-import { ApiResponse } from '../../api/models/api-response.model';
-import { PagedResult } from '../../api/models/paged-result.model';
+import { Subject, switchMap, debounceTime, distinctUntilChanged, catchError, of, map, tap } from 'rxjs';
+import { VendorService } from '../../../features/vendors/services/vendor.service';
 import { VendorOption } from '../models/vendor-option.model';
-
-interface VendorResponse {
-  id: string;
-  erpId: string;
-  name: string;
-  isApproved: boolean;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class VendorLookupService {
-  private readonly apiService = inject(ApiService);
-  private readonly baseUrl = '/vendors';
+  private readonly vendorService = inject(VendorService);
 
-  private vendorsCache = signal<VendorOption[] | null>(null);
   readonly loading = signal<boolean>(false);
-  readonly error = signal<string | null>(null);
+  readonly vendors = signal<VendorOption[]>([]);
+  readonly hasMore = signal<boolean>(false);
+  
+  private readonly query$ = new Subject<{ query: string, page: number }>();
+  
+  private currentQuery = '';
+  private currentPage = 1;
+  private readonly pageSize = 20;
 
-  get vendors() {
-    return this.vendorsCache.asReadonly();
-  }
-
-  loadVendors(): Observable<VendorOption[]> {
-    const cached = this.vendorsCache();
-    if (cached) {
-      return of(cached);
-    }
-
-    this.loading.set(true);
-    this.error.set(null);
-
-    return this.apiService.get<ApiResponse<PagedResult<VendorResponse>>>(`${this.baseUrl}?pageNumber=1&pageSize=1000`).pipe(
-      map(response => {
-        if (response.success && response.data) {
-          // Filter only approved vendors
-          const approvedVendors = response.data.items.filter(v => v.isApproved);
-          return approvedVendors.map(v => ({
+  constructor() {
+    this.query$.pipe(
+      debounceTime(300),
+      distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
+      switchMap(({ query, page }) => {
+        this.loading.set(true);
+        return this.vendorService.getVendors(page, this.pageSize, query?.trim() || undefined).pipe(
+          catchError(() => of(null))
+        );
+      })
+    ).subscribe(response => {
+      this.loading.set(false);
+      if (response?.success && response.data) {
+        const approvedVendors = response.data.items
+          .filter(v => v.isApproved)
+          .map(v => ({
             id: v.id,
             name: v.name,
             erpId: v.erpId
           }));
+          
+        if (this.currentPage === 1) {
+          this.vendors.set(approvedVendors);
+        } else {
+          this.vendors.update(current => [...current, ...approvedVendors]);
         }
-        throw new Error(response.message || 'Failed to load vendors');
-      }),
-      tap(vendors => {
-        this.vendorsCache.set(vendors);
-        this.loading.set(false);
-      }),
-      catchError(err => {
-        this.error.set(err.message || 'Error fetching vendors');
-        this.loading.set(false);
-        throw err;
-      })
-    );
+        
+        // Since we filter on the frontend (isApproved), the totalCount might be slightly inaccurate.
+        // But for infinite scrolling, checking if we received less than pageSize is a safe bet.
+        this.hasMore.set(response.data.items.length === this.pageSize);
+      } else if (this.currentPage === 1) {
+        this.vendors.set([]);
+        this.hasMore.set(false);
+      }
+    });
   }
 
-  clearCache() {
-    this.vendorsCache.set(null);
+  /**
+   * Trigger a debounced search. Pass the user's current query string.
+   */
+  search(query: string): void {
+    this.currentQuery = query ?? '';
+    this.currentPage = 1;
+    this.query$.next({ query: this.currentQuery, page: this.currentPage });
+  }
+  
+  /**
+   * Load the next page of results for the current search query.
+   */
+  loadMore(): void {
+    if (!this.loading() && this.hasMore()) {
+      this.currentPage++;
+      this.query$.next({ query: this.currentQuery, page: this.currentPage });
+    }
+  }
+
+  /** Reset suggestions without making a network request. */
+  clear(): void {
+    this.vendors.set([]);
+    this.hasMore.set(false);
+    this.currentQuery = '';
+    this.currentPage = 1;
+  }
+  
+  /** Legacy method to prevent breaking existing usages during transition */
+  loadVendors() {
+    this.search('');
+    return of([]);
   }
 }

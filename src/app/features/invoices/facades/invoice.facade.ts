@@ -1,33 +1,92 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { InvoiceService } from '../services/invoice.service';
 import { InvoiceStore } from '../stores/invoice.store';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { PERMISSIONS } from '../../../core/auth/constants/permissions';
 import { MessageService } from 'primeng/api';
+import { InvoiceListItemDto } from '../models/invoice.model';
+import { firstValueFrom } from 'rxjs';
+
+const ALL_ITEMS_PAGE_SIZE = 1000;
 
 @Injectable()
 export class InvoiceFacade {
-  // --- Table state (delegated from store) ---
-  readonly state;
-  readonly items;
-  readonly totalCount;
-  readonly pageNumber;
-  readonly pageSize;
-  readonly loading;
-  /** Search term is preserved in the store for future backend support, but the UI hides the input. */
-  readonly searchTerm;
+  // --- Raw dataset ---
+  readonly rawInvoices = signal<InvoiceListItemDto[]>([]);
 
-  // --- Permission signals (computed once in the facade; templates must not call authService directly) ---
-  readonly canUpload;
-  readonly canDownload;
-  readonly canViewAll;
+  // --- Filter State ---
+  readonly searchTerm = signal<string>('');
+  readonly selectedStatus = signal<string | null>(null);
+  readonly selectedVendorName = signal<string | null>(null);
+  readonly selectedPurchaseOrderId = signal<number | null>(null);
+  readonly hasDiscrepancies = signal<boolean | null>(null);
 
-  // --- Upload state ---
+  // --- Pagination State ---
+  readonly pageNumber = signal<number>(1);
+  readonly pageSize = signal<number>(10);
+
+  // --- UI State ---
+  readonly loading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+
+  // --- Permission signals ---
+  readonly canUpload: boolean;
+  readonly canDownload: boolean;
+  readonly canViewAll: boolean;
+
+  // --- Upload & Download state ---
   readonly uploadLoading = signal<boolean>(false);
-
-  // --- Per-row download state ---
-  /** ID of the invoice currently being downloaded, or null. Used for row-level loading indicator. */
   readonly downloadingId = signal<number | null>(null);
+
+  // --- Computed: Filtered Data ---
+  readonly filteredInvoices = computed(() => {
+    const search = this.searchTerm().trim().toLowerCase();
+    const status = this.selectedStatus();
+    const vendorName = this.selectedVendorName()?.trim().toLowerCase();
+    const purchaseOrderId = this.selectedPurchaseOrderId();
+    const discrepancy = this.hasDiscrepancies();
+
+    return this.rawInvoices().filter(invoice => {
+      const matchesSearch = !search ||
+        invoice.invoiceNumber?.toLowerCase().includes(search) ||
+        invoice.vendorName?.toLowerCase().includes(search) ||
+        invoice.purchaseOrderNumber?.toLowerCase().includes(search);
+
+      const matchesStatus = !status || invoice.status === status;
+      
+      /**
+       * InvoiceListItemDto currently exposes vendorName but not vendorId.
+       * Vendor filtering therefore uses the normalized vendor name.
+       *
+       * If the backend later exposes vendorId, replace this filter with
+       * ID-based comparison.
+       */
+      const invoiceVendorName = invoice.vendorName?.trim().toLowerCase();
+      const matchesVendor = !vendorName || invoiceVendorName === vendorName;
+      
+      const matchesPO = purchaseOrderId === null || invoice.purchaseOrderId === purchaseOrderId;
+      const matchesDiscrepancy = discrepancy === null || invoice.hasDiscrepancies === discrepancy;
+
+      return matchesSearch && matchesStatus && matchesVendor && matchesPO && matchesDiscrepancy;
+    });
+  });
+
+  // --- Computed: Paginated Data ---
+  // We name it items to maintain compatibility with the existing template
+  readonly items = computed(() => {
+    const all = this.filteredInvoices();
+    const start = (this.pageNumber() - 1) * this.pageSize();
+    return all.slice(start, start + this.pageSize());
+  });
+
+  readonly totalCount = computed(() => this.filteredInvoices().length);
+
+  readonly state = computed(() => {
+    if (this.loading()) return 'loading';
+    if (this.error()) return 'error';
+    if (this.filteredInvoices().length === 0) return 'empty';
+    return 'data';
+  });
 
   constructor(
     private readonly service: InvoiceService,
@@ -35,45 +94,86 @@ export class InvoiceFacade {
     private readonly authService: AuthService,
     private readonly messageService: MessageService
   ) {
-    this.state        = this.store.table.state;
-    this.items        = this.store.table.items;
-    this.totalCount   = this.store.table.totalCount;
-    this.pageNumber   = this.store.table.pageNumber;
-    this.pageSize     = this.store.table.pageSize;
-    this.loading      = this.store.table.loading;
-    this.searchTerm   = this.store.table.searchTerm;
-
-    this.canUpload    = this.authService.hasPermission(PERMISSIONS.invoices.upload);
-    this.canDownload  = this.authService.hasPermission(PERMISSIONS.invoices.download);
-    this.canViewAll   = this.authService.hasPermission(PERMISSIONS.invoices.viewAll);
+    this.canUpload = this.authService.hasPermission(PERMISSIONS.invoices.upload);
+    this.canDownload = this.authService.hasPermission(PERMISSIONS.invoices.download);
+    this.canViewAll = this.authService.hasPermission(PERMISSIONS.invoices.viewAll);
   }
 
   // --- Data loading ---
 
-  loadInvoices(): void {
+  async loadInvoices() {
     if (this.loading()) return;
-    this.store.table.setLoading(true);
-    this.service
-      .getInvoices(this.pageNumber(), this.pageSize())
-      .subscribe({
-        next: response => {
-          if (response.success && response.data) {
-            this.store.table.setItems(response.data.items ?? [], response.data.totalCount);
-          } else {
-            this.store.table.setError(response.message ?? 'Failed to load invoices');
-          }
-          this.store.table.setLoading(false);
-        },
-        error: () => {
-          this.store.table.setError('An error occurred while loading invoices');
-          this.store.table.setLoading(false);
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      let currentPage = 1;
+      let hasNextPage = true;
+      const allItems: InvoiceListItemDto[] = [];
+
+      while (hasNextPage) {
+        const response = await firstValueFrom(this.service.getInvoices(currentPage, ALL_ITEMS_PAGE_SIZE));
+        
+        if (response.success && response.data) {
+          allItems.push(...(response.data.items ?? []));
+          hasNextPage = response.data.hasNextPage;
+          currentPage++;
+        } else {
+          this.error.set(response.message ?? 'Failed to load invoices');
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: this.error()! });
+          break;
         }
-      });
+      }
+
+      if (!this.error()) {
+        this.rawInvoices.set(allItems);
+      }
+    } catch (err) {
+      this.error.set('An error occurred while loading invoices');
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load invoices' });
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  // --- Filter Setters ---
+  setSearchTerm(term: string): void {
+    this.searchTerm.set(term);
+    this.pageNumber.set(1);
+  }
+
+  setStatus(status: string | null): void {
+    this.selectedStatus.set(status);
+    this.pageNumber.set(1);
+  }
+
+  setVendorName(name: string | null): void {
+    this.selectedVendorName.set(name);
+    this.pageNumber.set(1);
+  }
+
+  setPurchaseOrder(id: number | null): void {
+    this.selectedPurchaseOrderId.set(id);
+    this.pageNumber.set(1);
+  }
+
+  setHasDiscrepancies(value: boolean | null): void {
+    this.hasDiscrepancies.set(value);
+    this.pageNumber.set(1);
   }
 
   setPage(pageNumber: number, pageSize: number): void {
-    this.store.table.setPage(pageNumber, pageSize);
-    this.loadInvoices();
+    this.pageNumber.set(pageNumber);
+    this.pageSize.set(pageSize);
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedStatus.set(null);
+    this.selectedVendorName.set(null);
+    this.selectedPurchaseOrderId.set(null);
+    this.hasDiscrepancies.set(null);
+    this.pageNumber.set(1);
   }
 
   refresh(): void {
@@ -81,11 +181,6 @@ export class InvoiceFacade {
   }
 
   // --- Upload ---
-
-  /**
-   * Upload a new invoice file linked to a Purchase Order.
-   * On success: closes dialog (via callback), resets form, and reloads the current page.
-   */
   uploadInvoice(purchaseOrderId: string, file: File, onSuccess: () => void): void {
     if (this.uploadLoading()) return;
     this.uploadLoading.set(true);
@@ -98,7 +193,7 @@ export class InvoiceFacade {
             detail: `Invoice uploaded successfully.`
           });
           onSuccess();
-          this.loadInvoices();
+          this.loadInvoices(); // Refresh from backend
         } else {
           this.messageService.add({
             severity: 'error',
@@ -120,13 +215,8 @@ export class InvoiceFacade {
   }
 
   // --- Download ---
-
-  /**
-   * Download invoice file by ID.
-   * Reads Content-Disposition header for filename; fallback: invoice-{id}.pdf
-   */
   downloadInvoice(id: number): void {
-    if (this.downloadingId() !== null) return; // prevent concurrent downloads
+    if (this.downloadingId() !== null) return;
     this.downloadingId.set(id);
 
     this.service.downloadInvoiceWithHeaders(id).subscribe({
@@ -138,7 +228,6 @@ export class InvoiceFacade {
           return;
         }
 
-        // Resolve filename from Content-Disposition or fallback
         const disposition = response.headers.get('Content-Disposition') ?? '';
         const filename = this._extractFilename(disposition) ?? `invoice-${id}.pdf`;
 
@@ -157,9 +246,7 @@ export class InvoiceFacade {
   }
 
   // --- Private helpers ---
-
   private _extractFilename(disposition: string): string | null {
-    // Try filename*= (RFC 5987) first, then filename=
     const utf8Match = disposition.match(/filename\*=UTF-8''([^;\n]+)/i);
     if (utf8Match) {
       return decodeURIComponent(utf8Match[1].trim());

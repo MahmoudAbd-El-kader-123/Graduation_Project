@@ -9,10 +9,57 @@
       [loading]="store.loading()"
       [showAdd]="canImport"
       addLabel="Import Purchase Order"
+      searchPlaceholder="Search purchase orders..."
       (searchChange)="store.setSearchTerm($event)"
       (refresh)="store.loadPurchaseOrders()"
       (add)="onImport()">
     </app-toolbar>
+
+    <!-- Filters Row -->
+    <div class="flex flex-wrap gap-4 items-end mt-4 mb-4">
+      <div class="flex flex-col gap-1 w-full sm:w-64">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Vendor</label>
+        <p-select 
+          [options]="vendorOptions()" 
+          [ngModel]="store.selectedVendorId()"
+          (ngModelChange)="store.setVendor($event)"
+          optionLabel="name" 
+          optionValue="id" 
+          [showClear]="true"
+          placeholder="All Vendors"
+          styleClass="w-full"
+          [filter]="true"
+          (onFilter)="onVendorFilter($event)"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="38"
+          [lazy]="true"
+          (onLazyLoad)="onVendorLazyLoad($event)"
+          [loading]="vendorLookup.loading()">
+        </p-select>
+      </div>
+
+      <div class="flex flex-col gap-1 w-full sm:w-64">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Status</label>
+        <p-select 
+          [options]="statusOptions" 
+          [ngModel]="store.selectedStatus()"
+          (ngModelChange)="store.setStatus($event)"
+          [showClear]="true"
+          placeholder="All Statuses"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="ml-auto">
+        <p-button 
+          label="Clear Filters" 
+          icon="pi pi-filter-slash" 
+          severity="secondary" 
+          [text]="true" 
+          (onClick)="store.clearFilters()">
+        </p-button>
+      </div>
+    </div>
 
     @switch (store.state()) {
       @case ('loading') {
@@ -20,9 +67,9 @@
       }
       @case ('empty') {
         <app-empty-state 
-          [isSearch]="store.searchTerm().length > 0"
+          [isSearch]="store.searchTerm().length > 0 || store.selectedVendorId() !== null || store.selectedStatus() !== null"
           emptyMessage="No purchase orders have been imported yet."
-          searchEmptyMessage="No purchase orders match your search."
+          searchEmptyMessage="No purchase orders match your current filters."
           primaryActionLabel="Import Purchase Order"
           (primaryAction)="onImport()">
         </app-empty-state>
@@ -31,7 +78,7 @@
         <app-error-state (retry)="store.loadPurchaseOrders()"></app-error-state>
       }
       @case ('data') {
-        <p-table [value]="store.purchaseOrders()" [tableStyle]="{ 'min-width': '50rem' }" dataKey="id">
+        <p-table [value]="store.paginatedPurchaseOrders()" [tableStyle]="{ 'min-width': '50rem' }" dataKey="id">
           <ng-template #header>
             <tr>
               <th *ngFor="let col of columns">{{ col.header }}</th>

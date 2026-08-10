@@ -2,9 +2,13 @@
 export interface InvoiceListItemDto {
   id: number;
   invoiceNumber: string | null;
+  purchaseOrderId: number;
+  purchaseOrderNumber: string | null;
   vendorName: string | null;
   status: string | null;
   totalAmount: number;
+  discrepancyCount: number;
+  hasDiscrepancies: boolean;
   invoiceDate: string;
   uploadedAt: string;
   uploadedByUserEmail: string | null;

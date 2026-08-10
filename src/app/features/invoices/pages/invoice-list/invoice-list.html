@@ -5,26 +5,93 @@
 
   <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
 
-    <!-- Toolbar: Refresh + Upload only (search hidden until backend adds SearchTerm) -->
-    <div class="flex justify-end items-center gap-2 mb-4">
-      <p-button
-        icon="pi pi-refresh"
-        [loading]="facade.loading()"
-        [disabled]="facade.loading()"
-        (onClick)="facade.refresh()"
-        severity="secondary"
-        outlined
-        pTooltip="Refresh">
-      </p-button>
+    <!-- Toolbar -->
+    <app-toolbar 
+      [loading]="facade.loading()"
+      [showAdd]="facade.canUpload"
+      addLabel="Upload Invoice"
+      searchPlaceholder="Search invoices..."
+      (searchChange)="facade.setSearchTerm($event)"
+      (refresh)="facade.loadInvoices()"
+      (add)="openUploadDialog()">
+    </app-toolbar>
 
-      @if (facade.canUpload) {
-        <p-button
-          id="uploadInvoiceBtn"
-          label="Upload Invoice"
-          icon="pi pi-upload"
-          (onClick)="openUploadDialog()">
+    <!-- Filters Row -->
+    <div class="flex flex-wrap gap-4 items-end mt-4 mb-4">
+      <div class="flex flex-col gap-1 w-full sm:w-48">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Vendor</label>
+        <p-select 
+          [options]="vendorFilterOptions() || []" 
+          [ngModel]="facade.selectedVendorName()"
+          (ngModelChange)="facade.setVendorName($event)"
+          optionLabel="name" 
+          optionValue="name" 
+          [showClear]="true"
+          placeholder="All Vendors"
+          styleClass="w-full"
+          [filter]="true"
+          (onFilter)="onVendorFilter($event)"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="38"
+          [lazy]="true"
+          (onLazyLoad)="onVendorLazyLoad($event)"
+          [loading]="vendorLookup.loading()">
+        </p-select>
+      </div>
+
+      <div class="flex flex-col gap-1 w-full sm:w-48">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Purchase Order</label>
+        <p-select 
+          [options]="poFilterOptions() || []" 
+          [ngModel]="facade.selectedPurchaseOrderId()"
+          (ngModelChange)="facade.setPurchaseOrder($event)"
+          optionLabel="orderNumber" 
+          optionValue="id" 
+          [showClear]="true"
+          placeholder="All POs"
+          styleClass="w-full"
+          [filter]="true"
+          (onFilter)="onPOFilter($event)"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="38"
+          [lazy]="true"
+          (onLazyLoad)="onPOLazyLoad($event)"
+          [loading]="poLookup.loading()">
+        </p-select>
+      </div>
+
+      <div class="flex flex-col gap-1 w-full sm:w-48">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Status</label>
+        <p-select 
+          [options]="invoiceStatusOptions" 
+          [ngModel]="facade.selectedStatus()"
+          (ngModelChange)="facade.setStatus($event)"
+          [showClear]="true"
+          placeholder="All Statuses"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="flex flex-col gap-1 w-full sm:w-48">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-200">Discrepancies</label>
+        <p-select 
+          [options]="discrepancyOptions" 
+          [ngModel]="facade.hasDiscrepancies()"
+          (ngModelChange)="facade.setHasDiscrepancies($event)"
+          placeholder="All"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="ml-auto">
+        <p-button 
+          label="Clear Filters" 
+          icon="pi pi-filter-slash" 
+          severity="secondary" 
+          [text]="true" 
+          (onClick)="facade.clearFilters()">
         </p-button>
-      }
+      </div>
     </div>
 
     <!-- Table states -->
@@ -35,9 +102,9 @@
 
       @case ('empty') {
         <app-empty-state
-          [isSearch]="false"
+          [isSearch]="facade.searchTerm().length > 0 || facade.selectedVendorName() !== null || facade.selectedPurchaseOrderId() !== null || facade.selectedStatus() !== null || facade.hasDiscrepancies() !== null"
           emptyMessage="No invoices found."
-          searchEmptyMessage="No invoices match your search.">
+          searchEmptyMessage="No invoices match your current filters.">
         </app-empty-state>
       }
 
