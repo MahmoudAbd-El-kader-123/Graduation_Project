@@ -1,4 +1,4 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpContextToken } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
@@ -7,12 +7,18 @@ import { AuthService } from '../auth/services/auth.service';
 import { AUTH_ROUTES, AUTH_ENDPOINTS } from '../auth/constants/auth.constants';
 import { ApiResponse } from '../models/api-response.model';
 
+export const SKIP_ERROR_TOAST = new HttpContextToken<boolean>(() => false);
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      if (req.context.get(SKIP_ERROR_TOAST)) {
+        return throwError(() => error);
+      }
+
       if (error.error && error.error.errors && Array.isArray(error.error.errors)) {
         const apiResponse = error.error as ApiResponse<any>;
         apiResponse.errors.forEach(err => toast.error(err));

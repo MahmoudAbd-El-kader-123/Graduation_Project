@@ -34,7 +34,18 @@ import {
   FileUp,
   Download,
   Receipt,
-  Eye
+  Eye,
+  Bot,
+  User,
+  Send,
+  AlertCircle,
+  RefreshCw,
+  Plus,
+  Search,
+  MessageSquare,
+  Check,
+  Edit2,
+  Trash2
 } from 'lucide-angular';
 
 export const APP_LUCIDE_ICONS = {
@@ -73,7 +84,18 @@ export const APP_LUCIDE_ICONS = {
   FileUp,
   Download,
   Receipt,
-  Eye
+  Eye,
+  Bot,
+  User,
+  Send,
+  AlertCircle,
+  RefreshCw,
+  Plus,
+  Search,
+  MessageSquare,
+  Check,
+  Edit2,
+  Trash2
 };
 
 export type AppIcon = keyof typeof APP_LUCIDE_ICONS;

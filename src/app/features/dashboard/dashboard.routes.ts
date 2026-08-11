@@ -81,5 +81,15 @@ export const DASHBOARD_ROUTES: Routes = [
       permissions: [PERMISSIONS.reports.view]
     } as DashboardRouteData,
     loadComponent: () => import('./pages/reports/reports.component').then(m => m.ReportsComponent)
+  },
+  {
+    path: 'assistant',
+    canActivate: [accessGuard],
+    data: {
+      title: 'Procurement Assistant',
+      breadcrumb: 'Assistant',
+      permissions: [PERMISSIONS.aiChat.use]
+    } as DashboardRouteData,
+    loadChildren: () => import('../ai-chat/ai-chat.routes').then(m => m.AI_CHAT_ROUTES)
   }
 ];

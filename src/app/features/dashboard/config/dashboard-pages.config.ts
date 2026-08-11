@@ -91,5 +91,16 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
         sidebarOrder: 7,
         homePriority: 7,
         permissions: [PERMISSIONS.reports.view]
+    },
+    {
+        id: 'assistant',
+        title: 'Assistant',
+        icon: 'Bot',
+        route: '/dashboard/assistant',
+        group: 'Analytics',
+        showInSidebar: true,
+        sidebarOrder: 8,
+        homePriority: 8,
+        permissions: [PERMISSIONS.aiChat.use]
     }
 ];

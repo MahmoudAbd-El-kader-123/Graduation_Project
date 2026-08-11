@@ -46,6 +46,9 @@ export const PERMISSIONS = {
         upload: 'Invoices.Upload',
         download: 'Invoices.Download',
         viewAll: 'Invoices.ViewAll'
+    },
+    aiChat: {
+        use: 'AIChat.Use'
     }
 } as const;
 
