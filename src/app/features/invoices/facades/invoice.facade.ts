@@ -181,18 +181,18 @@ export class InvoiceFacade {
   }
 
   // --- Upload ---
-  uploadInvoice(purchaseOrderId: string, file: File, onSuccess: () => void): void {
+  uploadInvoice(purchaseOrderId: string, file: File, onSuccess: (invoiceId: number) => void): void {
     if (this.uploadLoading()) return;
     this.uploadLoading.set(true);
     this.service.uploadInvoice(purchaseOrderId, file).subscribe({
       next: response => {
-        if (response.success) {
+        if (response.success && response.data) {
           this.messageService.add({
             severity: 'success',
             summary: 'Invoice Uploaded',
             detail: `Invoice uploaded successfully.`
           });
-          onSuccess();
+          onSuccess(response.data.invoiceId);
           this.loadInvoices(); // Refresh from backend
         } else {
           this.messageService.add({

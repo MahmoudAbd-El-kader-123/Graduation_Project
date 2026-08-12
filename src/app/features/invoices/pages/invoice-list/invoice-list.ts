@@ -260,8 +260,9 @@ export class InvoiceListComponent implements OnInit {
     const file = this.selectedFile();
     if (!po || !file) return;
 
-    this.facade.uploadInvoice(po.id, file, () => {
+    this.facade.uploadInvoice(po.id, file, invoiceId => {
       this.closeUploadDialog();
+      this.router.navigate(['/dashboard/invoices', invoiceId]);
     });
   }
 

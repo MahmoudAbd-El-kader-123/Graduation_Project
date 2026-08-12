@@ -1,11 +1,19 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, switchMap, takeWhile, timer } from 'rxjs';
 import { ApiService } from '../../../shared/api/services/api.service';
 import { ApiResponse } from '../../../shared/api/models/api-response.model';
 import { PagedResult } from '../../../shared/api/models/paged-result.model';
 import { API_ENDPOINTS, API_BASE_URL } from '../../../core/constants/api.constants';
-import { InvoiceListItemDto, InvoiceDetailDto, InvoiceUploadResultDto } from '../models/invoice.model';
+import {
+  InvoiceDetailDto,
+  InvoiceListItemDto,
+  InvoiceReconciliation,
+  InvoiceUploadResultDto
+} from '../models/invoice.model';
+
+const RECONCILIATION_POLL_INTERVAL_MS = 2500;
+const RECONCILIATION_TERMINAL_STATUSES = new Set(['completed', 'failed', 'needsreview']);
 
 @Injectable()
 export class InvoiceService {
@@ -44,6 +52,22 @@ export class InvoiceService {
    */
   getInvoice(id: number): Observable<ApiResponse<InvoiceDetailDto>> {
     return this.apiService.get<ApiResponse<InvoiceDetailDto>>(`${this.baseUrl}/${id}`);
+  }
+
+  getReconciliation(id: number): Observable<ApiResponse<InvoiceReconciliation>> {
+    return this.apiService.get<ApiResponse<InvoiceReconciliation>>(
+      `${this.baseUrl}/${id}/reconciliation`
+    );
+  }
+
+  pollReconciliation(id: number): Observable<ApiResponse<InvoiceReconciliation>> {
+    return timer(0, RECONCILIATION_POLL_INTERVAL_MS).pipe(
+      switchMap(() => this.getReconciliation(id)),
+      takeWhile(
+        response => !RECONCILIATION_TERMINAL_STATUSES.has(response.data.status.toLowerCase()),
+        true
+      )
+    );
   }
 
   /**

@@ -70,3 +70,30 @@ export interface InvoiceUploadResultDto {
   status: string | null;
   fileName: string | null;
 }
+
+export type DiscrepancyType =
+  | 'MissingSku'
+  | 'MissingFromInvoice'
+  | 'QuantityMismatch'
+  | 'UnitPriceMismatch'
+  | 'AmountMismatch';
+
+export interface InvoiceDiscrepancy {
+  id: number;
+  discrepancyType: DiscrepancyType;
+  fieldName: string;
+  expectedValue: string;
+  actualValue: string;
+  isResolved: boolean;
+}
+
+export interface InvoiceReconciliation {
+  invoiceId: number;
+  purchaseOrderId: number | null;
+  invoiceNumber: string;
+  status: string;
+  isReconciled: boolean;
+  hasDiscrepancies: boolean;
+  discrepancyCount: number;
+  discrepancies: InvoiceDiscrepancy[];
+}
