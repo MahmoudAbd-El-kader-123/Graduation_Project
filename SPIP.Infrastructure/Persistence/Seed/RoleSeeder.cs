@@ -39,5 +39,19 @@ public static class RoleSeeder
                 }
             }
         }
+
+        var managerRole = await roleManager.FindByNameAsync("Manager");
+        if (managerRole != null)
+        {
+            var managerClaims = await roleManager.GetClaimsAsync(managerRole);
+            if (!managerClaims.Any(claim =>
+                    claim.Type == "Permission" &&
+                    claim.Value == Permissions.ReconciliationReports.ViewAll))
+            {
+                await roleManager.AddClaimAsync(
+                    managerRole,
+                    new Claim("Permission", Permissions.ReconciliationReports.ViewAll));
+            }
+        }
     }
 }

@@ -56,6 +56,7 @@ public class Program
             var context = provider.GetRequiredService<SPIP.Infrastructure.Persistence.Context.ApplicationDbContext>();
 
             await RoleSeeder.SeedAsync(roleManager);
+            await ReconciliationReportPermissionSeeder.SeedAsync(context);
             await AdminUserSeeder.SeedAsync(userManager, context);
 
             Log.Information("Identity data seeded successfully");

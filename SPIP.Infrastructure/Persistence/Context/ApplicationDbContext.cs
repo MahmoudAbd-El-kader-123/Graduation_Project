@@ -62,7 +62,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
         var seeds = new List<PermissionCatalog>();
         int idCounter = 1;
         var permissionsType = typeof(Permissions);
-        var nestedTypes = permissionsType.GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
+        var nestedTypes = permissionsType
+            .GetNestedTypes(BindingFlags.Public | BindingFlags.Static)
+            .Where(type => type != typeof(Permissions.ReconciliationReports));
 
         foreach (var nestedType in nestedTypes)
         {

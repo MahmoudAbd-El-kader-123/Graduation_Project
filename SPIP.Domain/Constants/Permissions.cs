@@ -65,6 +65,11 @@ public static class Permissions
         public const string View = "Reports.View";
     }
 
+    public static class ReconciliationReports
+    {
+        public const string ViewAll = "ReconciliationReports.ViewAll";
+    }
+
     public static class AIChat
     {
         public const string Use = "AIChat.Use";
