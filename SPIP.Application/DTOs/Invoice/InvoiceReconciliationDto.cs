@@ -9,5 +9,6 @@ public class InvoiceReconciliationDto
     public bool IsReconciled { get; set; }
     public bool HasDiscrepancies { get; set; }
     public int DiscrepancyCount { get; set; }
+    public List<ReconciliationItemDto> Items { get; set; } = [];
     public List<DiscrepancyDto> Discrepancies { get; set; } = [];
 }
