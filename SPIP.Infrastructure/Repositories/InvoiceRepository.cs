@@ -18,6 +18,9 @@ public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
         var invoice = await DbSet
             .Include(i => i.Items)
             .Include(i => i.Discrepancies)
+                .ThenInclude(discrepancy => discrepancy.ReconciliationItem)
+            .Include(i => i.ReconciliationItems)
+                .ThenInclude(row => row.Discrepancies)
             .Include(i => i.ProcessingLogs)
             .Include(i => i.UploadedFiles)
             .Include(i => i.UploadedByUser)
@@ -31,6 +34,14 @@ public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
         }
 
         return invoice;
+    }
+
+    public void ClearReconciliationResults(Invoice invoice)
+    {
+        Context.Discrepancies.RemoveRange(invoice.Discrepancies);
+        Context.InvoiceReconciliationItems.RemoveRange(invoice.ReconciliationItems);
+        invoice.Discrepancies.Clear();
+        invoice.ReconciliationItems.Clear();
     }
 
     public async Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetPagedAsync(InvoiceListParameters parameters, CancellationToken cancellationToken = default)

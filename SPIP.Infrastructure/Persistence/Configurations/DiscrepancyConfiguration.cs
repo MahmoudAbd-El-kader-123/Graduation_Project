@@ -21,6 +21,16 @@ public class DiscrepancyConfiguration : IEntityTypeConfiguration<Discrepancy>
             .WithMany()
             .HasForeignKey(d => d.InvoiceItemId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(d => d.PurchaseOrderItem)
+            .WithMany()
+            .HasForeignKey(d => d.PurchaseOrderItemId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(d => d.ReconciliationItem)
+            .WithMany(row => row.Discrepancies)
+            .HasForeignKey(d => d.ReconciliationItemId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
 

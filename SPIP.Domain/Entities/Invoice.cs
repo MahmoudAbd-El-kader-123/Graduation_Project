@@ -23,6 +23,7 @@ public class Invoice : BaseEntity
     public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
     public ICollection<UploadedFile> UploadedFiles { get; set; } = new List<UploadedFile>();
     public ICollection<Discrepancy> Discrepancies { get; set; } = new List<Discrepancy>();
+    public ICollection<InvoiceReconciliationItem> ReconciliationItems { get; set; } = new List<InvoiceReconciliationItem>();
     public ICollection<AIExtractionResult> AIExtractionResults { get; set; } = new List<AIExtractionResult>();
     public ICollection<InvoiceProcessingLog> ProcessingLogs { get; set; } = new List<InvoiceProcessingLog>();
 }
