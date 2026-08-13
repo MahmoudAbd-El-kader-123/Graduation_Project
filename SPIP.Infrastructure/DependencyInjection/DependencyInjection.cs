@@ -90,6 +90,7 @@ public static class DependencyInjection
         services.AddScoped<IVendorColumnMappingRepository, VendorColumnMappingRepository>();
         services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IReconciliationReportRepository, ReconciliationReportRepository>();
         services.AddScoped<IInvoiceProcessingLogRepository, InvoiceProcessingLogRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -107,6 +108,7 @@ public static class DependencyInjection
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IInvoiceProcessingService, InvoiceProcessingService>();
         services.AddScoped<IReconciliationService, ReconciliationService>();
+        services.AddScoped<IReconciliationReportService, ReconciliationReportService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         services.AddOptions<AIServiceSettings>()
