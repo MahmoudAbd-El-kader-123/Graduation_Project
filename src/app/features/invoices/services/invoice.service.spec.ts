@@ -19,6 +19,7 @@ function response(status: string): ApiResponse<InvoiceReconciliation> {
       isReconciled: status === 'Completed',
       hasDiscrepancies: false,
       discrepancyCount: 0,
+      items: [],
       discrepancies: []
     }
   };
