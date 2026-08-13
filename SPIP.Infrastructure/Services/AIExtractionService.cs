@@ -35,6 +35,19 @@ public class AIExtractionService : IAIExtractionService
             content.Add(fileContent, "file", fileName);
 
             _logger.LogInformation("Sending invoice {FileName} to AI extraction service", fileName);
+
+            _httpClient.DefaultRequestHeaders.Remove("X-API-Key");
+            if (!string.IsNullOrWhiteSpace(_settings.ApiKey))
+            {
+                _httpClient.DefaultRequestHeaders.Add("X-API-Key", _settings.ApiKey);
+            }
+
+            if (!string.IsNullOrWhiteSpace(_settings.WebhookSecret))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _settings.WebhookSecret);
+            }
+
             using var response = await _httpClient.PostAsync(_settings.ExtractionEndpoint, content, cancellationToken);
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
