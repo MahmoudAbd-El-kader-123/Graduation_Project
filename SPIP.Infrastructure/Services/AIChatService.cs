@@ -295,9 +295,14 @@ public class AIChatService : IAIChatService
             message = userMessage              // do NOT log this value
         };
 
+        // Inject X-API-Key header for secret webhook authentication
+        _httpClient.DefaultRequestHeaders.Remove("X-API-Key");
+        if (!string.IsNullOrWhiteSpace(_aiSettings.ApiKey))
+        {
+            _httpClient.DefaultRequestHeaders.Add("X-API-Key", _aiSettings.ApiKey);
+        }
+
         // Optional: authenticate request to n8n with a bearer secret.
-        // Supply via environment variable / user-secrets — never from appsettings.json in VCS.
-        // Leave WebhookSecret empty to skip this header (preserves original unauthenticated behaviour).
         if (!string.IsNullOrWhiteSpace(_aiSettings.WebhookSecret))
         {
             _httpClient.DefaultRequestHeaders.Authorization =

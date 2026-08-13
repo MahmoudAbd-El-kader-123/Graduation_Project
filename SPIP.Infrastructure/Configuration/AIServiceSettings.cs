@@ -18,6 +18,11 @@ public sealed class AIServiceSettings
     public string ChatWebhookEndpoint { get; set; } = string.Empty;
 
     /// <summary>
+    /// Secret API Key for X-API-Key header authentication to n8n webhooks & AI microservices.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+
+    /// <summary>
     /// Optional bearer secret for authenticating requests to the n8n webhook.
     /// Supply via environment variable or user-secrets — NOT appsettings.json in source control.
     /// Leave empty to skip Authorization header (existing behaviour if not yet configured).
