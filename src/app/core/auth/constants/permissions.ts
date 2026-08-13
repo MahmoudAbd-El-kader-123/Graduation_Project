@@ -41,6 +41,9 @@ export const PERMISSIONS = {
     reports: {
         view: 'reports.view'
     },
+    reconciliationReports: {
+        viewAll: 'ReconciliationReports.ViewAll'
+    },
     invoices: {
         view: 'Invoices.View',
         upload: 'Invoices.Upload',
