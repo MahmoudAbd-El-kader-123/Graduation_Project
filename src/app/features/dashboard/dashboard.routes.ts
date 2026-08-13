@@ -75,12 +75,13 @@ export const DASHBOARD_ROUTES: Routes = [
 
   {
     path: 'reports',
-    canActivate: [accessGuard],
     data: {
       title: 'Reports',
-      permissions: [PERMISSIONS.reports.view]
+      breadcrumb: 'Reports'
     } as DashboardRouteData,
-    loadComponent: () => import('./pages/reports/reports.component').then(m => m.ReportsComponent)
+    loadChildren: () =>
+      import('../reconciliation-reports/reconciliation-reports.routes')
+        .then(m => m.RECONCILIATION_REPORT_ROUTES)
   },
   {
     path: 'assistant',

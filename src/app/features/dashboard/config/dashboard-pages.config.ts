@@ -90,7 +90,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
         showInSidebar: true,
         sidebarOrder: 7,
         homePriority: 7,
-        permissions: [PERMISSIONS.reports.view]
+        permissions: [PERMISSIONS.reconciliationReports.viewAll]
     },
     {
         id: 'assistant',

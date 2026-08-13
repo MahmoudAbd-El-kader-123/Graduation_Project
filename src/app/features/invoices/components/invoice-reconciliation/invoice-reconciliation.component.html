@@ -1,0 +1,203 @@
+<section
+  class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-hidden"
+  aria-labelledby="reconciliation-heading">
+  <div class="p-5 border-b border-surface-100 dark:border-surface-800">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 id="reconciliation-heading" class="text-lg font-semibold text-surface-900 dark:text-surface-0">
+          Invoice reconciliation
+        </h2>
+        <p class="mt-1 text-sm text-surface-500">
+          Purchase-order values compared with the AI-extracted invoice.
+        </p>
+      </div>
+
+      @if (reconciliation()) {
+        <p-tag
+          [value]="reconciliation()!.status"
+          [severity]="viewState() === 'failed' ? 'danger' : viewState() === 'needs-review' || viewState() === 'differences' ? 'warn' : viewState() === 'match' ? 'success' : 'info'"
+          [rounded]="true">
+        </p-tag>
+      }
+    </div>
+  </div>
+
+  <div class="p-5" aria-live="polite">
+    @if (error()) {
+      <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40" role="alert">
+        <div class="flex gap-3">
+          <i class="pi pi-exclamation-triangle mt-0.5 text-red-600" aria-hidden="true"></i>
+          <div>
+            <p class="font-medium text-red-800 dark:text-red-200">Unable to show reconciliation</p>
+            <p class="mt-1 text-sm text-red-700 dark:text-red-300">{{ error() }}</p>
+          </div>
+        </div>
+      </div>
+    } @else if (loading() || viewState() === 'processing') {
+      <div class="flex flex-col items-center justify-center gap-3 py-8 text-center" role="status">
+        <p-progress-spinner ariaLabel="Invoice comparison in progress" [style]="{ width: '42px', height: '42px' }"></p-progress-spinner>
+        <div>
+          <p class="font-medium text-surface-800 dark:text-surface-200">Comparing invoice with purchase order</p>
+          <p class="mt-1 text-sm text-surface-500">
+            @if (polling()) {
+              This result updates automatically while processing continues.
+            } @else {
+              Refresh this report later to see the completed reconciliation.
+            }
+          </p>
+        </div>
+      </div>
+    } @else if (viewState() === 'needs-review') {
+      <div class="rounded-lg border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40" role="status">
+        <div class="flex gap-3">
+          <i class="pi pi-user-edit mt-0.5 text-xl text-amber-600" aria-hidden="true"></i>
+          <div>
+            <p class="font-semibold text-amber-900 dark:text-amber-200">Manual review required</p>
+            <p class="mt-1 text-sm text-amber-800 dark:text-amber-300">Automated comparison has stopped and this invoice needs review.</p>
+          </div>
+        </div>
+      </div>
+    } @else if (viewState() === 'failed') {
+      <div class="rounded-lg border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/40" role="alert">
+        <div class="flex gap-3">
+          <i class="pi pi-times-circle mt-0.5 text-xl text-red-600" aria-hidden="true"></i>
+          <div>
+            <p class="font-semibold text-red-800 dark:text-red-200">Invoice comparison failed</p>
+            <p class="mt-1 text-sm text-red-700 dark:text-red-300">The reconciliation process could not be completed.</p>
+          </div>
+        </div>
+      </div>
+    } @else if (reconciliation(); as reconciliationResult) {
+      @if (viewState() === 'match') {
+        <div class="rounded-lg border border-green-200 bg-green-50 p-5 dark:border-green-900 dark:bg-green-950/40" role="status">
+          <div class="flex gap-3">
+            <i class="pi pi-check-circle mt-0.5 text-xl text-green-600" aria-hidden="true"></i>
+            <div>
+              <p class="font-semibold text-green-800 dark:text-green-200">Invoice matches the purchase order</p>
+              <p class="mt-1 text-sm text-green-700 dark:text-green-300">The comparison completed without differences.</p>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/40 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-semibold text-amber-900 dark:text-amber-200">Differences require attention</p>
+            <p class="mt-1 text-sm text-amber-800 dark:text-amber-300">
+              Expected values come from the purchase order; actual values were extracted from the invoice by AI.
+            </p>
+          </div>
+          <p-tag [value]="reconciliationResult.discrepancyCount + ' difference' + (reconciliationResult.discrepancyCount === 1 ? '' : 's')" severity="warn" [rounded]="true"></p-tag>
+        </div>
+      }
+
+      @if (discrepantItemComparisons().length > 0) {
+        <div class="mt-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">Item comparisons</h3>
+              <p class="mt-1 text-sm text-surface-500">Each relationship and status is provided by the reconciliation service.</p>
+            </div>
+            <div class="flex flex-wrap gap-2" aria-label="Item reconciliation counts">
+              <p-tag [value]="itemCounts().Different + ' different'" severity="warn" [rounded]="true"></p-tag>
+              <p-tag [value]="itemCounts().MissingFromInvoice + ' missing from invoice'" severity="warn" [rounded]="true"></p-tag>
+              <p-tag [value]="itemCounts().MissingFromPurchaseOrder + ' missing from PO'" severity="warn" [rounded]="true"></p-tag>
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-4">
+            @for (comparison of discrepantItemComparisons(); track comparison.reconciliationItem.id) {
+              <article
+                class="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700"
+                [attr.data-reconciliation-item-id]="comparison.reconciliationItem.id">
+                <div class="flex flex-col gap-3 bg-surface-50 p-4 dark:bg-surface-800 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h4 class="font-semibold text-surface-900 dark:text-surface-0">
+                      {{ displayValue(comparison.reconciliationItem.productName) }}
+                    </h4>
+                    <p class="mt-1 text-sm text-surface-600 dark:text-surface-300">{{ comparison.statusDescription }}</p>
+                  </div>
+                  <p-tag [value]="comparison.statusLabel" [severity]="comparison.statusSeverity" [rounded]="true"></p-tag>
+                </div>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full min-w-[34rem] border-collapse text-left text-sm">
+                    <thead>
+                      <tr class="border-y border-surface-200 bg-surface-50/60 dark:border-surface-700 dark:bg-surface-800/60">
+                        <th scope="col" class="px-4 py-3 font-semibold">Field</th>
+                        <th scope="col" class="px-4 py-3 font-semibold">Expected / Purchase Order</th>
+                        <th scope="col" class="px-4 py-3 font-semibold">Actual / Invoice</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+                      <tr>
+                        <th scope="row" class="px-4 py-3 font-medium">SKU</th>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.purchaseOrderSku) }}</td>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.invoiceSku) }}</td>
+                      </tr>
+                      <tr [class]="comparison.quantityDifferent ? 'bg-amber-50 dark:bg-amber-950/30' : ''">
+                        <th scope="row" class="px-4 py-3 font-medium">Quantity</th>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.expectedQuantity) }}</td>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.actualQuantity) }}</td>
+                      </tr>
+                      <tr [class]="comparison.unitPriceDifferent ? 'bg-amber-50 dark:bg-amber-950/30' : ''">
+                        <th scope="row" class="px-4 py-3 font-medium">Unit price</th>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.expectedUnitPrice) }}</td>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.actualUnitPrice) }}</td>
+                      </tr>
+                      <tr [class]="comparison.amountDifferent ? 'bg-amber-50 dark:bg-amber-950/30' : ''">
+                        <th scope="row" class="px-4 py-3 font-medium">Amount</th>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.expectedAmount) }}</td>
+                        <td class="px-4 py-3 font-mono">{{ displayValue(comparison.reconciliationItem.actualAmount) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                @if (comparison.reconciliationItem.discrepancies.length > 0) {
+                  <div class="border-t border-surface-200 p-4 dark:border-surface-700">
+                    <h5 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Differences for this item</h5>
+                    <ul class="mt-2 space-y-1 text-sm text-surface-600 dark:text-surface-300">
+                      @for (difference of comparison.reconciliationItem.discrepancies; track difference.id) {
+                        <li class="flex gap-2">
+                          <i class="pi pi-exclamation-circle mt-0.5 text-amber-600" aria-hidden="true"></i>
+                          <span>{{ getDiscrepancyLabel(difference.discrepancyType) }}: {{ difference.expectedValue }} expected, {{ difference.actualValue }} actual</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        </div>
+      }
+
+      @if (invoiceLevelDiscrepancies().length > 0) {
+        <section class="mt-6" aria-labelledby="invoice-level-differences-heading" data-testid="invoice-level-differences">
+          <h3 id="invoice-level-differences-heading" class="text-base font-semibold text-surface-900 dark:text-surface-0">Invoice-level differences</h3>
+          <p class="mt-1 text-sm text-surface-500">These differences apply to the invoice as a whole, not to an individual item.</p>
+          <div class="mt-3 overflow-x-auto">
+            <p-table [value]="invoiceLevelDiscrepancies()" dataKey="id" [tableStyle]="{ 'min-width': '46rem' }">
+              <ng-template #header>
+                <tr>
+                  <th scope="col">Difference</th>
+                  <th scope="col">Field</th>
+                  <th scope="col">Expected / Purchase Order</th>
+                  <th scope="col">Actual / Invoice</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-difference>
+                <tr>
+                  <td class="font-medium text-surface-800 dark:text-surface-200">{{ getDiscrepancyLabel(difference.discrepancyType) }}</td>
+                  <td>{{ getFieldLabel(difference.fieldName) }}</td>
+                  <td class="font-mono text-sm">{{ difference.expectedValue }}</td>
+                  <td class="font-mono text-sm">{{ difference.actualValue }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </section>
+      }
+    }
+  </div>
+</section>

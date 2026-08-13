@@ -1,0 +1,182 @@
+<main class="p-4 sm:p-6" aria-labelledby="reconciliation-reports-heading">
+  <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 id="reconciliation-reports-heading" class="text-2xl font-semibold text-surface-900 dark:text-surface-0">
+        Invoice Reconciliation Reports
+      </h1>
+      <p class="mt-1 text-sm text-surface-600 dark:text-surface-300">
+        Review invoice and purchase-order differences across the system.
+      </p>
+    </div>
+    @if (!loading() && !error()) {
+      <p class="text-sm text-surface-500">{{ totalCount() }} report{{ totalCount() === 1 ? '' : 's' }}</p>
+    }
+  </div>
+
+  <section class="mb-6 rounded-xl border border-surface-200 bg-surface-0 p-4 shadow-sm dark:border-surface-700 dark:bg-surface-900" aria-labelledby="report-filters-heading">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <h2 id="report-filters-heading" class="font-semibold text-surface-900 dark:text-surface-0">Filters</h2>
+      <p-button label="Reset" severity="secondary" [text]="true" [disabled]="!filtersActive()" (onClick)="clearFilters()"></p-button>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="xl:col-span-2">
+        <label for="report-search" class="mb-1 block text-sm font-medium">Search</label>
+        <input
+          id="report-search"
+          pInputText
+          class="w-full"
+          type="search"
+          maxlength="100"
+          placeholder="Invoice, PO, vendor, or uploader"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)" />
+      </div>
+      <div>
+        <label for="report-status" class="mb-1 block text-sm font-medium">Status</label>
+        <p-select
+          inputId="report-status"
+          class="w-full"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="status()"
+          (ngModelChange)="status.set($event); onFilterChange()">
+        </p-select>
+      </div>
+      <div>
+        <label for="report-discrepancies" class="mb-1 block text-sm font-medium">Differences</label>
+        <p-select
+          inputId="report-discrepancies"
+          class="w-full"
+          [options]="discrepancyOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="hasDiscrepancies()"
+          (ngModelChange)="hasDiscrepancies.set($event); onFilterChange()">
+        </p-select>
+      </div>
+      <div>
+        <label for="report-from-date" class="mb-1 block text-sm font-medium">Uploaded from</label>
+        <p-datepicker
+          inputId="report-from-date"
+          class="w-full"
+          [showIcon]="true"
+          [ngModel]="fromDate()"
+          (ngModelChange)="fromDate.set($event); onFilterChange()">
+        </p-datepicker>
+      </div>
+      <div>
+        <label for="report-to-date" class="mb-1 block text-sm font-medium">Uploaded to</label>
+        <p-datepicker
+          inputId="report-to-date"
+          class="w-full"
+          [showIcon]="true"
+          [minDate]="fromDate()"
+          [ngModel]="toDate()"
+          (ngModelChange)="toDate.set($event); onFilterChange()">
+        </p-datepicker>
+      </div>
+      <div>
+        <label for="report-sort" class="mb-1 block text-sm font-medium">Sort by</label>
+        <p-select
+          inputId="report-sort"
+          class="w-full"
+          [options]="sortOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="sortBy()"
+          (ngModelChange)="sortBy.set($event); onFilterChange()">
+        </p-select>
+      </div>
+      <div>
+        <label for="report-direction" class="mb-1 block text-sm font-medium">Direction</label>
+        <p-select
+          inputId="report-direction"
+          class="w-full"
+          [options]="directionOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="sortDirection()"
+          (ngModelChange)="sortDirection.set($event); onFilterChange()">
+        </p-select>
+      </div>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading reconciliation reports" aria-busy="true">
+      @for (placeholder of [1, 2, 3, 4, 5, 6]; track placeholder) {
+        <div class="h-64 animate-pulse rounded-xl border border-surface-200 bg-surface-100 dark:border-surface-700 dark:bg-surface-800"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <app-error-state [message]="error()!"></app-error-state>
+  } @else if (reports().length === 0) {
+    <app-empty-state
+      [isSearch]="filtersActive()"
+      emptyMessage="No reconciliation reports found."
+      searchEmptyMessage="No reconciliation reports match the selected filters.">
+    </app-empty-state>
+  } @else {
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Reconciliation report results">
+      @for (report of reports(); track report.invoiceId) {
+        <a
+          [routerLink]="['/dashboard/reports/reconciliation', report.invoiceId]"
+          class="flex flex-col rounded-xl border border-surface-200 bg-surface-0 p-5 shadow-sm transition hover:border-primary hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:border-surface-700 dark:bg-surface-900">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-xs font-medium uppercase tracking-wide text-surface-500">Invoice</p>
+              <h2 class="mt-1 text-lg font-semibold text-surface-900 dark:text-surface-0">{{ report.invoiceNumber || 'N/A' }}</h2>
+            </div>
+            <p-tag [value]="report.status" [severity]="statusSeverity(report.status)" [rounded]="true"></p-tag>
+          </div>
+
+          <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <div>
+              <dt class="text-surface-500">Purchase order</dt>
+              <dd class="mt-0.5 font-medium">{{ report.purchaseOrderNumber || 'N/A' }}</dd>
+            </div>
+            <div>
+              <dt class="text-surface-500">Uploaded</dt>
+              <dd class="mt-0.5 font-medium">{{ formatDate(report.uploadedAt) }}</dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-surface-500">Vendor</dt>
+              <dd class="mt-0.5 font-medium">{{ report.vendorName || 'N/A' }}</dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-surface-500">Uploaded by</dt>
+              <dd class="mt-0.5 break-all font-medium">{{ report.uploadedByUserEmail || 'N/A' }}</dd>
+            </div>
+          </dl>
+
+          <div class="mt-4 border-t border-surface-100 pt-4 dark:border-surface-800">
+            <p class="text-sm font-medium">{{ report.discrepancyCount }} total difference{{ report.discrepancyCount === 1 ? '' : 's' }}</p>
+            <div class="mt-2 flex flex-wrap gap-2 text-xs">
+              <span class="rounded-full bg-amber-100 px-2 py-1 text-amber-800 dark:bg-amber-950 dark:text-amber-200">{{ report.differentItemCount }} different</span>
+              <span class="rounded-full bg-amber-100 px-2 py-1 text-amber-800 dark:bg-amber-950 dark:text-amber-200">{{ report.missingFromInvoiceCount }} missing from invoice</span>
+              <span class="rounded-full bg-amber-100 px-2 py-1 text-amber-800 dark:bg-amber-950 dark:text-amber-200">{{ report.missingFromPurchaseOrderCount }} missing from PO</span>
+            </div>
+          </div>
+
+          @if (report.statusMessage) {
+            <p class="mt-4 rounded-lg bg-surface-100 p-3 text-sm text-surface-700 dark:bg-surface-800 dark:text-surface-200">
+              {{ report.statusMessage }}
+            </p>
+          }
+        </a>
+      }
+    </section>
+
+    <div class="mt-6">
+      <app-pagination
+        [totalCount]="totalCount()"
+        [pageNumber]="pageNumber()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[12, 24, 50]"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+  }
+</main>

@@ -70,3 +70,60 @@ export interface InvoiceUploadResultDto {
   status: string | null;
   fileName: string | null;
 }
+
+export type DiscrepancyType =
+  | 'MissingSku'
+  | 'MissingFromInvoice'
+  | 'QuantityMismatch'
+  | 'UnitPriceMismatch'
+  | 'AmountMismatch';
+
+export interface InvoiceDiscrepancy {
+  id: number;
+  discrepancyType: DiscrepancyType;
+  fieldName: string;
+  reconciliationItemId: number | null;
+  purchaseOrderItemId: number | null;
+  invoiceItemId: number | null;
+  purchaseOrderSku: string | null;
+  invoiceSku: string | null;
+  productName: string | null;
+  expectedValue: string;
+  actualValue: string;
+  isResolved: boolean;
+}
+
+export type ReconciliationItemStatus =
+  | 'Matched'
+  | 'Different'
+  | 'MissingFromInvoice'
+  | 'MissingFromPurchaseOrder';
+
+export interface ReconciliationItem {
+  id: number;
+  purchaseOrderItemId: number | null;
+  invoiceItemId: number | null;
+  purchaseOrderSku: string | null;
+  invoiceSku: string | null;
+  productName: string | null;
+  expectedQuantity: string;
+  actualQuantity: string;
+  expectedUnitPrice: string;
+  actualUnitPrice: string;
+  expectedAmount: string;
+  actualAmount: string;
+  status: ReconciliationItemStatus;
+  discrepancies: InvoiceDiscrepancy[];
+}
+
+export interface InvoiceReconciliation {
+  invoiceId: number;
+  purchaseOrderId: number | null;
+  invoiceNumber: string;
+  status: string;
+  isReconciled: boolean;
+  hasDiscrepancies: boolean;
+  discrepancyCount: number;
+  items: ReconciliationItem[];
+  discrepancies: InvoiceDiscrepancy[];
+}

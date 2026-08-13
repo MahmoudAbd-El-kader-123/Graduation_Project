@@ -82,6 +82,12 @@
         </div>
       </div>
 
+      <app-invoice-reconciliation
+        [reconciliation]="reconciliation()"
+        [loading]="reconciliationLoading()"
+        [error]="reconciliationError()">
+      </app-invoice-reconciliation>
+
       <!-- Line items -->
       @if (invoice()!.items && invoice()!.items!.length > 0) {
         <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
@@ -103,39 +109,6 @@
                 <td>{{ item.quantity }}</td>
                 <td>{{ formatAmount(item.unitPrice) }}</td>
                 <td class="font-medium">{{ formatAmount(item.lineTotal) }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      }
-
-      <!-- Discrepancies -->
-      @if (invoice()!.discrepancies && invoice()!.discrepancies!.length > 0) {
-        <div class="bg-surface-0 dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-4">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Discrepancies</h2>
-          <p-table [value]="invoice()!.discrepancies!" [tableStyle]="{ 'min-width': '40rem' }">
-            <ng-template #header>
-              <tr>
-                <th>Type</th>
-                <th>Field</th>
-                <th>Expected</th>
-                <th>Actual</th>
-                <th>Resolved</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-d>
-              <tr>
-                <td>{{ d.discrepancyType ?? '—' }}</td>
-                <td>{{ d.fieldName ?? '—' }}</td>
-                <td>{{ d.expectedValue ?? '—' }}</td>
-                <td>{{ d.actualValue ?? '—' }}</td>
-                <td>
-                  <p-tag
-                    [value]="d.isResolved ? 'Resolved' : 'Open'"
-                    [severity]="d.isResolved ? 'success' : 'warn'"
-                    [rounded]="true">
-                  </p-tag>
-                </td>
               </tr>
             </ng-template>
           </p-table>
