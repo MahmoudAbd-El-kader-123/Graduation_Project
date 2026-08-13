@@ -82,9 +82,38 @@ export interface InvoiceDiscrepancy {
   id: number;
   discrepancyType: DiscrepancyType;
   fieldName: string;
+  reconciliationItemId: number | null;
+  purchaseOrderItemId: number | null;
+  invoiceItemId: number | null;
+  purchaseOrderSku: string | null;
+  invoiceSku: string | null;
+  productName: string | null;
   expectedValue: string;
   actualValue: string;
   isResolved: boolean;
+}
+
+export type ReconciliationItemStatus =
+  | 'Matched'
+  | 'Different'
+  | 'MissingFromInvoice'
+  | 'MissingFromPurchaseOrder';
+
+export interface ReconciliationItem {
+  id: number;
+  purchaseOrderItemId: number | null;
+  invoiceItemId: number | null;
+  purchaseOrderSku: string | null;
+  invoiceSku: string | null;
+  productName: string | null;
+  expectedQuantity: string;
+  actualQuantity: string;
+  expectedUnitPrice: string;
+  actualUnitPrice: string;
+  expectedAmount: string;
+  actualAmount: string;
+  status: ReconciliationItemStatus;
+  discrepancies: InvoiceDiscrepancy[];
 }
 
 export interface InvoiceReconciliation {
@@ -95,5 +124,6 @@ export interface InvoiceReconciliation {
   isReconciled: boolean;
   hasDiscrepancies: boolean;
   discrepancyCount: number;
+  items: ReconciliationItem[];
   discrepancies: InvoiceDiscrepancy[];
 }

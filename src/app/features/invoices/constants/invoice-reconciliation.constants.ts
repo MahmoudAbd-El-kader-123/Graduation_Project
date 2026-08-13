@@ -1,4 +1,8 @@
-import { DiscrepancyType, InvoiceReconciliation } from '../models/invoice.model';
+import {
+  DiscrepancyType,
+  InvoiceReconciliation,
+  ReconciliationItemStatus
+} from '../models/invoice.model';
 
 export type ReconciliationViewState =
   | 'processing'
@@ -13,6 +17,13 @@ export const DISCREPANCY_LABELS: Record<DiscrepancyType, string> = {
   QuantityMismatch: 'Quantity mismatch',
   UnitPriceMismatch: 'Unit-price mismatch',
   AmountMismatch: 'Amount mismatch'
+};
+
+export const RECONCILIATION_ITEM_STATUS_LABELS: Record<ReconciliationItemStatus, string> = {
+  Matched: 'Matched',
+  Different: 'Different',
+  MissingFromInvoice: 'Missing from invoice',
+  MissingFromPurchaseOrder: 'Missing from purchase order'
 };
 
 export function getReconciliationViewState(
