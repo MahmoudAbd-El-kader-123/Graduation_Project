@@ -23,62 +23,102 @@
 
   <!-- Loading State -->
   <ng-container *ngIf="facade.isLoading() && !facade.hasStats()">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <p-skeleton *ngFor="let i of [1,2,3,4,5]" height="7rem" borderRadius="12px"></p-skeleton>
-    </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <p-skeleton height="20rem" borderRadius="12px"></p-skeleton>
+      <p-skeleton *ngFor="let i of [1,2,3,4]" height="22rem" borderRadius="12px"></p-skeleton>
     </div>
   </ng-container>
 
   <!-- Error State -->
   <div *ngIf="facade.error() as error" class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-200 dark:border-red-800/30 flex items-center gap-3">
     <lucide-icon name="AlertTriangle"></lucide-icon>
-    <span>{{ error }}</span>
+    <span class="flex-1">{{ error }}</span>
+    <button type="button" class="font-semibold underline underline-offset-2" (click)="facade.loadStats()">Try again</button>
   </div>
 
-  <!-- Content -->
+  <!-- Business dashboard -->
   <ng-container *ngIf="facade.hasStats() && !facade.error()">
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <div *ngFor="let widget of widgets" class="bg-surface-0 dark:bg-surface-900 p-5 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col justify-between h-full relative overflow-hidden group">
-        <div class="flex justify-between items-start mb-4">
-          <span class="text-surface-500 dark:text-surface-400 font-medium">{{ widget.title }}</span>
-          <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-500 flex items-center justify-center transition-transform group-hover:scale-110">
-            <lucide-icon [name]="widget.icon" [size]="20"></lucide-icon>
-          </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Invoice Pipeline</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Current invoices grouped by processing status.</p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-3xl font-semibold text-surface-900 dark:text-surface-0">{{ getWidgetValue(widget.field) }}</span>
+        <div class="h-72" *ngIf="facade.invoiceStatusData(); else emptyInvoices">
+          <canvas baseChart type="bar" [data]="invoiceStatusChartData()" [options]="countBarOptions()"></canvas>
         </div>
+        <ng-template #emptyInvoices><div class="h-72 flex items-center justify-center text-surface-500">No invoice data available.</div></ng-template>
+      </div>
+
+      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Reconciliation Health</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Clean matches compared with invoices needing review.</p>
+        </div>
+        <div class="h-72" *ngIf="facade.reconciliationHealthData(); else emptyReconciliation">
+          <canvas baseChart type="doughnut" [data]="reconciliationChartData()" [options]="doughnutOptions()"></canvas>
+        </div>
+        <ng-template #emptyReconciliation><div class="h-72 flex items-center justify-center text-surface-500">No reconciliation data available.</div></ng-template>
       </div>
     </div>
 
-    <!-- Charts / Breakdown -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <!-- Users per Role -->
       <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="flex items-center gap-2 mb-6">
-          <lucide-icon name="Users" class="text-surface-500"></lucide-icon>
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Users per Role</h2>
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Invoice Value by Vendor</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Top vendors by invoice value in the loaded records.</p>
         </div>
-        
-        <div class="flex flex-col gap-4" *ngIf="facade.usersPerRoleData() as data; else emptyRoles">
-          <div *ngFor="let label of data.labels; let i = index" class="flex items-center justify-between p-3 rounded-lg bg-surface-50 dark:bg-surface-800/50">
-            <div class="flex items-center gap-3">
-              <div class="w-2 h-2 rounded-full bg-primary-500"></div>
-              <span class="font-medium text-surface-700 dark:text-surface-200">{{ label }}</span>
-            </div>
-            <p-badge [value]="data.series[i].toString()" severity="info"></p-badge>
-          </div>
+        <div class="h-80" *ngIf="facade.invoiceValueByVendorData(); else emptyInvoiceValue">
+          <canvas baseChart type="bar" [data]="invoiceValueChartData()" [options]="currencyBarOptions()"></canvas>
         </div>
-        <ng-template #emptyRoles>
-          <div class="flex flex-col items-center justify-center py-8 text-surface-500">
-            <p>No role distribution data available.</p>
-          </div>
-        </ng-template>
+        <ng-template #emptyInvoiceValue><div class="h-80 flex items-center justify-center text-surface-500">No invoice value data available.</div></ng-template>
       </div>
 
+      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Purchase Order Workflow</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Orders grouped by approval and fulfillment status.</p>
+        </div>
+        <div class="h-80" *ngIf="facade.purchaseOrderStatusData(); else emptyOrders">
+          <canvas baseChart type="bar" [data]="purchaseOrderStatusChartData()" [options]="countBarOptions()"></canvas>
+        </div>
+        <ng-template #emptyOrders><div class="h-80 flex items-center justify-center text-surface-500">No purchase order data available.</div></ng-template>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Product Catalog by Vendor</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Top vendors by number of catalog products.</p>
+        </div>
+        <div class="h-80" *ngIf="facade.productsByVendorData(); else emptyProducts">
+          <canvas baseChart type="bar" [data]="productsByVendorChartData()" [options]="countBarOptions()"></canvas>
+        </div>
+        <ng-template #emptyProducts><div class="h-80 flex items-center justify-center text-surface-500">No product data available.</div></ng-template>
+      </div>
+
+      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Vendor Approval</h2>
+          <p class="text-sm text-surface-500 mt-1 mb-0">Approved vendors compared with vendors awaiting approval.</p>
+        </div>
+        <div class="h-80" *ngIf="facade.vendorApprovalData(); else emptyVendors">
+          <canvas baseChart type="doughnut" [data]="vendorApprovalChartData()" [options]="doughnutOptions()"></canvas>
+        </div>
+        <ng-template #emptyVendors><div class="h-80 flex items-center justify-center text-surface-500">No vendor data available.</div></ng-template>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+      <div *ngFor="let kpi of kpis" class="bg-surface-0 dark:bg-surface-900 px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-500 flex items-center justify-center">
+          <lucide-icon [name]="kpi.icon" [size]="18"></lucide-icon>
+        </div>
+        <div>
+          <div class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{ getWidgetValue(kpi.field) ?? '--' }}</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400">{{ kpi.label }}</div>
+        </div>
+      </div>
     </div>
   </ng-container>
 

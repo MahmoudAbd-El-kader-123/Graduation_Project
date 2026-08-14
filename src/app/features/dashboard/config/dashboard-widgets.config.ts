@@ -38,5 +38,47 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
         title: 'Permissions',
         icon: 'Key',
         field: 'totalPermissions'
+    },
+    {
+        id: 'vendors',
+        title: 'Vendors',
+        icon: 'Building2',
+        field: 'totalVendors'
+    },
+    {
+        id: 'products',
+        title: 'Products',
+        icon: 'Package',
+        field: 'totalProducts'
+    },
+    {
+        id: 'purchase-orders',
+        title: 'Purchase Orders',
+        icon: 'FileText',
+        field: 'totalPurchaseOrders'
+    },
+    {
+        id: 'invoices',
+        title: 'Invoices',
+        icon: 'Receipt',
+        field: 'totalInvoices'
+    },
+    {
+        id: 'reconciliation-reports',
+        title: 'Reconciliation Reports',
+        icon: 'GitMerge',
+        field: 'totalReconciliationReports'
+    },
+    {
+        id: 'audit-logs',
+        title: 'Audit Logs',
+        icon: 'Activity',
+        field: 'totalAuditLogs'
+    },
+    {
+        id: 'chat-sessions',
+        title: 'AI Chat Sessions',
+        icon: 'Bot',
+        field: 'totalChatSessions'
     }
 ];
