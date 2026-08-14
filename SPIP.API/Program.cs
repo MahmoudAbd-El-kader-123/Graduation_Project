@@ -1,8 +1,6 @@
 using Hangfire;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SPIP.API.Extensions;
 using SPIP.Application.DependencyInjection;
@@ -26,6 +24,8 @@ public class Program
             var app = builder.Build();
 
             ConfigurePipeline(app);
+            
+            await ApplyPendingMigrationsAsync(app);
 
             await SeedIdentityDataAsync(app);
 
@@ -41,6 +41,36 @@ public class Program
         finally
         {
             Log.CloseAndFlush();
+        }
+    }
+    private static async Task ApplyPendingMigrationsAsync(WebApplication app)
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var provider = scope.ServiceProvider;
+            var context = provider.GetRequiredService<SPIP.Infrastructure.Persistence.Context.ApplicationDbContext>();
+
+            var pendingMigrations = context.Database.GetPendingMigrations();
+
+            if (!pendingMigrations.Any())
+            {
+                Log.Information("No pending database migrations found.");
+                return;
+            }
+
+            Log.Information("Applying {Count} pending database migration(s): {Migrations}", pendingMigrations, pendingMigrations);
+
+            await context.Database.MigrateAsync();
+
+            Log.Information("Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while applying pending database migrations");
+            Console.Error.WriteLine($"=== MIGRATION ERROR ===");
+            Console.Error.WriteLine(ex.ToString());
+            throw;
         }
     }
 
