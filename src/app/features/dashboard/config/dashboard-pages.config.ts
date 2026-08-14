@@ -5,7 +5,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'home',
         title: 'Dashboard',
-        icon: 'LayoutDashboard',
+        icon: 'layout-dashboard',
         route: '/dashboard/home',
         group: 'General',
         showInSidebar: true,
@@ -17,7 +17,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'users',
         title: 'Users',
-        icon: 'Users',
+        icon: 'users',
         route: '/dashboard/users',
         group: 'Management',
         showInSidebar: true,
@@ -28,7 +28,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'roles',
         title: 'Roles',
-        icon: 'Shield',
+        icon: 'shield',
         route: '/dashboard/roles',
         group: 'Management',
         showInSidebar: true,
@@ -39,7 +39,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'vendors',
         title: 'Vendors',
-        icon: 'Building2',
+        icon: 'building-2',
         route: '/dashboard/vendors',
         group: 'Inventory',
         showInSidebar: true,
@@ -50,7 +50,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'products',
         title: 'Products',
-        icon: 'Package',
+        icon: 'package',
         route: '/dashboard/products',
         group: 'Inventory',
         showInSidebar: true,
@@ -61,7 +61,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'purchase-orders',
         title: 'Purchase Orders',
-        icon: 'FileDown',
+        icon: 'file-down',
         route: '/dashboard/purchase-orders',
         group: 'Operations',
         showInSidebar: true,
@@ -73,7 +73,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'invoices',
         title: 'Invoices',
-        icon: 'Receipt',
+        icon: 'receipt',
         route: '/dashboard/invoices',
         group: 'Operations',
         showInSidebar: true,
@@ -84,7 +84,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'reports',
         title: 'Reports',
-        icon: 'ChartColumn',
+        icon: 'chart-column',
         route: '/dashboard/reports',
         group: 'Analytics',
         showInSidebar: true,
@@ -95,7 +95,7 @@ export const DASHBOARD_PAGES: DashboardPage[] = [
     {
         id: 'assistant',
         title: 'Assistant',
-        icon: 'Bot',
+        icon: 'bot',
         route: '/dashboard/assistant',
         group: 'Analytics',
         showInSidebar: true,

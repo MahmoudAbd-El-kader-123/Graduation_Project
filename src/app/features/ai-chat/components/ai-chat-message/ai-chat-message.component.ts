@@ -2,14 +2,14 @@ import { Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, in
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ChatMessageDto } from '../../models/ai-chat.model';
-import { LucideAngularModule, User, Bot } from 'lucide-angular';
+import { LucideDynamicIcon, LucideUser as User, LucideBot as Bot } from '@lucide/angular';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 @Component({
   selector: 'app-ai-chat-message',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideDynamicIcon],
   template: `
     <div class="flex gap-4 p-6" [class.bg-gray-50]="isAssistant" [class.dark:bg-gray-800/50]="isAssistant">
       <div class="flex-shrink-0 mt-1">
@@ -20,7 +20,7 @@ import DOMPurify from 'dompurify';
              [class.text-gray-700]="isAssistant"
              [class.dark:bg-gray-700]="isAssistant"
              [class.dark:text-gray-200]="isAssistant">
-          <lucide-icon [name]="isAssistant ? 'Bot' : 'User'" [size]="18"></lucide-icon>
+          <svg [lucideIcon]="isAssistant ? 'bot' : 'user'" [style.width.px]="18" [style.height.px]="18"></svg>
         </div>
       </div>
       <div class="flex-1 min-w-0">

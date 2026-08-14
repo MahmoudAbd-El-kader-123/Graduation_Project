@@ -1,10 +1,10 @@
 import { Component, input, computed } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideDynamicIcon } from '@lucide/angular';
 
 @Component({
   selector: 'app-stat-card',
   standalone: true,
-  imports: [LucideAngularModule],
+  imports: [LucideDynamicIcon],
   template: `
     <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 h-full flex flex-col justify-between">
       <div class="flex justify-between items-start mb-4">
@@ -13,7 +13,7 @@ import { LucideAngularModule } from 'lucide-angular';
           <div class="text-3xl font-bold text-surface-900 dark:text-surface-0">{{ value() }}</div>
         </div>
         <div class="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-          <lucide-icon [name]="icon()" [size]="24"></lucide-icon>
+          <svg [lucideIcon]="icon()" [style.width.px]="24" [style.height.px]="24"></svg>
         </div>
       </div>
       

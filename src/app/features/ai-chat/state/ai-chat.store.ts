@@ -47,7 +47,7 @@ export class AiChatStore {
   loadSessions() {
     this._isLoadingSessions.set(true);
     // For now, load page 1, size 100. In a real app we might paginate properly.
-    this.api.getSessions({ pageNumber: 1, pageSize: 100 })
+    this.api.getSessions({ pageNumber: 1, pageSize: 50 })
       .pipe(
         finalize(() => this._isLoadingSessions.set(false))
       )

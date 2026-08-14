@@ -31,7 +31,7 @@ describe('HomeService', () => {
             ? [{ status: 'Completed', totalAmount: 100, vendorName: 'Vendor', hasDiscrepancies: false }]
             : [{ status: 'Completed', hasDiscrepancies: false }],
           pageNumber: 1,
-          pageSize: 100,
+          pageSize: 50,
           totalCount: 1,
           totalPages: 1,
           hasPreviousPage: false,

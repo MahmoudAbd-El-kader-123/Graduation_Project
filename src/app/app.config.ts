@@ -6,8 +6,8 @@ import { providePrimeNG } from 'primeng/config';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
-import { LucideAngularModule } from 'lucide-angular';
-import { APP_LUCIDE_ICONS } from './core/icons/lucide-icons';
+import { provideLucideIcons } from '@lucide/angular';
+import { APP_LUCIDE_ICONS_ARRAY } from './core/icons/lucide-icons';
 import { importProvidersFrom } from '@angular/core';
 
 import { routes } from './app.routes';
@@ -45,7 +45,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     MessageService,
     ConfirmationService,
-    importProvidersFrom(LucideAngularModule.pick(APP_LUCIDE_ICONS)),
+    provideLucideIcons(...APP_LUCIDE_ICONS_ARRAY),
     provideHttpClient(
       withInterceptors([errorInterceptor, authInterceptor])
     ),

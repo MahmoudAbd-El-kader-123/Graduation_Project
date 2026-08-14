@@ -2,17 +2,17 @@ import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-import { LucideAngularModule, AlertCircle } from 'lucide-angular';
+import { LucideDynamicIcon, LucideAlertCircle as AlertCircle } from '@lucide/angular';
 
 @Component({
   selector: 'app-column-mapping-row',
   standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, SelectModule, LucideDynamicIcon],
   template: `
     <div class="flex flex-col sm:flex-row sm:items-center py-4 border-b border-surface-200 dark:border-surface-700 last:border-0 gap-4">
       <div class="flex items-center gap-2 w-full sm:w-1/3">
         <span class="font-medium text-surface-900 dark:text-surface-0">{{ systemField() }}</span>
-        <lucide-icon *ngIf="isRequired()" [img]="AlertCircleIcon" class="w-4 h-4 text-red-500" strokeWidth="2"></lucide-icon>
+        <svg *ngIf="isRequired()" [lucideIcon]="AlertCircleIcon" class="w-4 h-4 text-red-500" stroke-width="2"></svg>
       </div>
 
       <div class="flex-1 w-full flex items-center gap-4">

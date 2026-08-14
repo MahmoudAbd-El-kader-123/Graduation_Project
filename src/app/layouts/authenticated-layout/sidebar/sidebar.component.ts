@@ -1,6 +1,6 @@
+import { LucideDynamicIcon } from '@lucide/angular';
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
 import { Drawer } from 'primeng/drawer';
 import { DashboardNavigationService } from '../../../features/dashboard/services/dashboard-navigation.service';
 import { LayoutService } from '../services/layout.service';
@@ -8,7 +8,7 @@ import { LayoutService } from '../services/layout.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, LucideAngularModule, Drawer],
+  imports: [RouterLink, RouterLinkActive, Drawer, LucideDynamicIcon],
   template: `
     <!-- Desktop Sidebar -->
     <aside class="hidden lg:flex flex-col w-64 h-screen bg-surface-0 dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700 sticky top-0 left-0 z-20">
@@ -27,7 +27,7 @@ import { LayoutService } from '../services/layout.service';
                  routerLinkActive="bg-primary/10 text-primary font-medium" 
                  [routerLinkActiveOptions]="{exact: false}"
                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
-                <lucide-icon [name]="item.icon" [size]="20"></lucide-icon>
+                <svg [lucideIcon]="item.icon" [style.width.px]="20" [style.height.px]="20"></svg>
                 <span>{{ item.label }}</span>
               </a>
             }
@@ -56,7 +56,7 @@ import { LayoutService } from '../services/layout.service';
                  [routerLinkActiveOptions]="{exact: false}"
                  (click)="layoutService.mobileMenuOpen.set(false)"
                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
-                <lucide-icon [name]="item.icon" [size]="20"></lucide-icon>
+                <svg [lucideIcon]="item.icon" [style.width.px]="20" [style.height.px]="20"></svg>
                 <span>{{ item.label }}</span>
               </a>
             }

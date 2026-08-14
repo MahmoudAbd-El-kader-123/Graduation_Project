@@ -78,7 +78,7 @@ export class HomeService {
 
     return this.apiService.get<ApiResponse<PagedResult<T>>>(endpoint, {
       pageNumber: 1,
-      pageSize: 100
+      pageSize: 50
     }).pipe(
       map(response => {
         if (!response.success || !response.data) {

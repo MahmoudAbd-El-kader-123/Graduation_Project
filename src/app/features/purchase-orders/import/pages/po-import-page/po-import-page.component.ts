@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { StepperModule } from 'primeng/stepper';
 import { ButtonModule } from 'primeng/button';
-import { LucideAngularModule, ArrowLeft, ArrowRight, Check } from 'lucide-angular';
+import { LucideArrowLeft as ArrowLeft, LucideArrowRight as ArrowRight, LucideCheck as Check } from '@lucide/angular';
 import { PoImportStoreService } from '../../services/po-import-store.service';
 import { UploadStepComponent } from '../../components/upload-step/upload-step.component';
 import { MapColumnsStepComponent } from '../../components/map-columns-step/map-columns-step.component';
@@ -19,7 +19,6 @@ import { MessageService } from 'primeng/api';
     CommonModule,
     CardModule,
     ButtonModule,
-    LucideAngularModule,
     UploadStepComponent,
     MapColumnsStepComponent,
     ConfirmImportStepComponent,

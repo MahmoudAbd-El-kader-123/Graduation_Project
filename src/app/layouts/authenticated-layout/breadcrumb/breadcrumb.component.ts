@@ -2,7 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { LucideAngularModule, ChevronRight, Home } from 'lucide-angular';
+import { LucideDynamicIcon, LucideChevronRight as ChevronRight, LucideHome as Home } from '@lucide/angular';
 
 interface BreadcrumbItem {
   label: string;
@@ -12,15 +12,15 @@ interface BreadcrumbItem {
 @Component({
   selector: 'app-breadcrumb',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule],
+  imports: [RouterLink, LucideDynamicIcon],
   template: `
     <nav class="flex items-center space-x-1 text-sm font-medium text-surface-500">
       <a routerLink="/dashboard" class="flex items-center hover:text-primary transition-colors">
-        <lucide-icon name="home" [size]="16"></lucide-icon>
+        <svg lucideIcon="home" [style.width.px]="16" [style.height.px]="16"></svg>
       </a>
       
       @for (item of breadcrumbs(); track item.label; let last = $last) {
-        <lucide-icon name="chevron-right" [size]="16" class="text-surface-400"></lucide-icon>
+        <svg lucideIcon="chevron-right" [style.width.px]="16" [style.height.px]="16" class="text-surface-400"></svg>
         
         @if (!last && item.url) {
           <a [routerLink]="item.url" class="hover:text-primary transition-colors">

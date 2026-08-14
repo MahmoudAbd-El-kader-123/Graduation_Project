@@ -12,73 +12,73 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     {
         id: 'total-users',
         title: 'Total Users',
-        icon: 'Users',
+        icon: 'users',
         field: 'totalUsers'
     },
     {
         id: 'active-users',
         title: 'Active Users',
-        icon: 'UserCheck',
+        icon: 'user-check',
         field: 'activeUsers'
     },
     {
         id: 'inactive-users',
         title: 'Inactive Users',
-        icon: 'UserX',
+        icon: 'user-x',
         field: 'inactiveUsers'
     },
     {
         id: 'roles',
         title: 'Roles',
-        icon: 'Shield',
+        icon: 'shield',
         field: 'totalRoles'
     },
     {
         id: 'permissions',
         title: 'Permissions',
-        icon: 'Key',
+        icon: 'key',
         field: 'totalPermissions'
     },
     {
         id: 'vendors',
         title: 'Vendors',
-        icon: 'Building2',
+        icon: 'building-2',
         field: 'totalVendors'
     },
     {
         id: 'products',
         title: 'Products',
-        icon: 'Package',
+        icon: 'package',
         field: 'totalProducts'
     },
     {
         id: 'purchase-orders',
         title: 'Purchase Orders',
-        icon: 'FileText',
+        icon: 'file-text',
         field: 'totalPurchaseOrders'
     },
     {
         id: 'invoices',
         title: 'Invoices',
-        icon: 'Receipt',
+        icon: 'receipt',
         field: 'totalInvoices'
     },
     {
         id: 'reconciliation-reports',
         title: 'Reconciliation Reports',
-        icon: 'GitMerge',
+        icon: 'git-merge',
         field: 'totalReconciliationReports'
     },
     {
         id: 'audit-logs',
         title: 'Audit Logs',
-        icon: 'Activity',
+        icon: 'activity',
         field: 'totalAuditLogs'
     },
     {
         id: 'chat-sessions',
         title: 'AI Chat Sessions',
-        icon: 'Bot',
+        icon: 'bot',
         field: 'totalChatSessions'
     }
 ];

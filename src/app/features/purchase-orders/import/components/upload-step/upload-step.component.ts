@@ -6,7 +6,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { LucideAngularModule, UploadCloud, FileSpreadsheet, X, AlertTriangle } from 'lucide-angular';
+import { LucideDynamicIcon, LucideUploadCloud as UploadCloud, LucideFileSpreadsheet as FileSpreadsheet, LucideX as X, LucideAlertTriangle as AlertTriangle } from '@lucide/angular';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -19,19 +19,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
 @Component({
   selector: 'app-upload-step',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    SelectModule, 
-    FileUploadModule, 
-    ButtonModule, 
-    MessageModule, 
-    ProgressSpinnerModule, 
-    LucideAngularModule,
-    ExcelPreviewPanelComponent,
-    ToastModule,
-    ConfirmDialogModule
-  ],
+  imports: [CommonModule, FormsModule, SelectModule, FileUploadModule, ButtonModule, MessageModule, ProgressSpinnerModule, ExcelPreviewPanelComponent, ToastModule, ConfirmDialogModule, LucideDynamicIcon],
   providers: [MessageService, ConfirmationService],
   template: `
     <div class="flex flex-col gap-6 w-full relative">
@@ -66,7 +54,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
              (dragleave)="onDragLeave($event)"
              (drop)="onDrop($event)"
              [ngClass]="{'border-primary-500 bg-primary-50 dark:bg-primary-900/20': isDragging()}">
-          <lucide-icon [img]="UploadCloudIcon" class="w-12 h-12 text-surface-400 mb-4"></lucide-icon>
+          <svg [lucideIcon]="UploadCloudIcon" class="w-12 h-12 text-surface-400 mb-4"></svg>
           <p class="text-lg font-medium text-surface-700 dark:text-surface-200">Click or drag file to this area to upload</p>
           <p class="text-sm text-surface-500 mt-1">Supports .xlsx and .xls formats</p>
           <input #fileInput type="file" class="hidden" accept=".xlsx, .xls" (change)="onFileSelected($event)">
@@ -77,7 +65,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
              (click)="fileInput.click()">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-lg">
-              <lucide-icon [img]="FileSpreadsheetIcon" class="w-6 h-6"></lucide-icon>
+              <svg [lucideIcon]="FileSpreadsheetIcon" class="w-6 h-6"></svg>
             </div>
             <div>
               <p class="font-medium text-surface-900 dark:text-surface-0">{{ store.selectedFile()?.name }}</p>
@@ -86,7 +74,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
             </div>
           </div>
           <button type="button" class="text-red-500 hover:text-red-700 shrink-0" (click)="removeFile($event)">
-            <lucide-icon [img]="XIcon" class="w-5 h-5"></lucide-icon>
+            <svg [lucideIcon]="XIcon" class="w-5 h-5"></svg>
           </button>
           <!-- Hidden file input for replacement -->
           <input #fileInput type="file" class="hidden" accept=".xlsx, .xls" (change)="onFileSelected($event)">
@@ -100,7 +88,7 @@ import { ExcelPreviewPanelComponent } from '../excel-preview-panel/excel-preview
       </div>
 
       <div *ngIf="errorMsg()" class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-        <lucide-icon [img]="AlertTriangleIcon" class="text-red-500 mt-0.5 w-5 h-5"></lucide-icon>
+        <svg [lucideIcon]="AlertTriangleIcon" class="text-red-500 mt-0.5 w-5 h-5"></svg>
         <div class="text-red-700 dark:text-red-400 flex-1">
           <p class="font-medium">Failed to process file</p>
           <p class="text-sm mt-1">{{ errorMsg() }}</p>

@@ -3,19 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { LucideAngularModule, Send, AlertCircle, RefreshCw } from 'lucide-angular';
+import { LucideDynamicIcon, LucideSend as Send, LucideAlertCircle as AlertCircle, LucideRefreshCw as RefreshCw } from '@lucide/angular';
 import { AiChatStore } from '../../state/ai-chat.store';
 import { AiChatMessageComponent } from '../ai-chat-message/ai-chat-message.component';
 
 @Component({
   selector: 'app-ai-chat-area',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, LucideAngularModule, AiChatMessageComponent],
+  imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, AiChatMessageComponent, LucideDynamicIcon],
   template: `
     @if (!store.activeSessionId()) {
       <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500">
         <div class="w-16 h-16 bg-primary-50 dark:bg-primary-900/50 rounded-full flex items-center justify-center mb-4">
-          <lucide-icon name="Bot" [size]="32" class="text-primary-600 dark:text-primary-400"></lucide-icon>
+          <svg lucideIcon="bot" [style.width.px]="32" [style.height.px]="32" class="text-primary-600 dark:text-primary-400"></svg>
         </div>
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Procurement Intelligence Assistant</h3>
         <p class="max-w-md">
@@ -63,7 +63,7 @@ import { AiChatMessageComponent } from '../ai-chat-message/ai-chat-message.compo
               <div class="flex gap-4 p-6 bg-gray-50 dark:bg-gray-800/50">
                 <div class="flex-shrink-0 mt-1">
                   <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 flex items-center justify-center">
-                    <lucide-icon name="Bot" [size]="18"></lucide-icon>
+                    <svg lucideIcon="bot" [style.width.px]="18" [style.height.px]="18"></svg>
                   </div>
                 </div>
                 <div class="flex-1 min-w-0 flex items-center gap-2 text-gray-500">
@@ -76,7 +76,7 @@ import { AiChatMessageComponent } from '../ai-chat-message/ai-chat-message.compo
             @if (store.messageError()) {
               <div class="flex gap-4 p-6 bg-red-50 dark:bg-red-900/10 border-t border-b border-red-100 dark:border-red-900/30">
                 <div class="flex-shrink-0 mt-1">
-                  <lucide-icon name="AlertCircle" class="text-red-600 dark:text-red-400" [size]="24"></lucide-icon>
+                  <svg lucideIcon="alert-circle" class="text-red-600 dark:text-red-400" [style.width.px]="24" [style.height.px]="24"></svg>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="text-red-800 dark:text-red-300 font-medium mb-1">
@@ -90,7 +90,7 @@ import { AiChatMessageComponent } from '../ai-chat-message/ai-chat-message.compo
                         (onClick)="retryMessage()" 
                         [disabled]="store.isSendingMessage()">
                         <div class="flex items-center gap-2">
-                          <lucide-icon name="RefreshCw" [size]="14"></lucide-icon>
+                          <svg lucideIcon="refresh-cw" [style.width.px]="14" [style.height.px]="14"></svg>
                           <span>Retry</span>
                         </div>
                       </p-button>
@@ -127,7 +127,7 @@ import { AiChatMessageComponent } from '../ai-chat-message/ai-chat-message.compo
             class="absolute right-2 bottom-2"
             [disabled]="!currentInput.trim() || store.isSendingMessage()"
             (onClick)="sendMessage()">
-            <lucide-icon name="Send" [size]="18"></lucide-icon>
+            <svg lucideIcon="send" [style.width.px]="18" [style.height.px]="18"></svg>
           </p-button>
         </div>
         <div class="text-center mt-2">

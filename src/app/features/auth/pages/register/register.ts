@@ -9,13 +9,13 @@ import { toast } from 'ngx-sonner';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { AuthStorageService } from '../../../../core/auth/services/auth-storage.service';
 import { ThemeService } from '../../../../core/services/theme.service';
-import { LucideAngularModule, Moon, Sun, Monitor } from 'lucide-angular';
+import { LucideDynamicIcon, LucideMoon as Moon, LucideSun as Sun, LucideMonitor as Monitor } from '@lucide/angular';
 import { AUTH_ROUTES } from '../../../../core/auth/constants/auth.constants';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, LucideAngularModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, LucideDynamicIcon],
   templateUrl: './register.html'
 })
 export class Register {

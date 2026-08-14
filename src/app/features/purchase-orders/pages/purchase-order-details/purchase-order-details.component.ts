@@ -11,7 +11,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { SkeletonModule } from 'primeng/skeleton';
-import { LucideAngularModule, ArrowLeft, Download, Printer, FileDown } from 'lucide-angular';
+import { LucideArrowLeft as ArrowLeft, LucideDownload as Download, LucidePrinter as Printer, LucideFileDown as FileDown } from '@lucide/angular';
 
 import { EmptyStateComponent } from '../../../../shared/table/components/empty-state/empty-state';
 import { ErrorStateComponent } from '../../../../shared/table/components/error-state/error-state';
@@ -30,7 +30,6 @@ import { InvoiceUploadContextService } from '../../../invoices/services/invoice-
     TagModule,
     TooltipModule,
     SkeletonModule,
-    LucideAngularModule,
     EmptyStateComponent,
     ErrorStateComponent
   ],

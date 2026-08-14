@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { LucideAngularModule, CheckCircle2, FileText, Building2, Map } from 'lucide-angular';
+import { LucideDynamicIcon, LucideCheckCircle2 as CheckCircle2, LucideFileText as FileText, LucideBuilding2 as Building2, LucideMap as Map } from '@lucide/angular';
 import { PoImportStoreService } from '../../services/po-import-store.service';
 import { MappingTableComponent } from '../mapping-table/mapping-table.component';
 import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-system-fields';
@@ -9,17 +9,12 @@ import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-sys
 @Component({
   selector: 'app-confirm-import-step',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonModule,
-    LucideAngularModule,
-    MappingTableComponent
-  ],
+  imports: [CommonModule, ButtonModule, MappingTableComponent, LucideDynamicIcon],
   template: `
     <div class="flex flex-col gap-6">
       <div>
         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 flex items-center gap-2">
-          <lucide-icon [img]="CheckCircle2Icon" class="w-5 h-5 text-primary-500"></lucide-icon>
+          <svg [lucideIcon]="CheckCircle2Icon" class="w-5 h-5 text-primary-500"></svg>
           Confirm Import
         </h3>
         <p class="text-sm text-surface-500 mt-1">Review your import settings before proceeding.</p>
@@ -29,7 +24,7 @@ import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-sys
         <!-- Vendor Card -->
         <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 flex gap-4 items-start">
           <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-900/50 flex items-center justify-center shrink-0">
-            <lucide-icon [img]="Building2Icon" class="w-5 h-5 text-primary-600 dark:text-primary-400"></lucide-icon>
+            <svg [lucideIcon]="Building2Icon" class="w-5 h-5 text-primary-600 dark:text-primary-400"></svg>
           </div>
           <div>
             <p class="text-xs font-medium text-surface-500 uppercase tracking-wider">Vendor</p>
@@ -40,7 +35,7 @@ import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-sys
         <!-- File Card -->
         <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 flex gap-4 items-start">
           <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
-            <lucide-icon [img]="FileTextIcon" class="w-5 h-5 text-blue-600 dark:text-blue-400"></lucide-icon>
+            <svg [lucideIcon]="FileTextIcon" class="w-5 h-5 text-blue-600 dark:text-blue-400"></svg>
           </div>
           <div class="min-w-0 flex-1">
             <p class="text-xs font-medium text-surface-500 uppercase tracking-wider">Source File</p>
@@ -54,7 +49,7 @@ import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-sys
         <!-- Mappings Card -->
         <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 flex gap-4 items-start">
           <div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/50 flex items-center justify-center shrink-0">
-            <lucide-icon [img]="MapIcon" class="w-5 h-5 text-purple-600 dark:text-purple-400"></lucide-icon>
+            <svg [lucideIcon]="MapIcon" class="w-5 h-5 text-purple-600 dark:text-purple-400"></svg>
           </div>
           <div>
             <p class="text-xs font-medium text-surface-500 uppercase tracking-wider">Mappings</p>

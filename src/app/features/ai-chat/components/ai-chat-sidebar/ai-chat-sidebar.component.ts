@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService } from 'primeng/api';
-import { LucideAngularModule, Plus, MessageSquare, Trash2, Edit2, Check, X, Search } from 'lucide-angular';
+import { LucideDynamicIcon, LucidePlus as Plus, LucideMessageSquare as MessageSquare, LucideTrash2 as Trash2, LucideEdit2 as Edit2, LucideCheck as Check, LucideX as X, LucideSearch as Search } from '@lucide/angular';
 import { AiChatStore } from '../../state/ai-chat.store';
 import { AiChatApiService } from '../../services/ai-chat-api.service';
 import { toast } from 'ngx-sonner';
@@ -13,7 +13,7 @@ import { toast } from 'ngx-sonner';
 @Component({
   selector: 'app-ai-chat-sidebar',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ProgressSpinnerModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ProgressSpinnerModule, LucideDynamicIcon],
   template: `
     <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-900/50">
       <div class="p-4 border-b dark:border-gray-800 flex items-center justify-between">
@@ -24,13 +24,13 @@ import { toast } from 'ngx-sonner';
           (onClick)="createNewChat()"
           [disabled]="store.isCreatingSession()"
           title="New Chat">
-          <lucide-icon name="Plus" [size]="20"></lucide-icon>
+          <svg lucideIcon="plus" [style.width.px]="20" [style.height.px]="20"></svg>
         </p-button>
       </div>
 
       <div class="p-4 border-b dark:border-gray-800">
         <div class="relative">
-          <lucide-icon name="Search" [size]="16" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></lucide-icon>
+          <svg lucideIcon="search" [style.width.px]="16" [style.height.px]="16" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></svg>
           <input 
             pInputText 
             [(ngModel)]="searchQuery" 
@@ -65,8 +65,8 @@ import { toast } from 'ngx-sonner';
               [class.dark:hover:bg-gray-800]="store.activeSessionId() !== session.id"
               (click)="selectSession(session.id)">
               
-              <lucide-icon name="MessageSquare" [size]="18" class="shrink-0 text-gray-400" 
-                [class.text-primary-500]="store.activeSessionId() === session.id"></lucide-icon>
+              <svg lucideIcon="message-square" [style.width.px]="18" [style.height.px]="18" class="shrink-0 text-gray-400" 
+                [class.text-primary-500]="store.activeSessionId() === session.id"></svg>
               
               @if (editingSessionId() === session.id) {
                 <div class="flex-1 flex items-center gap-1 min-w-0" (click)="$event.stopPropagation()">
@@ -79,10 +79,10 @@ import { toast } from 'ngx-sonner';
                     class="w-full py-1 px-2 text-sm"
                     autofocus />
                   <button class="p-1 text-green-600 hover:bg-green-50 rounded" (click)="saveRename(session.id)">
-                    <lucide-icon name="Check" [size]="16"></lucide-icon>
+                    <svg lucideIcon="check" [style.width.px]="16" [style.height.px]="16"></svg>
                   </button>
                   <button class="p-1 text-red-600 hover:bg-red-50 rounded" (click)="cancelRename()">
-                    <lucide-icon name="X" [size]="16"></lucide-icon>
+                    <svg lucideIcon="x" [style.width.px]="16" [style.height.px]="16"></svg>
                   </button>
                 </div>
               } @else {
@@ -97,13 +97,13 @@ import { toast } from 'ngx-sonner';
                     class="p-1.5 text-gray-500 hover:text-primary-600 hover:bg-white dark:hover:bg-gray-700 rounded transition-colors" 
                     (click)="startRename(session.id, session.title)"
                     title="Rename">
-                    <lucide-icon name="Edit2" [size]="14"></lucide-icon>
+                    <svg lucideIcon="edit-2" [style.width.px]="14" [style.height.px]="14"></svg>
                   </button>
                   <button 
                     class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white dark:hover:bg-gray-700 rounded transition-colors" 
                     (click)="confirmDelete(session.id, $event)"
                     title="Delete">
-                    <lucide-icon name="Trash2" [size]="14"></lucide-icon>
+                    <svg lucideIcon="trash-2" [style.width.px]="14" [style.height.px]="14"></svg>
                   </button>
                 </div>
               }

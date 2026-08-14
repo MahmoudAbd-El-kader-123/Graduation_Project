@@ -1,5 +1,5 @@
+import { LucideDynamicIcon } from '@lucide/angular';
 import { Component, inject, output, signal, computed } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
 import { Button } from 'primeng/button';
 import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/i18n/language.service';
@@ -9,13 +9,13 @@ import { UserMenuComponent } from '../user-menu/user-menu.component';
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [LucideAngularModule, Button, BreadcrumbComponent, UserMenuComponent],
+  imports: [Button, BreadcrumbComponent, UserMenuComponent, LucideDynamicIcon],
   template: `
     <header class="h-16 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10 w-full">
       <div class="flex items-center gap-4">
         <!-- Mobile Menu Toggle -->
         <p-button variant="text" severity="secondary" rounded="true" styleClass="lg:!hidden !p-2" (onClick)="toggleSidebar()">
-          <lucide-icon name="menu" [size]="20"></lucide-icon>
+          <svg lucideIcon="menu" [style.width.px]="20" [style.height.px]="20"></svg>
         </p-button>
         
         <!-- Breadcrumb -->
@@ -49,9 +49,9 @@ import { UserMenuComponent } from '../user-menu/user-menu.component';
         <!-- Theme Toggle -->
         <p-button variant="text" severity="secondary" rounded="true" styleClass="!p-2" (onClick)="toggleTheme()">
           @if (themeService.currentTheme() === 'dark' || (themeService.currentTheme() === 'system' && isSystemDark())) {
-            <lucide-icon name="sun" [size]="20"></lucide-icon>
+            <svg lucideIcon="sun" [style.width.px]="20" [style.height.px]="20"></svg>
           } @else {
-            <lucide-icon name="moon" [size]="20"></lucide-icon>
+            <svg lucideIcon="moon" [style.width.px]="20" [style.height.px]="20"></svg>
           }
         </p-button>
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { LucideAngularModule, GitMerge, AlertCircle, CheckCircle2 } from 'lucide-angular';
+import { LucideDynamicIcon, LucideGitMerge as GitMerge, LucideAlertCircle as AlertCircle, LucideCheckCircle2 as CheckCircle2 } from '@lucide/angular';
 import { PoImportStoreService } from '../../services/po-import-store.service';
 import { MappingTableComponent } from '../mapping-table/mapping-table.component';
 import { IMPORT_SYSTEM_FIELDS } from '../../../../../shared/constants/import-system-fields';
@@ -12,20 +12,13 @@ import { ColumnMapping } from '../../../models/vendor-mapping.model';
 @Component({
   selector: 'app-map-columns-step',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MessageModule,
-    ProgressSpinnerModule,
-    LucideAngularModule,
-    MappingTableComponent
-  ],
+  imports: [CommonModule, FormsModule, MessageModule, ProgressSpinnerModule, MappingTableComponent, LucideDynamicIcon],
   template: `
     <div class="flex flex-col gap-6">
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 flex items-center gap-2">
-            <lucide-icon [img]="GitMergeIcon" class="w-5 h-5 text-primary-500"></lucide-icon>
+            <svg [lucideIcon]="GitMergeIcon" class="w-5 h-5 text-primary-500"></svg>
             Map Excel Columns
           </h3>
           <p class="text-sm text-surface-500 mt-1">Match your Excel columns to the required system fields.</p>
@@ -33,7 +26,7 @@ import { ColumnMapping } from '../../../models/vendor-mapping.model';
         
         <div class="flex items-center gap-2 text-sm font-medium" 
              [ngClass]="store.isMappingValid() ? 'text-green-600 dark:text-green-400' : 'text-orange-500'">
-          <lucide-icon [img]="store.isMappingValid() ? CheckCircle2Icon : AlertCircleIcon" class="w-4 h-4"></lucide-icon>
+          <svg [lucideIcon]="store.isMappingValid() ? CheckCircle2Icon : AlertCircleIcon" class="w-4 h-4"></svg>
           {{ store.isMappingValid() ? 'Ready to proceed' : 'Mapping incomplete' }}
         </div>
       </div>

@@ -4,7 +4,7 @@
     <div class="z-10 text-center">
       <div class="mb-8 flex justify-center">
         <div class="w-20 h-20 bg-primary-contrast/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-          <lucide-icon [img]="icons.Monitor" [size]="40"></lucide-icon>
+          <svg [lucideIcon]="icons.Monitor" [size]="40"></svg>
         </div>
       </div>
       <h1 class="text-5xl font-bold mb-4 tracking-tight">Join SPIP Platform</h1>
@@ -18,9 +18,9 @@
     
     <div class="absolute top-6 right-6 z-50">
       <p-button [rounded]="true" [text]="true" (onClick)="toggleTheme()">
-        <lucide-icon *ngIf="themeService.currentTheme() === 'dark'" [img]="icons.Moon"></lucide-icon>
-        <lucide-icon *ngIf="themeService.currentTheme() === 'light'" [img]="icons.Sun"></lucide-icon>
-        <lucide-icon *ngIf="themeService.currentTheme() === 'system'" [img]="icons.Monitor"></lucide-icon>
+        <svg *ngIf="themeService.currentTheme() === 'dark'" [lucideIcon]="icons.Moon"></svg>
+        <svg *ngIf="themeService.currentTheme() === 'light'" [lucideIcon]="icons.Sun"></svg>
+        <svg *ngIf="themeService.currentTheme() === 'system'" [lucideIcon]="icons.Monitor"></svg>
       </p-button>
     </div>
 

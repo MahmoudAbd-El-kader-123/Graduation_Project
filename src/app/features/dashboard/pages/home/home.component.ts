@@ -1,9 +1,9 @@
+import { LucideDynamicIcon } from '@lucide/angular';
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeFacade } from './home.facade';
 import { AuthStorageService } from '../../../../core/auth/services/auth-storage.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { LucideAngularModule } from 'lucide-angular';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -14,12 +14,7 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    SkeletonModule,
-    LucideAngularModule,
-    BaseChartDirective
-  ],
+  imports: [CommonModule, SkeletonModule, BaseChartDirective, LucideDynamicIcon],
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './home.component.html'
 })
@@ -30,12 +25,12 @@ export class HomeComponent implements OnInit {
   private readonly languageService = inject(LanguageService);
 
   readonly kpis: Array<{ label: string; field: keyof DashboardStats; icon: AppIcon }> = [
-    { label: 'Vendors', field: 'totalVendors', icon: 'Building2' },
-    { label: 'Products', field: 'totalProducts', icon: 'Package' },
-    { label: 'Purchase Orders', field: 'totalPurchaseOrders', icon: 'FileText' },
-    { label: 'Invoices', field: 'totalInvoices', icon: 'Receipt' },
-    { label: 'Users', field: 'totalUsers', icon: 'Users' },
-    { label: 'Admins', field: 'totalAdmins', icon: 'Shield' }
+    { label: 'Vendors', field: 'totalVendors', icon: 'building-2' },
+    { label: 'Products', field: 'totalProducts', icon: 'package' },
+    { label: 'Purchase Orders', field: 'totalPurchaseOrders', icon: 'file-text' },
+    { label: 'Invoices', field: 'totalInvoices', icon: 'receipt' },
+    { label: 'Users', field: 'totalUsers', icon: 'users' },
+    { label: 'Admins', field: 'totalAdmins', icon: 'shield' }
   ];
 
   readonly vendorApprovalChartData = computed<ChartData<'doughnut'>>(() => {
