@@ -1,0 +1,980 @@
+
+> spip.frontend@0.0.0 start
+> ng serve --host 127.0.0.1
+
+> Building...
+√ Building...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  64.87 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-RIWP5LL3.js   | -                                    |   9.45 kB | 
+chunk-CEE7I2LM.js   | -                                    |   5.73 kB | 
+chunk-5HF3MH23.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-KSCCZ3PU.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-SAAI6VTR.js   | -                                    | 524 bytes | 
+
+                    | Initial total                        | 137.77 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-AQAEIFDE.js   | po-import-page-component             | 109.92 kB | 
+chunk-BXTJNBQS.js   | invoice-list                         |  78.05 kB | 
+chunk-BLBHAGLH.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-QGBCBZBZ.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-TX3JBDPX.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-KBN757YV.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-BISP4DSL.js   | invoice-detail                       |  31.25 kB | 
+chunk-HBVOOQWG.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-ABDHBDXA.js   | product-edit                         |  24.16 kB | 
+chunk-G4V6IEVS.js   | home-component                       |  22.48 kB | 
+chunk-NEDXYKTU.js   | register                             |  22.04 kB | 
+chunk-HM7MIU56.js   | vendor-list                          |  21.34 kB | 
+chunk-OT5WYTTR.js   | product-create                       |  20.84 kB | 
+chunk-RK2G4JMP.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [7.490 seconds] - 2026-08-14T09:37:52.450Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4200[22m/[39m
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  64.87 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-RIWP5LL3.js   | -                                    |   9.45 kB | 
+chunk-CEE7I2LM.js   | -                                    |   5.73 kB | 
+chunk-5HF3MH23.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-KSCCZ3PU.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-SAAI6VTR.js   | -                                    | 524 bytes | 
+
+                    | Initial total                        | 137.77 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-AQAEIFDE.js   | po-import-page-component             | 109.92 kB | 
+chunk-BXTJNBQS.js   | invoice-list                         |  78.05 kB | 
+chunk-BLBHAGLH.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-QGBCBZBZ.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-TX3JBDPX.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-KBN757YV.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-BISP4DSL.js   | invoice-detail                       |  31.25 kB | 
+chunk-HBVOOQWG.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-ABDHBDXA.js   | product-edit                         |  24.16 kB | 
+chunk-G4V6IEVS.js   | home-component                       |  22.48 kB | 
+chunk-NEDXYKTU.js   | register                             |  22.04 kB | 
+chunk-HM7MIU56.js   | vendor-list                          |  21.34 kB | 
+chunk-OT5WYTTR.js   | product-create                       |  20.84 kB | 
+chunk-RK2G4JMP.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.414 seconds] - 2026-08-14T11:34:33.061Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+main.js             | main                                 |  45.12 kB | 
+chunk-DGX5ICE5.js   | -                                    |   9.45 kB | 
+chunk-P2UBKTTK.js   | -                                    |   5.73 kB | 
+chunk-MEULRMLD.js   | -                                    |   5.23 kB | 
+chunk-KVPSQTWD.js   | -                                    |   1.99 kB | 
+chunk-SKQQSPXX.js   | -                                    | 562 bytes | 
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-NIQJ44RU.js   | po-import-page-component             | 109.92 kB | 
+chunk-AZGETZJT.js   | invoice-list                         |  78.05 kB | 
+chunk-EAQGNVO3.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-U3ZA4VSM.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-7QFHG2BY.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-XXP7NQLC.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-RUAOOL3G.js   | invoice-detail                       |  31.25 kB | 
+chunk-ZQWFYFB7.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-76P4ZQNU.js   | product-edit                         |  24.16 kB | 
+chunk-W5PQ7OGT.js   | home-component                       |  22.48 kB | 
+chunk-3NES76UX.js   | register                             |  22.04 kB | 
+chunk-T2RRO76M.js   | vendor-list                          |  21.34 kB | 
+chunk-W62T4BHX.js   | product-create                       |  20.84 kB | 
+chunk-NRSRS5V4.js   | user-list-component                  |  20.01 kB | 
+chunk-6BFJIO5D.js   | product-list                         |  19.73 kB | 
+...and 25 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [5.605 seconds] - 2026-08-14T11:35:39.136Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+styles.css          | styles           | 64.99 kB | 
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-B76TMDNG.js   | home-component   | 26.25 kB | 
+chunk-F47YZ2TT.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [3.998 seconds] - 2026-08-14T11:35:43.150Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 45.24 kB | 
+
+Application bundle generation complete. [1.820 seconds] - 2026-08-14T11:36:53.716Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.24 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-OHDVKX7P.js   | home-component   | 25.53 kB | 
+chunk-NBTDAMQ6.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.798 seconds] - 2026-08-14T11:36:55.542Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 45.12 kB | 
+
+Application bundle generation complete. [1.114 seconds] - 2026-08-14T11:37:49.097Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-PLX4T7RK.js   | home-component   | 25.76 kB | 
+chunk-AQFSQF4N.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.785 seconds] - 2026-08-14T11:37:50.892Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+main.js             | main                                 |  45.12 kB | 
+chunk-IQMBTJPU.js   | -                                    |   9.45 kB | 
+chunk-5M7JXSWP.js   | -                                    |   5.73 kB | 
+chunk-QB4FFFXF.js   | -                                    |   5.23 kB | 
+chunk-PXI6ZGBB.js   | -                                    |   1.99 kB | 
+chunk-FAD77JYP.js   | -                                    | 642 bytes | 
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-PZ43FN7J.js   | po-import-page-component             | 109.92 kB | 
+chunk-PIPFHX7X.js   | invoice-list                         |  78.05 kB | 
+chunk-NYGBOJQF.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-JQJRXBPN.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-S356MCFQ.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-AD3L6C2L.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-3LV4MLTS.js   | invoice-detail                       |  31.25 kB | 
+chunk-ACEQUJIM.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-HPXJQZYA.js   | home-component                       |  25.76 kB | 
+chunk-CRPJBZAI.js   | product-edit                         |  24.16 kB | 
+chunk-YFZQWMXJ.js   | register                             |  22.04 kB | 
+chunk-PRVUX6XV.js   | vendor-list                          |  21.34 kB | 
+chunk-5PO3XPHP.js   | product-create                       |  20.84 kB | 
+chunk-WBEGPCP6.js   | user-list-component                  |  20.01 kB | 
+chunk-QIHCSHDH.js   | product-list                         |  19.73 kB | 
+...and 25 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.343 seconds] - 2026-08-14T11:41:06.269Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  64.99 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IQMBTJPU.js   | -                                    |   9.45 kB | 
+chunk-5M7JXSWP.js   | -                                    |   5.73 kB | 
+chunk-QB4FFFXF.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-PXI6ZGBB.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-FAD77JYP.js   | -                                    | 642 bytes | 
+
+                    | Initial total                        | 138.00 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-PZ43FN7J.js   | po-import-page-component             | 109.92 kB | 
+chunk-PIPFHX7X.js   | invoice-list                         |  78.05 kB | 
+chunk-NYGBOJQF.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-JQJRXBPN.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-S356MCFQ.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-AD3L6C2L.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-3LV4MLTS.js   | invoice-detail                       |  31.25 kB | 
+chunk-ACEQUJIM.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-HPXJQZYA.js   | home-component                       |  25.76 kB | 
+chunk-CRPJBZAI.js   | product-edit                         |  24.16 kB | 
+chunk-YFZQWMXJ.js   | register                             |  22.04 kB | 
+chunk-PRVUX6XV.js   | vendor-list                          |  21.34 kB | 
+chunk-5PO3XPHP.js   | product-create                       |  20.84 kB | 
+chunk-WBEGPCP6.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.885 seconds] - 2026-08-14T11:41:07.165Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-FODR6V7N.js   | home-component   | 26.42 kB | 
+chunk-MWRQB7IR.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.838 seconds] - 2026-08-14T11:41:08.013Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.036 seconds] - 2026-08-14T11:41:09.057Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  64.99 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IQMBTJPU.js   | -                                    |   9.45 kB | 
+chunk-E23NAXAG.js   | -                                    |   5.73 kB | 
+chunk-QB4FFFXF.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-PXI6ZGBB.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-FAD77JYP.js   | -                                    | 642 bytes | 
+
+                    | Initial total                        | 138.00 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-PZ43FN7J.js   | po-import-page-component             | 109.92 kB | 
+chunk-5RY5576A.js   | invoice-list                         |  78.05 kB | 
+chunk-7HDOJ5VI.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-JQJRXBPN.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-S356MCFQ.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-MCMRMRHZ.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-63RCU6JT.js   | invoice-detail                       |  31.25 kB | 
+chunk-BZXYAP4B.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-WTJ5UXV6.js   | home-component                       |  29.19 kB | 
+chunk-CRPJBZAI.js   | product-edit                         |  24.16 kB | 
+chunk-YFZQWMXJ.js   | register                             |  22.04 kB | 
+chunk-NKWIEJVP.js   | vendor-list                          |  21.34 kB | 
+chunk-5PO3XPHP.js   | product-create                       |  20.84 kB | 
+chunk-QQT5ZQAO.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.214 seconds] - 2026-08-14T11:41:10.285Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-KH2GO2QT.js   | home-component   | 30.33 kB | 
+chunk-BABQNM23.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.467 seconds] - 2026-08-14T11:41:11.762Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+styles.css          | styles           | 65.04 kB | 
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-B3WYCSYI.js   | home-component   | 32.05 kB | 
+chunk-U3DYYFNE.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.247 seconds] - 2026-08-14T11:41:13.018Z
+
+Stylesheet update sent to client(s).
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+main.js             | main                                 |  45.12 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-PYXGIO7T.js   | home-component                       |  32.05 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+chunk-CWD4KT66.js   | product-list                         |  19.73 kB | 
+...and 25 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.603 seconds] - 2026-08-14T11:42:11.950Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.04 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 138.12 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-PYXGIO7T.js   | home-component                       |  32.05 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.851 seconds] - 2026-08-14T11:42:12.814Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-D5W3Z2RL.js   | home-component   | 32.17 kB | 
+chunk-NR5CTWDE.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.963 seconds] - 2026-08-14T11:42:13.784Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-GK3TFYPC.js   | home-component   | 33.12 kB | 
+chunk-TVY5QCW4.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.988 seconds] - 2026-08-14T11:42:14.783Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-ULAHKJUZ.js   | home-component   | 33.17 kB | 
+chunk-KNO5U4CX.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.995 seconds] - 2026-08-14T11:42:15.791Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-EZPUBZZI.js   | home-component   | 33.18 kB | 
+chunk-A46QTRZC.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.532 seconds] - 2026-08-14T11:42:17.332Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-VTR3EI5X.js   | home-component   | 33.17 kB | 
+chunk-HQDTM4DK.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.254 seconds] - 2026-08-14T11:42:18.598Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-JVQBBVAS.js   | home-component   | 33.17 kB | 
+chunk-GB7XTW4E.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.239 seconds] - 2026-08-14T11:42:24.654Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.04 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 138.12 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-JVQBBVAS.js   | home-component                       |  33.17 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.881 seconds] - 2026-08-14T11:46:35.051Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-4ETNSRPV.js   | home-component   | 32.27 kB | 
+chunk-KSZV6TNG.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.846 seconds] - 2026-08-14T11:46:36.026Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.850 seconds] - 2026-08-14T11:47:01.988Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.453 seconds] - 2026-08-14T11:47:46.796Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.15 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 138.24 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-S7EGB4TD.js   | home-component                       |  42.64 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.409 seconds] - 2026-08-14T11:49:48.266Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-K3IXGCHC.js   | home-component   | 42.64 kB | 
+chunk-6CNX2PE5.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.525 seconds] - 2026-08-14T11:50:42.536Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-LA2PBRS5.js   | home-component   | 42.65 kB | 
+chunk-IO4KRL2Z.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.047 seconds] - 2026-08-14T11:50:43.592Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.15 kB | 
+main.js             | main                                 |  45.12 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 138.24 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-LA2PBRS5.js   | home-component                       |  42.65 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.031 seconds] - 2026-08-14T11:52:28.601Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-X45HV2ET.js   | home-component   | 42.82 kB | 
+chunk-OTDFIVDG.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.923 seconds] - 2026-08-14T11:52:29.555Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-JQVQCAMU.js   | home-component   | 42.95 kB | 
+chunk-QTA6WQR7.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.731 seconds] - 2026-08-14T11:52:31.536Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+styles.css          | styles           | 65.39 kB | 
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-TIJEBM4P.js   | home-component   | 42.98 kB | 
+chunk-INBO7JBL.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.507 seconds] - 2026-08-14T11:52:33.057Z
+
+Stylesheet update sent to client(s).
+Component update sent to client(s).
+[2m3:14:40 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ new dependencies optimized: [33mng2-charts[32m[39m
+[2m3:14:40 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ optimized dependencies changed. reloading[39m
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             | 45.12 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-PEYHF3FF.js   | home-component   | 43.15 kB | 
+chunk-FX427C6W.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [4.412 seconds] - 2026-08-14T12:34:12.085Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 73.97 kB | 
+
+Application bundle generation complete. [1.990 seconds] - 2026-08-14T12:54:53.583Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  | Raw size
+main.js             | main   | 79.17 kB | 
+styles.css          | styles | 65.30 kB | 
+
+Application bundle generation complete. [1.522 seconds] - 2026-08-14T12:54:55.132Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+main.js             | main                                 |  79.17 kB | 
+styles.css          | styles                               |  65.30 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 172.43 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-PEYHF3FF.js   | home-component                       |  43.15 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.209 seconds] - 2026-08-14T12:54:55.352Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 79.69 kB | 
+
+Application bundle generation complete. [1.029 seconds] - 2026-08-14T12:57:11.739Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 85.74 kB | 
+
+Application bundle generation complete. [1.313 seconds] - 2026-08-14T12:57:13.070Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.656 seconds] - 2026-08-14T12:59:06.706Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+main.js             | main                                 | 109.05 kB | 
+styles.css          | styles                               |  65.30 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 202.31 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-PEYHF3FF.js   | home-component                       |  43.15 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.709 seconds] - 2026-08-14T12:59:26.316Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  | 109.77 kB | 
+
+Application bundle generation complete. [0.627 seconds] - 2026-08-14T13:00:05.564Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-PDA74W4N.js   | -                | 59.35 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-EFMWVDSI.js   | home-component   | 43.54 kB | 
+chunk-74Y2CC7Q.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.693 seconds] - 2026-08-14T13:00:07.442Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-3D6GHVX5.js   | -                | 59.42 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-YCRO54PY.js   | home-component   | 43.54 kB | 
+chunk-LFAGQXK4.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [1.197 seconds] - 2026-08-14T13:25:26.205Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-4VSCOEF2.js   | -                | 59.61 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-KXK5FHCG.js   | home-component   | 43.54 kB | 
+chunk-53M66JJY.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.949 seconds] - 2026-08-14T13:26:02.726Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.693 seconds] - 2026-08-14T13:26:40.326Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.30 kB | 
+chunk-M2A3K5DE.js   | -                                    |  59.61 kB | 
+main.js             | main                                 |  50.53 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 203.40 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-UHHS2HJJ.js   | home-component                       |  43.54 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.868 seconds] - 2026-08-14T13:26:55.359Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-TRB25E2W.js   | -                | 59.58 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-LKR4SF5U.js   | home-component   | 43.54 kB | 
+chunk-ZKMPR5MV.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.855 seconds] - 2026-08-14T13:27:42.407Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-CRMVEP27.js   | -                | 59.63 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-ZD4QWI5T.js   | home-component   | 43.54 kB | 
+chunk-T4PVVG3G.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.633 seconds] - 2026-08-14T13:28:50.326Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-QIKDVDNA.js   | -                | 59.68 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-HCQMTBRD.js   | home-component   | 43.54 kB | 
+chunk-K23HU5JY.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.803 seconds] - 2026-08-14T13:28:59.749Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-EYV6TREM.js   | -                | 59.72 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-26U53J3L.js   | home-component   | 43.54 kB | 
+chunk-ZVVEAE2K.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.820 seconds] - 2026-08-14T13:29:07.919Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-F3IDQAPM.js   | -                | 59.81 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-OJST7B36.js   | home-component   | 43.54 kB | 
+chunk-USJVQWF4.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.788 seconds] - 2026-08-14T13:29:41.935Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-VLVSY6O4.js   | -                | 59.93 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-6QURWP5B.js   | home-component   | 43.54 kB | 
+chunk-GODFB3FA.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.619 seconds] - 2026-08-14T13:30:16.348Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+chunk-VWXLQYFV.js   | -                | 60.05 kB | 
+main.js             | main             | 50.53 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-7SSNZSJC.js   | home-component   | 43.54 kB | 
+chunk-NFKXOOOP.js   | dashboard-routes |  5.11 kB | 
+
+Application bundle generation complete. [0.668 seconds] - 2026-08-14T13:33:24.805Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                                |  Raw size
+styles.css          | styles                               |  65.30 kB | 
+chunk-VWXLQYFV.js   | -                                    |  60.05 kB | 
+main.js             | main                                 |  50.53 kB | 
+chunk-IRVUWIL7.js   | -                                    |   9.45 kB | 
+chunk-EXCWBZPR.js   | -                                    |   5.73 kB | 
+chunk-K3DSN52B.js   | -                                    |   5.23 kB | 
+chunk-DNIEWJNY.js   | -                                    |   2.23 kB | 
+chunk-JWABVTVT.js   | -                                    |   1.99 kB | 
+chunk-GOMI4DH3.js   | -                                    |   1.37 kB | 
+chunk-VM2Z4XA6.js   | -                                    |   1.25 kB | 
+chunk-IWC5ORO6.js   | -                                    | 712 bytes | 
+
+                    | Initial total                        | 203.85 kB
+
+Lazy chunk files    | Names                                |  Raw size
+chunk-6JCAEE6B.js   | po-import-page-component             | 109.92 kB | 
+chunk-PULB2WYW.js   | invoice-list                         |  78.05 kB | 
+chunk-2XRRPFQ5.js   | roles-permissions-page-component     |  77.73 kB | 
+chunk-D45ZPE6V.js   | ai-chat-routes                       |  75.57 kB | 
+chunk-7SSNZSJC.js   | home-component                       |  43.54 kB | 
+chunk-EN7TOZPP.js   | -                                    |  42.47 kB | 
+chunk-IVVHC5U6.js   | reconciliation-report-list-component |  36.94 kB | 
+chunk-OKPCSW7I.js   | purchase-order-list-component        |  32.39 kB | 
+chunk-AHGJK7RB.js   | invoice-detail                       |  31.25 kB | 
+chunk-SCIKMYCF.js   | purchase-order-details-component     |  29.99 kB | 
+chunk-DK6LXMKW.js   | product-edit                         |  24.16 kB | 
+chunk-SRSY23CJ.js   | register                             |  22.04 kB | 
+chunk-VCLK2RWY.js   | vendor-list                          |  21.34 kB | 
+chunk-2YRCLVCI.js   | product-create                       |  20.84 kB | 
+chunk-JAPUXHSN.js   | user-list-component                  |  20.01 kB | 
+...and 39 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.603 seconds] - 2026-08-14T13:33:52.511Z
+

@@ -9,6 +9,9 @@
   <script>
     (function() {
       try {
+        var language = localStorage.getItem('spip_language') === 'ar' ? 'ar' : 'en';
+        document.documentElement.lang = language;
+        document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
         var theme = localStorage.getItem('spip_theme') || 'light';
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (theme === 'dark' || (theme === 'system' && prefersDark)) {

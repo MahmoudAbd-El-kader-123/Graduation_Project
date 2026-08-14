@@ -1,0 +1,259 @@
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2554: Expected 1 arguments, but got 0.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.facade.ts:52:21:
+[37m      52 │     this.homeService.[32mgetStats[37m().pipe(
+         ╵                      [32m~~~~~~~~[0m
+
+  An argument for 'permissions' was not provided.
+
+    src/app/features/dashboard/pages/home/home.service.ts:40:11:
+[37m      40 │   getStats([32mpermissions: readonly string[][37m): Observable<DashboardSt...
+         ╵            [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'success' does not exist on type 'DashboardStats'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.facade.ts:56:21:
+[37m      56 │         if (response.[32msuccess[37m && response.data) {
+         ╵                      [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'data' does not exist on type 'DashboardStats'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.facade.ts:56:41:
+[37m      56 │         if (response.success && response.[32mdata[37m) {
+         ╵                                          [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'data' does not exist on type 'DashboardStats'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.facade.ts:57:34:
+[37m      57 │           this.stats.set(response.[32mdata[37m);
+         ╵                                   [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'message' does not exist on type 'DashboardStats'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.facade.ts:59:34:
+[37m      59 │ ...    this.error.set(response.[32mmessage[37m || 'Failed to load dashboar...
+         ╵                                [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'entityTotalsData' does not exist on type 'HomeFacade'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.ts:60:31:
+[37m      60 │     const totals = this.facade.[32mentityTotalsData[37m();
+         ╵                                [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'widgets' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:45:33:
+[37m      45 │ ... <div *ngFor="let widget of [32mwidgets[37m" class="bg-surface-0 dark:b...
+         ╵                                [32m~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'roleChartData' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:71:20:
+[37m      71 │             [data]="[32mroleChartData[37m()"
+         ╵                     [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'roleChartOptions' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:72:23:
+[37m      72 │             [options]="[32mroleChartOptions[37m()">
+         ╵                        [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'statusChartData' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:93:20:
+[37m      93 │             [data]="[32mstatusChartData[37m()"
+         ╵                     [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'statusChartOptions' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:94:23:
+[37m      94 │             [options]="[32mstatusChartOptions[37m()">
+         ╵                        [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'entityTotalsChartData' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:114:18:
+[37m      114 │           [data]="[32mentityTotalsChartData[37m()"
+          ╵                   [32m~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'entityTotalsChartOptions' does not exist on type 'HomeComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/pages/home/home.component.html:115:21:
+[37m      115 │           [options]="[32mentityTotalsChartOptions[37m()">
+          ╵                      [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component HomeComponent.
+
+    src/app/features/dashboard/pages/home/home.component.ts:23:15:
+[37m      23 │   templateUrl: [32m'./home.component.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Contact Email" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:244:4:
+[37m      244 │     [32m'Contact Email'[37m: 'بريد التواصل',
+          ╵     [32m~~~~~~~~~~~~~~~[0m
+
+  The original key "Contact Email" is here:
+
+    src/app/core/i18n/ar.translations.ts:153:4:
+[37m      153 │     [32m'Contact Email'[37m: 'بريد التواصل',
+          ╵     [32m~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Contact Phone" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:245:4:
+[37m      245 │     [32m'Contact Phone'[37m: 'هاتف التواصل',
+          ╵     [32m~~~~~~~~~~~~~~~[0m
+
+  The original key "Contact Phone" is here:
+
+    src/app/core/i18n/ar.translations.ts:154:4:
+[37m      154 │     [32m'Contact Phone'[37m: 'هاتف التواصل',
+          ╵     [32m~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Download" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:257:4:
+[37m      257 │     [32m'Download'[37m: 'تنزيل',
+          ╵     [32m~~~~~~~~~~[0m
+
+  The original key "Download" is here:
+
+    src/app/core/i18n/ar.translations.ts:89:4:
+[37m      89 │     [32m'Download'[37m: 'تنزيل',
+         ╵     [32m~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Excel Column" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:261:4:
+[37m      261 │     [32m'Excel Column'[37m: 'عمود Excel',
+          ╵     [32m~~~~~~~~~~~~~~[0m
+
+  The original key "Excel Column" is here:
+
+    src/app/core/i18n/ar.translations.ts:197:4:
+[37m      197 │     [32m'Excel Column'[37m: 'عمود Excel',
+          ╵     [32m~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Select a Vendor" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:344:4:
+[37m      344 │     [32m'Select a Vendor'[37m: 'اختر موردًا',
+          ╵     [32m~~~~~~~~~~~~~~~~~[0m
+
+  The original key "Select a Vendor" is here:
+
+    src/app/core/i18n/ar.translations.ts:146:4:
+[37m      146 │     [32m'Select a Vendor'[37m: 'اختر موردًا',
+          ╵     [32m~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:244:3:
+[37m      244 │   ,[32m'Contact Email'[37m: 'بريد التواصل'
+          ╵    [32m~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:245:3:
+[37m      245 │   ,[32m'Contact Phone'[37m: 'هاتف التواصل'
+          ╵    [32m~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:257:3:
+[37m      257 │   ,[32m'Download'[37m: 'تنزيل'
+          ╵    [32m~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:261:3:
+[37m      261 │   ,[32m'Excel Column'[37m: 'عمود Excel'
+          ╵    [32m~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:344:3:
+[37m      344 │   ,[32m'Select a Vendor'[37m: 'اختر موردًا'
+          ╵    [32m~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate key "Permissions" in object literal[0m [duplicate-object-key]
+
+    src/app/core/i18n/ar.translations.ts:22:4:
+[37m      22 │     [32m'Permissions'[37m: 'الصلاحيات',
+         ╵     [32m~~~~~~~~~~~~~[0m
+
+  The original key "Permissions" is here:
+
+    src/app/core/i18n/ar.translations.ts:3:4:
+[37m      3 │     [32m'Permissions'[37m: 'الصلاحيات',
+        ╵     [32m~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1117: An object literal cannot have multiple properties with the same name.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/i18n/ar.translations.ts:22:2:
+[37m      22 │   [32m'Permissions'[37m: 'الصلاحيات',
+         ╵   [32m~~~~~~~~~~~~~[0m
+
+

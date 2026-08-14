@@ -9,6 +9,7 @@ import { ChartConfiguration, ChartData } from 'chart.js';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { DashboardStats } from '../../models/dashboard-stats.model';
 import { AppIcon } from '../../../../core/icons/lucide-icons';
+import { LanguageService } from '../../../../core/i18n/language.service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit {
   public readonly facade = inject(HomeFacade);
   public readonly authStorage = inject(AuthStorageService);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
 
   readonly kpis: Array<{ label: string; field: keyof DashboardStats; icon: AppIcon }> = [
     { label: 'Vendors', field: 'totalVendors', icon: 'Building2' },
@@ -39,7 +41,7 @@ export class HomeComponent implements OnInit {
   readonly vendorApprovalChartData = computed<ChartData<'doughnut'>>(() => {
     const data = this.facade.vendorApprovalData();
     return {
-      labels: data?.labels ?? [],
+      labels: this.translateLabels(data?.labels),
       datasets: [{
         data: data?.values ?? [],
         backgroundColor: ['#10b981', '#f59e0b'],
@@ -52,7 +54,7 @@ export class HomeComponent implements OnInit {
   readonly reconciliationChartData = computed<ChartData<'doughnut'>>(() => {
     const data = this.facade.reconciliationHealthData();
     return {
-      labels: data?.labels ?? [],
+      labels: this.translateLabels(data?.labels),
       datasets: [{
         data: data?.values ?? [],
         backgroundColor: ['#10b981', '#ef4444'],
@@ -65,9 +67,9 @@ export class HomeComponent implements OnInit {
   readonly productsByVendorChartData = computed<ChartData<'bar'>>(() => {
     const data = this.facade.productsByVendorData();
     return {
-      labels: data?.labels ?? [],
+      labels: this.translateLabels(data?.labels),
       datasets: [{
-        label: 'Products',
+        label: this.languageService.translate('Products'),
         data: data?.values ?? [],
         backgroundColor: '#8b5cf6',
         borderRadius: 8,
@@ -134,7 +136,7 @@ export class HomeComponent implements OnInit {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: context => new Intl.NumberFormat('en-EG', {
+          label: context => new Intl.NumberFormat(this.languageService.isArabic() ? 'ar-EG' : 'en-EG', {
             style: 'currency',
             currency: 'EGP',
             maximumFractionDigits: 0
@@ -161,9 +163,9 @@ export class HomeComponent implements OnInit {
     color: string
   ): ChartData<'bar'> {
     return {
-      labels: data?.labels ?? [],
+      labels: this.translateLabels(data?.labels),
       datasets: [{
-        label,
+        label: this.languageService.translate(label),
         data: data?.values ?? [],
         backgroundColor: color,
         borderRadius: 8,
@@ -175,6 +177,10 @@ export class HomeComponent implements OnInit {
   private isDarkTheme(): boolean {
     const theme = this.themeService.currentTheme();
     return theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  private translateLabels(labels: string[] | undefined): string[] {
+    return (labels ?? []).map(label => this.languageService.translate(label));
   }
 
   private chartTextColor(): string {
