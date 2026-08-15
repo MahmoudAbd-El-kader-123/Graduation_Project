@@ -11,13 +11,12 @@ namespace SPIP.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Drop the previous AIChatMessages and AIChatSessions tables (created with int IDENTITY PKs).
-            // These tables are safe to drop — they were introduced in Sprint 4 development and contain no
-            // production data. We recreate them with the correct uniqueidentifier (GUID) primary keys.
-
-            // Drop messages first (FK child → parent order)
-            migrationBuilder.DropTable(name: "AIChatMessages");
-            migrationBuilder.DropTable(name: "AIChatSessions");
+            // Drop the previous AIChatMessages and AIChatSessions tables if they already exist.
+            // This keeps the migration idempotent for databases where the AI chat tables were never created.
+            migrationBuilder.Sql(
+                "IF OBJECT_ID(N'[dbo].[AIChatMessages]', N'U') IS NOT NULL DROP TABLE [dbo].[AIChatMessages];");
+            migrationBuilder.Sql(
+                "IF OBJECT_ID(N'[dbo].[AIChatSessions]', N'U') IS NOT NULL DROP TABLE [dbo].[AIChatSessions];");
 
             // ── AIChatSessions — correct schema with uniqueidentifier PK ──────────
             migrationBuilder.CreateTable(

@@ -1,0 +1,9 @@
+{
+  "_comment": "Runtime IDs are resolved from each list response. Keep this file empty to prevent stale IDs from being reused in the workflow.",
+  "vendorIds": [],
+  "productIds": [],
+  "purchaseOrderIds": [],
+  "auditLogIds": [],
+  "userIds": [],
+  "roleIds": []
+}

@@ -6,6 +6,7 @@ using SPIP.API.Extensions;
 using SPIP.Application.DependencyInjection;
 using SPIP.Infrastructure.DependencyInjection;
 using SPIP.Infrastructure.Identity;
+using SPIP.Infrastructure.Persistence.Context;
 using SPIP.Infrastructure.Persistence.Seed;
 
 namespace SPIP.API;
@@ -48,10 +49,13 @@ public class Program
         try
         {
             using var scope = app.Services.CreateScope();
-            var provider = scope.ServiceProvider;
-            var context = provider.GetRequiredService<SPIP.Infrastructure.Persistence.Context.ApplicationDbContext>();
 
-            var pendingMigrations = context.Database.GetPendingMigrations();
+            var context = scope.ServiceProvider
+                .GetRequiredService<ApplicationDbContext>();
+
+            var pendingMigrations = (
+                await context.Database.GetPendingMigrationsAsync()
+            ).ToList();
 
             if (!pendingMigrations.Any())
             {
@@ -59,7 +63,11 @@ public class Program
                 return;
             }
 
-            Log.Information("Applying {Count} pending database migration(s): {Migrations}", pendingMigrations, pendingMigrations);
+            Log.Information(
+                "Applying {Count} pending database migration(s): {Migrations}",
+                pendingMigrations.Count,
+                string.Join(", ", pendingMigrations)
+            );
 
             await context.Database.MigrateAsync();
 
@@ -67,9 +75,14 @@ public class Program
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while applying pending database migrations");
-            Console.Error.WriteLine($"=== MIGRATION ERROR ===");
-            Console.Error.WriteLine(ex.ToString());
+            Log.Error(
+                ex,
+                "An error occurred while applying pending database migrations"
+            );
+
+            Console.Error.WriteLine("=== MIGRATION ERROR ===");
+            Console.Error.WriteLine(ex);
+
             throw;
         }
     }
@@ -140,56 +153,56 @@ public class Program
 
         builder.Services.AddSwaggerWithJwt();
 
-        builder.Services.AddRateLimiter(options =>
-        {
-            options.GlobalLimiter = System.Threading.RateLimiting.PartitionedRateLimiter.Create<Microsoft.AspNetCore.Http.HttpContext, string>(httpContext =>
-                System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true,
-                        PermitLimit = 400,
-                        QueueLimit = 0,
-                        Window = TimeSpan.FromMinutes(1)
-                    }));
+        //builder.Services.AddRateLimiter(options =>
+        //{
+        //    options.GlobalLimiter = System.Threading.RateLimiting.PartitionedRateLimiter.Create<Microsoft.AspNetCore.Http.HttpContext, string>(httpContext =>
+        //        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+        //            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+        //            factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+        //            {
+        //                AutoReplenishment = true,
+        //                PermitLimit = 400,
+        //                QueueLimit = 0,
+        //                Window = TimeSpan.FromMinutes(1)
+        //            }));
 
-            options.AddPolicy("AuthPolicy", httpContext =>
-                System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true,
-                        PermitLimit = 5,
-                        QueueLimit = 0,
-                        Window = TimeSpan.FromMinutes(1)
-                    }));
+        //    options.AddPolicy("AuthPolicy", httpContext =>
+        //        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+        //            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+        //            factory: partition => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+        //            {
+        //                AutoReplenishment = true,
+        //                PermitLimit = 5,
+        //                QueueLimit = 0,
+        //                Window = TimeSpan.FromMinutes(1)
+        //            }));
 
-            // Dedicated AI chat rate-limit policy.
-            // Partitioned by authenticated user ID (not IP) because AI calls are expensive and per-user.
-            // Token bucket: allows short bursts (up to 20) while enforcing 10 req/min sustained.
-            options.AddPolicy("AIChatPolicy", httpContext =>
-            {
-                // Use the authenticated user's NameIdentifier claim as the partition key.
-                // Fall back to IP if the user is somehow unauthenticated (the [Authorize] attribute
-                // prevents this in practice, but the fallback is defensive).
-                var partitionKey = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
-                                   ?? httpContext.Connection.RemoteIpAddress?.ToString()
-                                   ?? "anonymous";
+        //    // Dedicated AI chat rate-limit policy.
+        //    // Partitioned by authenticated user ID (not IP) because AI calls are expensive and per-user.
+        //    // Token bucket: allows short bursts (up to 20) while enforcing 10 req/min sustained.
+        //    options.AddPolicy("AIChatPolicy", httpContext =>
+        //    {
+        //        // Use the authenticated user's NameIdentifier claim as the partition key.
+        //        // Fall back to IP if the user is somehow unauthenticated (the [Authorize] attribute
+        //        // prevents this in practice, but the fallback is defensive).
+        //        var partitionKey = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        //                           ?? httpContext.Connection.RemoteIpAddress?.ToString()
+        //                           ?? "anonymous";
 
-                return System.Threading.RateLimiting.RateLimitPartition.GetTokenBucketLimiter(
-                    partitionKey,
-                    _ => new System.Threading.RateLimiting.TokenBucketRateLimiterOptions
-                    {
-                        TokenLimit = 20,                             // burst capacity
-                        ReplenishmentPeriod = TimeSpan.FromMinutes(1),
-                        TokensPerPeriod = 10,                        // 10 req/min sustained
-                        QueueLimit = 0,
-                        AutoReplenishment = true
-                    });
-            });
+        //        return System.Threading.RateLimiting.RateLimitPartition.GetTokenBucketLimiter(
+        //            partitionKey,
+        //            _ => new System.Threading.RateLimiting.TokenBucketRateLimiterOptions
+        //            {
+        //                TokenLimit = 20,                             // burst capacity
+        //                ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+        //                TokensPerPeriod = 10,                        // 10 req/min sustained
+        //                QueueLimit = 0,
+        //                AutoReplenishment = true
+        //            });
+        //    });
 
-            options.RejectionStatusCode = 429;
-        });
+        //    options.RejectionStatusCode = 429;
+        //});
     }
 
     private static void ConfigurePipeline(WebApplication app)
@@ -206,7 +219,7 @@ public class Program
 
         app.UseCors("AllowFrontend");
 
-        app.UseRateLimiter();
+        //app.UseRateLimiter();
 
         app.UseAuthentication();
         app.UseAuthorization();
