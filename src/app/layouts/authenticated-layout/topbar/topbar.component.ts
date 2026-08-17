@@ -95,9 +95,9 @@ import { UserMenuComponent } from '../user-menu/user-menu.component';
     }
 
     .language-option-active {
-      color: var(--p-primary-contrast-color);
-      background: var(--p-primary-color);
-      box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+      color: #ffffff;
+      background: linear-gradient(135deg, #F5A623 0%, #E8940D 100%);
+      box-shadow: 0 1px 6px rgba(245,166,35,0.4);
     }
 
     .language-divider {

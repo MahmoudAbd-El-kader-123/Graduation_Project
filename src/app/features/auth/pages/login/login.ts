@@ -15,7 +15,8 @@ import { LucideDynamicIcon, LucideMoon as Moon, LucideSun as Sun, LucideMonitor 
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, LucideDynamicIcon],
-  templateUrl: './login.html'
+  templateUrl: './login.html',
+  styleUrl: './login.css'
 })
 export class Login {
   private readonly fb = inject(FormBuilder);

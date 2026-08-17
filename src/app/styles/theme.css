@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════
+   Fatorty Theme — Global Styles
+   Applied on top of PrimeNG / Tailwind
+   ═══════════════════════════════════════════════════════════ */
+
+/* ---- Base Page ---- */
+body {
+  background-color: #F8FAFC;
+  color: #1E293B;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── DARK MODE — Full App Background Fix ── */
+.my-app-dark body,
+html.my-app-dark body {
+  background-color: #0D1B2A;
+  color: #E2E8F0;
+}
+
+/* Main content background in dark mode */
+.my-app-dark main,
+.my-app-dark [role="main"] {
+  background-color: #0D1B2A !important;
+}
+
+/* Outer layout wrapper */
+.my-app-dark .flex.h-screen {
+  background-color: #070E17 !important;
+}
+
+/* Fix Tailwind dark: surface classes to use our navy palette */
+.my-app-dark .dark\:bg-surface-950 { background-color: #070E17 !important; }
+.my-app-dark .dark\:bg-surface-900 { background-color: #0D1B2A !important; }
+.my-app-dark .dark\:bg-surface-800 { background-color: #1B2E45 !important; }
+.my-app-dark .dark\:border-surface-800 { border-color: #243B55 !important; }
+.my-app-dark .dark\:border-surface-700 { border-color: #2F4D6E !important; }
+.my-app-dark .dark\:text-surface-0   { color: #F1F5F9 !important; }
+.my-app-dark .dark\:text-surface-300 { color: #94A3B8 !important; }
+.my-app-dark .dark\:text-surface-400 { color: #7A9BB8 !important; }
+
+/* ---- Sidebar ---- */
+app-sidebar .fatorty-sidebar {
+  background-color: var(--sidebar-bg) !important;
+  border-right-color: var(--sidebar-border) !important;
+}
+
+/* ---- Topbar ---- */
+app-topbar header {
+  background-color: #FFFFFF !important;
+  border-bottom-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.my-app-dark app-topbar header {
+  background-color: #1B2E45 !important;
+  border-bottom-color: #243B55 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+/* Breadcrumb in dark topbar */
+.my-app-dark app-topbar .text-surface-500,
+.my-app-dark app-topbar .text-surface-600 {
+  color: #94A3B8 !important;
+}
+
+.my-app-dark app-topbar .text-surface-700,
+.my-app-dark app-topbar .text-surface-800,
+.my-app-dark app-topbar .text-surface-900 {
+  color: #E2E8F0 !important;
+}
+
+/* ---- Language Switcher Dark ---- */
+.my-app-dark .language-switcher {
+  border-color: #243B55 !important;
+  background: #0D1B2A !important;
+}
+
+/* ---- PrimeNG component dark fixes ---- */
+.my-app-dark .p-card,
+.my-app-dark .p-panel {
+  background: #1B2E45 !important;
+  border-color: #243B55 !important;
+}
+
+.my-app-dark .p-datatable-wrapper,
+.my-app-dark .p-datatable .p-datatable-thead > tr > th,
+.my-app-dark .p-datatable .p-datatable-tbody > tr {
+  background: #1B2E45 !important;
+  border-color: #243B55 !important;
+  color: #E2E8F0 !important;
+}
+
+.my-app-dark .p-datatable .p-datatable-tbody > tr:hover {
+  background: #243B55 !important;
+}
+
+/* ---- Scrollbar (WebKit) ---- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #F5A623; }
+
+.my-app-dark ::-webkit-scrollbar-thumb { background: #243B55; }
+.my-app-dark ::-webkit-scrollbar-thumb:hover { background: #F5A623; }
+
+/* ---- Typography ---- */
+h1, h2, h3, h4, h5 { letter-spacing: -0.02em; }
+
+/* ---- Focus Rings ---- */
+*:focus-visible {
+  outline: 2px solid #F5A623;
+  outline-offset: 2px;
+}
+
+/* ---- PrimeNG Skeleton dark ---- */
+.my-app-dark .p-skeleton {
+  background: #1B2E45 !important;
+}
+.my-app-dark .p-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(36,59,85,0.6), transparent) !important;
+}

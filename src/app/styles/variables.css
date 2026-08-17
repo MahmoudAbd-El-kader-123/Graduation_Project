@@ -1,0 +1,47 @@
+/* =========================================================
+   Fatorty Brand — CSS Custom Properties
+   Orange (#F5A623) + Dark Navy (#0D1B2A) palette
+   ========================================================= */
+
+:root {
+  /* Brand Colors */
+  --fatorty-orange:       #F5A623;
+  --fatorty-orange-dark:  #E8940D;
+  --fatorty-orange-light: #FBCB6A;
+  --fatorty-orange-glow:  rgba(245, 166, 35, 0.18);
+
+  --fatorty-navy-950: #070E17;
+  --fatorty-navy-900: #0D1B2A;
+  --fatorty-navy-800: #1B2E45;
+  --fatorty-navy-700: #243B55;
+  --fatorty-navy-600: #2F4D6E;
+  --fatorty-navy-500: #3D6080;
+  --fatorty-navy-400: #567898;
+  --fatorty-navy-300: #7A9BB8;
+  --fatorty-navy-200: #A8C2D8;
+  --fatorty-navy-100: #D3E4F0;
+  --fatorty-navy-50:  #EEF4FA;
+
+  /* Text */
+  --fatorty-text-primary: #EEF2F7;
+  --fatorty-text-muted:   #94A3B8;
+  --fatorty-text-subtle:  #64748B;
+
+  /* Sidebar Specific */
+  --sidebar-bg:            var(--fatorty-navy-900);
+  --sidebar-border:        var(--fatorty-navy-800);
+  --sidebar-text:          var(--fatorty-text-muted);
+  --sidebar-text-active:   #FFFFFF;
+  --sidebar-item-active-bg: rgba(245, 166, 35, 0.15);
+  --sidebar-item-active-border: var(--fatorty-orange);
+  --sidebar-icon-active:   var(--fatorty-orange);
+  --sidebar-label:         var(--fatorty-navy-400);
+  --sidebar-hover-bg:      rgba(255,255,255,0.05);
+
+  /* Topbar */
+  --topbar-bg:     #FFFFFF;
+  --topbar-border: #E2E8F0;
+
+  /* Page */
+  --page-bg: #F8FAFC;
+}

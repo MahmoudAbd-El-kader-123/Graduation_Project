@@ -4,6 +4,10 @@ import { AuthenticatedLayoutComponent } from './layouts/authenticated-layout';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent)
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
@@ -16,11 +20,6 @@ export const routes: Routes = [
   {
     path: 'unauthorized',
     loadComponent: () => import('./features/unauthorized/unauthorized.component').then(m => m.UnauthorizedComponent)
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
   },
   {
     path: '**',

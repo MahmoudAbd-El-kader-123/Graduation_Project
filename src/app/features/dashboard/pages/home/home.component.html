@@ -1,27 +1,32 @@
-<div class="flex flex-col gap-6">
-  
-  <!-- Welcome Section -->
-  <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div class="flex flex-col">
-      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">
-        Welcome back, {{ authStorage.session()?.fullName ?? authStorage.session()?.email }}
-      </h1>
-      <p class="text-surface-500 dark:text-surface-400 mt-1 mb-0">Here's what's happening with your system today.</p>
-    </div>
-    
-    <div class="flex flex-wrap gap-3">
-      <div class="flex items-center gap-2 bg-primary-50 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 px-3 py-2 rounded-lg">
-        <svg lucideIcon="shield" [style.width.px]="18" [style.height.px]="18"></svg>
-        <span class="font-medium capitalize">Role: {{ authStorage.session()?.role }}</span>
+<div class="flex flex-col gap-5">
+
+  <!-- Welcome Banner -->
+  <div class="relative overflow-hidden bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <!-- Orange left accent bar -->
+    <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl" style="background: linear-gradient(180deg,#F5A623,#E8940D);"></div>
+    <div class="pl-3">
+      <div class="inline-flex items-center gap-1.5 mb-2 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider" style="background:rgba(245,166,35,0.12);color:#C97D0A;border:1px solid rgba(245,166,35,0.25);">
+        <span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#F5A623;box-shadow:0 0 5px #F5A623;"></span>
+        Live Dashboard
       </div>
-      <div class="flex items-center gap-2 bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 px-3 py-2 rounded-lg">
-        <svg lucideIcon="key" [style.width.px]="18" [style.height.px]="18"></svg>
-        <span class="font-medium">Permissions: {{ authStorage.session()?.permissions?.length || 0 }}</span>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">
+        Welcome back, <span style="color:#E8940D;">{{ authStorage.session()?.fullName ?? authStorage.session()?.email }}</span>
+      </h1>
+      <p class="text-surface-500 dark:text-surface-400 mt-1 mb-0 text-sm">Here's what's happening with your system today.</p>
+    </div>
+    <div class="flex flex-wrap gap-2 shrink-0">
+      <div class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold" style="background:rgba(245,166,35,0.1);color:#C97D0A;border:1px solid rgba(245,166,35,0.2);">
+        <svg [lucideIcon]="'shield'" [style.width.px]="15" [style.height.px]="15"></svg>
+        Role: {{ authStorage.session()?.role }}
+      </div>
+      <div class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
+        <svg [lucideIcon]="'key'" [style.width.px]="15" [style.height.px]="15"></svg>
+        Permissions: {{ authStorage.session()?.permissions?.length || 0 }}
       </div>
     </div>
   </div>
 
-  <!-- Loading State -->
+  <!-- Loading Skeletons -->
   <ng-container *ngIf="facade.isLoading() && !facade.hasStats()">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <p-skeleton *ngFor="let i of [1,2,3,4]" height="22rem" borderRadius="12px"></p-skeleton>
@@ -30,96 +35,136 @@
 
   <!-- Error State -->
   <div *ngIf="facade.error() as error" class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-200 dark:border-red-800/30 flex items-center gap-3">
-    <svg lucideIcon="alert-triangle"></svg>
+    <svg [lucideIcon]="'alert-triangle'" [style.width.px]="18" [style.height.px]="18"></svg>
     <span class="flex-1">{{ error }}</span>
     <button type="button" class="font-semibold underline underline-offset-2" (click)="facade.loadStats()">Try again</button>
   </div>
 
-  <!-- Business dashboard -->
+  <!-- Charts -->
   <ng-container *ngIf="facade.hasStats() && !facade.error()">
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Invoice Pipeline</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Current invoices grouped by processing status.</p>
+      <!-- Invoice Pipeline -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'file-text'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Invoice Pipeline</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Current invoices grouped by processing status.</p>
+          </div>
         </div>
         <div class="h-72" *ngIf="facade.invoiceStatusData(); else emptyInvoices">
           <canvas baseChart type="bar" [data]="invoiceStatusChartData()" [options]="countBarOptions()"></canvas>
         </div>
-        <ng-template #emptyInvoices><div class="h-72 flex items-center justify-center text-surface-500">No invoice data available.</div></ng-template>
+        <ng-template #emptyInvoices><div class="h-72 flex items-center justify-center text-surface-400 text-sm italic">No invoice data available.</div></ng-template>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Reconciliation Health</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Clean matches compared with invoices needing review.</p>
+      <!-- Reconciliation Health -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'check-circle'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Reconciliation Health</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Clean matches compared with invoices needing review.</p>
+          </div>
         </div>
         <div class="h-72" *ngIf="facade.reconciliationHealthData(); else emptyReconciliation">
           <canvas baseChart type="doughnut" [data]="reconciliationChartData()" [options]="doughnutOptions()"></canvas>
         </div>
-        <ng-template #emptyReconciliation><div class="h-72 flex items-center justify-center text-surface-500">No reconciliation data available.</div></ng-template>
+        <ng-template #emptyReconciliation><div class="h-72 flex items-center justify-center text-surface-400 text-sm italic">No reconciliation data available.</div></ng-template>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Invoice Value by Vendor</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Top vendors by invoice value in the loaded records.</p>
+      <!-- Invoice Value by Vendor -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'trending-up'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Invoice Value by Vendor</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Top vendors by invoice value in the loaded records.</p>
+          </div>
         </div>
         <div class="h-80" *ngIf="facade.invoiceValueByVendorData(); else emptyInvoiceValue">
           <canvas baseChart type="bar" [data]="invoiceValueChartData()" [options]="currencyBarOptions()"></canvas>
         </div>
-        <ng-template #emptyInvoiceValue><div class="h-80 flex items-center justify-center text-surface-500">No invoice value data available.</div></ng-template>
+        <ng-template #emptyInvoiceValue><div class="h-80 flex items-center justify-center text-surface-400 text-sm italic">No invoice value data available.</div></ng-template>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Purchase Order Workflow</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Orders grouped by approval and fulfillment status.</p>
+      <!-- Purchase Order Workflow -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'shopping-cart'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Purchase Order Workflow</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Orders grouped by approval and fulfillment status.</p>
+          </div>
         </div>
         <div class="h-80" *ngIf="facade.purchaseOrderStatusData(); else emptyOrders">
           <canvas baseChart type="bar" [data]="purchaseOrderStatusChartData()" [options]="countBarOptions()"></canvas>
         </div>
-        <ng-template #emptyOrders><div class="h-80 flex items-center justify-center text-surface-500">No purchase order data available.</div></ng-template>
+        <ng-template #emptyOrders><div class="h-80 flex items-center justify-center text-surface-400 text-sm italic">No purchase order data available.</div></ng-template>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Product Catalog by Vendor</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Top vendors by number of catalog products.</p>
+      <!-- Product Catalog by Vendor -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'package'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Product Catalog by Vendor</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Top vendors by number of catalog products.</p>
+          </div>
         </div>
         <div class="h-80" *ngIf="facade.productsByVendorData(); else emptyProducts">
           <canvas baseChart type="bar" [data]="productsByVendorChartData()" [options]="countBarOptions()"></canvas>
         </div>
-        <ng-template #emptyProducts><div class="h-80 flex items-center justify-center text-surface-500">No product data available.</div></ng-template>
+        <ng-template #emptyProducts><div class="h-80 flex items-center justify-center text-surface-400 text-sm italic">No product data available.</div></ng-template>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 p-6 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 flex flex-col">
-        <div class="mb-5">
-          <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">Vendor Approval</h2>
-          <p class="text-sm text-surface-500 mt-1 mb-0">Approved vendors compared with vendors awaiting approval.</p>
+      <!-- Vendor Approval -->
+      <div class="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm flex flex-col">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 8px rgba(245,166,35,0.3);">
+            <svg [lucideIcon]="'building-2'" [style.width.px]="16" [style.height.px]="16"></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 tracking-tight">Vendor Approval</h2>
+            <p class="text-xs text-surface-500 mt-0.5 mb-0">Approved vendors compared with vendors awaiting approval.</p>
+          </div>
         </div>
         <div class="h-80" *ngIf="facade.vendorApprovalData(); else emptyVendors">
           <canvas baseChart type="doughnut" [data]="vendorApprovalChartData()" [options]="doughnutOptions()"></canvas>
         </div>
-        <ng-template #emptyVendors><div class="h-80 flex items-center justify-center text-surface-500">No vendor data available.</div></ng-template>
+        <ng-template #emptyVendors><div class="h-80 flex items-center justify-center text-surface-400 text-sm italic">No vendor data available.</div></ng-template>
       </div>
     </div>
 
+    <!-- KPI Strip -->
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-      <div *ngFor="let kpi of kpis" class="bg-surface-0 dark:bg-surface-900 px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-500 flex items-center justify-center">
-          <svg [lucideIcon]="kpi.icon" [style.width.px]="18" [style.height.px]="18"></svg>
+      <div *ngFor="let kpi of kpis"
+           class="bg-white dark:bg-surface-900 px-4 py-3.5 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-3 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#F5A623,#E8940D);box-shadow:0 2px 6px rgba(245,166,35,0.3);">
+          <svg [lucideIcon]="kpi.icon" [style.width.px]="17" [style.height.px]="17"></svg>
         </div>
         <div>
-          <div class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{ getWidgetValue(kpi.field) ?? '--' }}</div>
-          <div class="text-xs text-surface-500 dark:text-surface-400">{{ kpi.label }}</div>
+          <div class="text-xl font-bold text-surface-900 dark:text-surface-0 leading-none">{{ getWidgetValue(kpi.field) ?? '--' }}</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 font-medium">{{ kpi.label }}</div>
         </div>
       </div>
     </div>
+
   </ng-container>
 
 </div>

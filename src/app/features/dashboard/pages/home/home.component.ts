@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit {
       labels: this.translateLabels(data?.labels),
       datasets: [{
         data: data?.values ?? [],
-        backgroundColor: ['#10b981', '#f59e0b'],
+        backgroundColor: ['#F5A623', '#243B55'],
         borderWidth: 0,
         hoverOffset: 8
       }]
@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
       labels: this.translateLabels(data?.labels),
       datasets: [{
         data: data?.values ?? [],
-        backgroundColor: ['#10b981', '#ef4444'],
+        backgroundColor: ['#F5A623', '#E8940D'],
         borderWidth: 0,
         hoverOffset: 8
       }]
@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
       datasets: [{
         label: this.languageService.translate('Products'),
         data: data?.values ?? [],
-        backgroundColor: '#8b5cf6',
+        backgroundColor: '#1B2E45',
         borderRadius: 8,
         maxBarThickness: 48
       }]
@@ -75,12 +75,12 @@ export class HomeComponent implements OnInit {
 
   readonly purchaseOrderStatusChartData = computed<ChartData<'bar'>>(() => {
     const data = this.facade.purchaseOrderStatusData();
-    return this.countBarData(data, 'Purchase orders', '#0ea5e9');
+    return this.countBarData(data, 'Purchase orders', '#F5A623');
   });
 
   readonly invoiceStatusChartData = computed<ChartData<'bar'>>(() => {
     const data = this.facade.invoiceStatusData();
-    return this.countBarData(data, 'Invoices', '#06b6d4');
+    return this.countBarData(data, 'Invoices', '#E8940D');
   });
 
   readonly invoiceValueChartData = computed<ChartData<'bar'>>(() => {
@@ -179,10 +179,10 @@ export class HomeComponent implements OnInit {
   }
 
   private chartTextColor(): string {
-    return this.isDarkTheme() ? '#cbd5e1' : '#475569';
+    return this.isDarkTheme() ? '#94A3B8' : '#334155';
   }
 
   private chartGridColor(): string {
-    return this.isDarkTheme() ? 'rgba(148, 163, 184, 0.16)' : 'rgba(148, 163, 184, 0.24)';
+    return this.isDarkTheme() ? 'rgba(36, 59, 85, 0.6)' : 'rgba(203, 213, 225, 0.5)';
   }
 }

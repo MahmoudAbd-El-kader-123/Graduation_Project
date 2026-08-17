@@ -16,20 +16,78 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AuthService } from './core/auth/services/auth.service';
 import { environment } from '../environments/environment';
 
-const SkyBluePreset = definePreset(Aura, {
+const CustomFatortyPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '#f0f9ff',
-            100: '#e0f2fe',
-            200: '#bae6fd',
-            300: '#7dd3fc',
-            400: '#38bdf8',
-            500: '#0ea5e9',
-            600: '#0284c7',
-            700: '#0369a1',
-            800: '#075985',
-            900: '#0c4a6e',
-            950: '#082f49'
+            50:  '#fffbeb',
+            100: '#fef3c7',
+            200: '#fde68a',
+            300: '#fcd34d',
+            400: '#fbbf24',
+            500: '#f59e0b',
+            600: '#e8940d',
+            700: '#d97706',
+            800: '#b45309',
+            900: '#92400e',
+            950: '#78350f'
+        },
+        colorScheme: {
+            light: {
+                primary: {
+                    color:         '{primary.600}',
+                    inverseColor:  '#ffffff',
+                    hoverColor:    '{primary.700}',
+                    activeColor:   '{primary.800}'
+                },
+                highlight: {
+                    background:    'rgba(232, 148, 13, 0.12)',
+                    focusBackground: 'rgba(232, 148, 13, 0.20)',
+                    color:         '{primary.700}',
+                    focusColor:    '{primary.800}'
+                },
+                surface: {
+                    0:   '#ffffff',
+                    50:  '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b',
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
+                    950: '#020617'
+                }
+            },
+            dark: {
+                primary: {
+                    color:         '{primary.400}',
+                    inverseColor:  '{surface.900}',
+                    hoverColor:    '{primary.300}',
+                    activeColor:   '{primary.200}'
+                },
+                highlight: {
+                    background:    'rgba(245, 166, 35, 0.16)',
+                    focusBackground: 'rgba(245, 166, 35, 0.25)',
+                    color:         '{primary.300}',
+                    focusColor:    '{primary.200}'
+                },
+                surface: {
+                    0:   '#ffffff',
+                    50:  '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b',
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
+                    950: '#020617'
+                }
+            }
         }
     }
 });
@@ -51,7 +109,7 @@ export const appConfig: ApplicationConfig = {
     ),
     providePrimeNG({
         theme: {
-            preset: SkyBluePreset,
+            preset: CustomFatortyPreset,
             options: {
                 darkModeSelector: '.my-app-dark'
             }

@@ -1,0 +1,185 @@
+<!-- ═══════════════════════════════════
+     NAVBAR
+════════════════════════════════════ -->
+<nav class="navbar" [class.navbar-scrolled]="scrolled()">
+  <div class="nav-inner">
+    <a routerLink="/" class="nav-logo">
+      <img src="logo.png" alt="Fatorty" class="nav-logo-img" />
+    </a>
+
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how-it-works" class="nav-link">How it works</a>
+      <a href="#stats" class="nav-link">Results</a>
+    </div>
+
+    <div class="nav-actions">
+      <a routerLink="/auth/login" class="nav-signin">Sign In</a>
+      <a routerLink="/auth/register" class="nav-cta">Get Started Free</a>
+    </div>
+
+    <!-- Mobile toggle -->
+    <button class="nav-hamburger" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (mobileMenuOpen()) {
+    <div class="nav-mobile">
+      <a href="#features" class="nav-mobile-link" (click)="mobileMenuOpen.set(false)">Features</a>
+      <a href="#how-it-works" class="nav-mobile-link" (click)="mobileMenuOpen.set(false)">How it works</a>
+      <a href="#stats" class="nav-mobile-link" (click)="mobileMenuOpen.set(false)">Results</a>
+      <hr class="nav-mobile-hr" />
+      <a routerLink="/auth/login" class="nav-mobile-link">Sign In</a>
+      <a routerLink="/auth/register" class="nav-mobile-cta">Get Started Free</a>
+    </div>
+  }
+</nav>
+
+<!-- ═══════════════════════════════════
+     HERO
+════════════════════════════════════ -->
+<section class="hero">
+  <!-- Background texture -->
+  <div class="hero-bg-dots" aria-hidden="true"></div>
+  <div class="hero-bg-glow-tl" aria-hidden="true"></div>
+  <div class="hero-bg-glow-br" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <!-- Big floating logo -->
+    <div class="hero-logo-wrap">
+      <img src="logo.png" alt="Fatorty" class="hero-logo" />
+    </div>
+
+    <!-- Badge -->
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      AI-Powered Procurement Intelligence
+    </div>
+
+    <!-- Headline -->
+    <h1 class="hero-headline">
+      Keep Costs<br>
+      <span class="hero-headline-accent">Under Control.</span>
+    </h1>
+    <p class="hero-subline">
+      Fatorty automates your entire procurement lifecycle — from purchase orders
+      to invoice reconciliation — so your finance team can focus on strategy,
+      not spreadsheets.
+    </p>
+
+    <!-- CTAs -->
+    <div class="hero-ctas">
+      <a routerLink="/auth/register" class="btn-primary">
+        Start Free Today
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a routerLink="/auth/login" class="btn-ghost">
+        Sign In to Dashboard
+      </a>
+    </div>
+
+    <!-- Trust bar -->
+    <p class="hero-trust">No credit card required &nbsp;·&nbsp; Free for teams up to 5 &nbsp;·&nbsp; Setup in &lt; 5 minutes</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     STATS BAND
+════════════════════════════════════ -->
+<section id="stats" class="stats-band">
+  <div class="stats-inner">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-card">
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     FEATURES
+════════════════════════════════════ -->
+<section id="features" class="features-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">Platform Features</div>
+      <h2 class="section-title">Everything your procurement team needs</h2>
+      <p class="section-sub">
+        One platform that replaces your spreadsheets, email approvals,
+        and disconnected tools — with a single source of truth.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      @for (f of features; track f.title) {
+        <div class="feature-card">
+          <div class="feature-icon" [innerHTML]="f.icon"></div>
+          <h3 class="feature-title">{{ f.title }}</h3>
+          <p class="feature-desc">{{ f.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════ -->
+<section id="how-it-works" class="hiw-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Up and running in three steps</h2>
+      <p class="section-sub">No lengthy implementation. No consultants. Just results.</p>
+    </div>
+
+    <div class="hiw-steps">
+      @for (step of steps; track step.num) {
+        <div class="hiw-step">
+          <div class="hiw-step-num">{{ step.num }}</div>
+          <div class="hiw-step-connector" aria-hidden="true"></div>
+          <div class="hiw-step-body">
+            <h3 class="hiw-step-title">{{ step.title }}</h3>
+            <p class="hiw-step-desc">{{ step.desc }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     CTA BANNER
+════════════════════════════════════ -->
+<section class="cta-banner">
+  <div class="cta-inner">
+    <div class="cta-glow" aria-hidden="true"></div>
+    <h2 class="cta-title">Ready to take control of your costs?</h2>
+    <p class="cta-sub">Join procurement teams that have cut costs by 40% in their first quarter with Fatorty.</p>
+    <div class="cta-actions">
+      <a routerLink="/auth/register" class="btn-primary btn-primary-lg">
+        Get Started Free
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a routerLink="/auth/login" class="cta-signin-link">Already have an account? Sign in →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     FOOTER
+════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="logo.png" alt="Fatorty" class="footer-logo" />
+      <p class="footer-tagline">Keep costs under control.</p>
+    </div>
+    <div class="footer-copy">
+      © {{ year }} Fatorty. Built with ❤️ for smart procurement teams.
+    </div>
+  </div>
+</footer>

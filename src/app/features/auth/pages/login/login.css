@@ -1,0 +1,403 @@
+/* ═══════════════════════════════════════════════════════════
+   Login Page — Fatorty Brand (Orange + Dark Navy)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Layout ── */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #F8FAFC;
+}
+
+/* ══════════════════════════════════════
+   LEFT — Hero / Brand Panel
+══════════════════════════════════════ */
+.hero-panel {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52%;
+  min-height: 100vh;
+  padding: 3.5rem 4rem;
+  background: linear-gradient(
+    150deg,
+    #0D1B2A 0%,
+    #1B2E45 55%,
+    #0D1B2A 100%
+  );
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .hero-panel { display: flex; }
+}
+
+/* Texture: subtle dot grid */
+.hero-texture {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Corner accent shapes */
+.hero-corner-top {
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-corner-bottom {
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ── Hero content ── */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 460px;
+  width: 100%;
+}
+
+.hero-logo-wrap {
+  margin-bottom: 2.75rem;
+}
+
+.hero-logo {
+  height: 5rem;
+  object-fit: contain;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 12px rgba(245,166,35,0.4));
+}
+
+/* Headline */
+.hero-headline {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin: 0 0 1rem;
+  letter-spacing: -0.03em;
+}
+
+.hero-headline-accent {
+  color: #F5A623;
+}
+
+.hero-sub {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #94A3B8;
+  margin: 0 0 2.5rem;
+  max-width: 380px;
+}
+
+/* Stats strip */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.25rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #F5A623;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  color: #94A3B8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+
+/* Feature chips */
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.875rem;
+  background: rgba(245,166,35,0.10);
+  border: 1px solid rgba(245,166,35,0.25);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #F5A623;
+  letter-spacing: 0.02em;
+}
+
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F5A623;
+  box-shadow: 0 0 6px rgba(245,166,35,0.8);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   RIGHT — Form Panel
+══════════════════════════════════════ */
+.form-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2.5rem 1.5rem;
+  background: #F8FAFC;
+}
+
+@media (min-width: 1024px) {
+  .form-panel { width: 48%; }
+}
+
+/* Theme button */
+.theme-btn-wrap {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+}
+
+/* Mobile logo (hidden on desktop) */
+.mobile-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.mobile-logo {
+  height: 2.25rem;
+  object-fit: contain;
+}
+
+@media (min-width: 1024px) {
+  .mobile-logo-wrap { display: none; }
+}
+
+/* ── Login Card ── */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 4px 24px rgba(13, 27, 42, 0.08), 0 1px 4px rgba(13, 27, 42, 0.04);
+}
+
+.login-card-header {
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0D1B2A;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.4rem;
+}
+
+.login-sub {
+  font-size: 0.875rem;
+  color: #64748B;
+  margin: 0;
+}
+
+/* ── Form ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1E293B;
+  letter-spacing: 0.01em;
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  font-size: 0.9rem;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 10px;
+  background: #F8FAFC;
+  color: #0D1B2A;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.field-input:focus,
+.field-input:focus-visible {
+  border-color: #F5A623;
+  box-shadow: 0 0 0 3px rgba(245,166,35,0.15);
+  background: #FFFFFF;
+}
+
+.field-input-error {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.10) !important;
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: #EF4444;
+  font-weight: 500;
+}
+
+/* ── Submit Button ── */
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, #F5A623 0%, #E8940D 100%);
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 14px rgba(245,166,35,0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245,166,35,0.45);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(245,166,35,0.25);
+}
+
+.submit-btn:disabled,
+.submit-btn-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner */
+.btn-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer link ── */
+.login-card-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.83rem;
+  color: #64748B;
+}
+
+.footer-link {
+  color: #E8940D;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 0.25rem;
+  transition: color 0.12s ease;
+}
+
+.footer-link:hover {
+  color: #F5A623;
+  text-decoration: underline;
+}
+
+/* ── Dark mode ── */
+:host-context(.my-app-dark) .hero-panel {
+  background: linear-gradient(150deg, #070E17 0%, #0D1B2A 55%, #070E17 100%);
+}
+
+:host-context(.my-app-dark) .form-panel,
+:host-context(.my-app-dark) .login-page {
+  background: #0F172A;
+}
+
+:host-context(.my-app-dark) .login-card {
+  background: #1B2E45;
+  border-color: #243B55;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+:host-context(.my-app-dark) .login-title       { color: #F1F5F9; }
+:host-context(.my-app-dark) .login-sub         { color: #94A3B8; }
+:host-context(.my-app-dark) .field-label       { color: #CBD5E1; }
+:host-context(.my-app-dark) .field-input       { background: #0D1B2A; border-color: #334155; color: #F1F5F9; }
+:host-context(.my-app-dark) .field-input:focus { background: #1B2E45; border-color: #F5A623; }
+:host-context(.my-app-dark) .login-card-footer { color: #94A3B8; }
+:host-context(.my-app-dark) .footer-link       { color: #F5A623; }
